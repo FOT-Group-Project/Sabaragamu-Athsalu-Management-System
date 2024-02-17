@@ -3,14 +3,14 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon } from 'react-icons/fa'
+import logo from '../assets/logo.png'
 
 export default function Header() {
   const path = useLocation().pathname;
   return (
     <Navbar className='border-b-2'>
       <Link to="/" className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'>
-        <span className='px-2 py-1'>Sabaragamu</span>
-        Athsalu
+      <img src={logo} class="h-10" alt="Flowbite Logo" />
       </Link>
 
       <Button className='w-12 h-10 lg:hidden' color='gray' pill>
