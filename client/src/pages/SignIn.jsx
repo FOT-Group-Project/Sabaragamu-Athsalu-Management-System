@@ -18,6 +18,7 @@ export default function SignIn() {
         {/* right side */}
         <div className='flex-1'>
           <form className='flex flex-col gap-4'>
+            <h3 className='text-2xl font-bold dark:text-white'>Log In</h3>
             <div>
               <Label value='Your Email'/>
               <TextInput type='text' placeholder='name@company.com' id='username'/>
@@ -26,7 +27,7 @@ export default function SignIn() {
               <Label value='Your Password'/>
               <TextInput type='password' placeholder='***********' id='password'/>
             </div>
-            <Button gradientDuoTone='purpleToBlue' className='w-full mt-2'>
+            <Button color='blue' className='w-full mt-2'>
               Sign In
             </Button>
           </form>
