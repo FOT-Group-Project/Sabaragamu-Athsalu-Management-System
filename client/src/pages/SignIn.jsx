@@ -17,20 +17,37 @@ export default function SignIn() {
 
         {/* right side */}
         <div className='flex-1'>
-          <form className='flex flex-col gap-4'>
+          <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
             <h3 className='text-2xl font-bold dark:text-white'>Log In</h3>
             <div>
-              <Label value='Your Email'/>
-              <TextInput type='text' placeholder='name@company.com' id='username'/>
+              <Label value='Your User Name'/>
+              <TextInput type='text' placeholder='maleesha71' id='username' onChange={handleChange}/>
             </div>
             <div>
               <Label value='Your Password'/>
-              <TextInput type='password' placeholder='***********' id='password'/>
+              <TextInput type='password' placeholder='***********' id='password' onChange={handleChange}/>
             </div>
-            <Button type='submit' color='blue' className='w-full mt-2'>
-              Sign In
+            <Button color='blue' type='submit' disabled={Loading}>
+                {
+                  Loading ? (
+                    <>
+                      <Spinner size='sm' />
+                      <span className='pl-3'>Loading...</span>
+                    </>
+                    
+                  ) : (
+                    'Sign In'
+                  ) 
+                }    
             </Button>
           </form>
+          {
+            errorMessage && (
+              <Alert className='mt-5' color='failure'>
+                {errorMessage}
+              </Alert>
+            )
+          }
         </div>
       </div>
     </div>
