@@ -1,6 +1,7 @@
 import { User } from "../models/user.models.js";
+import { errorHandler } from "../utils/error.js";
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
   if (
@@ -11,7 +12,7 @@ export const signup = async (req, res) => {
     email === "" ||
     password === ""
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    next(errorHandler(400, "All fields are required"));
   }
 
   User.findByUsername(username, (error, user) => {
@@ -24,8 +25,7 @@ export const signup = async (req, res) => {
     }
     User.createUser(username, email, password, (error, userId) => {
       if (error) {
-        console.error("Error executing MySQL query:", error);
-        return res.status(500).json({ message: "Internal server error" });
+        next(error);
       }
       res.status(201).json({ message: "User created successfully", userId });
     });
