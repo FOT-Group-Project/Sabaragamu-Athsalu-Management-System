@@ -21,7 +21,7 @@ export const signup = async (req, res, next) => {
       return res.status(500).json({ message: "Internal server error" });
     }
     if (user) {
-      return res.status(400).json({ message: "Username already exists" });
+      return next(errorHandler(400, "Username already exists"));
     }
     User.createUser(username, email, password, (error, userId) => {
       if (error) {

@@ -27,7 +27,7 @@ export default function SignIn() {
               <Label value='Your Password'/>
               <TextInput type='password' placeholder='***********' id='password'/>
             </div>
-            <Button color='blue' className='w-full mt-2'>
+            <Button type='submit' color='blue' className='w-full mt-2'>
               Sign In
             </Button>
           </form>
