@@ -2,12 +2,15 @@ import {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
 import logo from '../assets/logo.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
 
 export default function SignIn() {
 
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [Loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector(state => state.user);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,12 +21,11 @@ export default function SignIn() {
     e.preventDefault();
 
     if(!formData.username || !formData.password){
-      return setErrorMessage('All fields are required');
+      return dispatch(signInFailure('Please fill all the fields'));
     }
 
     try{
-      setLoading(true);
-      setErrorMessage(null);
+      dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -35,18 +37,16 @@ export default function SignIn() {
       const data = await res.json();
 
       if(data.success === false){
-        setLoading(false);
-        return setErrorMessage(data.message);
+        dispatch(signInFailure(data.message));
       }
-      setLoading(false);
 
       if(res.ok){
+        dispatch(signInSuccess(data));
         navigate('/dashboard');
       }
 
     }catch(error){
-      setErrorMessage(error.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   }
 
@@ -74,9 +74,9 @@ export default function SignIn() {
               <Label value='Your Password'/>
               <TextInput type='password' placeholder='***********' id='password' onChange={handleChange}/>
             </div>
-            <Button color='blue' type='submit' disabled={Loading}>
+            <Button color='blue' type='submit' disabled={loading}>
                 {
-                  Loading ? (
+                  loading ? (
                     <>
                       <Spinner size='sm' />
                       <span className='pl-3'>Loading...</span>
