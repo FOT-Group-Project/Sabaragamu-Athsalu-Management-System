@@ -4,9 +4,13 @@ import { Link, useLocation } from 'react-router-dom'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon } from 'react-icons/fa'
 import logo from '../assets/logo.png'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleTheme } from '../redux/theme/themeSlice'
 
 export default function Header() {
   const path = useLocation().pathname;
+  const dispatch = useDispatch();
+  
   return (
     <Navbar className='border-b-2'>
       <Link to="/" className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'>
@@ -18,7 +22,7 @@ export default function Header() {
       </Button>
 
       <div className='flex gap-2 md:order-2' >
-        <Button className='w-12 h-10 hidden sm:inline' color='gray' pill>
+        <Button className='w-12 h-10 hidden sm:inline' color='gray' pill onClick={ () => dispatch(toggleTheme())}>
           <FaMoon/>
         </Button>
         <Link to="/sign-in">
