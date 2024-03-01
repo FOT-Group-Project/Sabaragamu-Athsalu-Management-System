@@ -1,13 +1,18 @@
 import {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
-import logo from '../assets/logo.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
+import Logolight from '../assets/logolight.png'
+import Logodark from '../assets/logodark.png'
 
 export default function SignUp() {
 
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [Loading, setLoading] = useState(false);
+  const { loading, error: errorMessage } = useSelector(state => state.user);
+  const theme = useSelector((state) => state.theme.theme);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,12 +23,11 @@ export default function SignUp() {
     e.preventDefault();
 
     if(!formData.username || !formData.email || !formData.password){
-      return setErrorMessage('All fields are required');
+      return dispatch(signInFailure('Please fill all the fields'));
     }
 
     try{
-      setLoading(true);
-      setErrorMessage(null);
+      dispatch(signInStart());
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -35,18 +39,16 @@ export default function SignUp() {
       const data = await res.json();
 
       if(data.success === false){
-        setLoading(false);
-        return setErrorMessage(data.message);
+        dispatch(signInFailure(data.message));
       }
-      setLoading(false);
 
       if(res.ok){
+        dispatch(signInSuccess(data));
         navigate('/sign-in');
       }
 
     }catch(error){
-      setErrorMessage(error.message);
-      setLoading(false);
+      dispatch(signInFailure(error.message));
     }
   }
 
@@ -56,7 +58,10 @@ export default function SignUp() {
       {/* left side */}
       <div className='flex-1'>
         <Link to="/" className=''>
-         <img src={logo} class="h-16" alt="Flowbite Logo" />
+        {theme === 'light' ? 
+              <img src={Logolight} class="h-16" alt="Flowbite Logo" />
+            : <img src={Logodark} class="h-16" alt="Flowbite Logo" />
+            }
         </Link>
         <p className='text-sm mt-5'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex officiis harum vel magni, tenetur neque officia ducimus..</p>
       </div>
@@ -77,9 +82,9 @@ export default function SignUp() {
             <Label value='Your Password'/>
             <TextInput type='password' placeholder='***********' id='password' onChange={handleChange}/>
           </div>
-          <Button color='blue' type='submit' disabled={Loading}>
+          <Button color='blue' type='submit' disabled={loading}>
                 {
-                  Loading ? (
+                  loading ? (
                     <>
                       <Spinner size='sm' />
                       <span className='pl-3'>Loading...</span>

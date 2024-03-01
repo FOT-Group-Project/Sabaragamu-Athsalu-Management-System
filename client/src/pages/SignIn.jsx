@@ -1,14 +1,16 @@
 import {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
-import logo from '../assets/logo.png'
 import { useDispatch, useSelector } from 'react-redux'
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
+import Logolight from '../assets/logolight.png'
+import Logodark from '../assets/logodark.png'
 
 export default function SignIn() {
 
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector(state => state.user);
+  const theme = useSelector((state) => state.theme.theme);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -57,7 +59,10 @@ export default function SignIn() {
         {/* left side */}
         <div className='flex-1'>
           <Link to="/" className=''>
-           <img src={logo} class="h-16" alt="Flowbite Logo" />
+            {theme === 'light' ? 
+              <img src={Logolight} class="h-16" alt="Flowbite Logo" />
+            : <img src={Logodark} class="h-16" alt="Flowbite Logo" />
+            }
           </Link>
           <p className='text-sm mt-5'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex officiis harum vel magni, tenetur neque officia ducimus..</p>
         </div>
@@ -68,7 +73,7 @@ export default function SignIn() {
             <h3 className='text-2xl font-bold dark:text-white'>Log In</h3>
             <div>
               <Label value='Your User Name'/>
-              <TextInput type='text' placeholder='maleesha71' id='username' onChange={handleChange}/>
+              <TextInput type='text' placeholder='user name' id='username' onChange={handleChange}/>
             </div>
             <div>
               <Label value='Your Password'/>

@@ -3,7 +3,8 @@ import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AiOutlineSearch } from 'react-icons/ai'
 import { FaMoon, FaSun } from 'react-icons/fa'
-import logo from '../assets/logo.png'
+import Logolight from '../assets/logolight.png'
+import Logodark from '../assets/logodark.png'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleTheme } from '../redux/theme/themeSlice'
 
@@ -16,7 +17,11 @@ export default function Header() {
   return (
     <Navbar className='border-b-2'>
       <Link to="/" className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'>
-      <img src={logo} class="h-10" alt="Flowbite Logo" />
+      {theme === 'light' ? 
+        <img src={Logolight} class="h-10" alt="Flowbite Logo" />
+      : <img src={Logodark} class="h-10" alt="Flowbite Logo" />
+      }
+      
       </Link>
 
       <Button className='w-12 h-10 lg:hidden' color='gray' pill>
