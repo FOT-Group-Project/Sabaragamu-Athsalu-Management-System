@@ -1,4 +1,4 @@
-import { Button, Navbar, TextInput, Dropdown } from "flowbite-react";
+import { Button, Navbar, TextInput, Dropdown, Avatar } from "flowbite-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
@@ -43,7 +43,33 @@ export default function Header() {
         </Button>
 
         {currentUser ? (
-          <Dropdown></Dropdown>
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar alt="user" img={currentUser.profilepicurl} rounded />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">
+                @{currentUser.firstname} {currentUser.lastname}
+              </span>
+              <span className="block text-sm font-medium truncate">
+                {currentUser.email}
+              </span>
+            </Dropdown.Header>
+            <Link to="/dashboard?tab=profile">
+              <Dropdown.Item>
+                <span className="block text-sm">Profile</span>
+              </Dropdown.Item>
+            </Link>
+            <Dropdown.Divider />
+            <Link to="/dashboard?tab=profile">
+              <Dropdown.Item>
+                <span className="block text-sm">Sign out</span>
+              </Dropdown.Item>
+            </Link>
+          </Dropdown>
         ) : (
           <Link to="/sign-in">
             <Button color="blue" outline size="sm">
@@ -59,7 +85,7 @@ export default function Header() {
           <Link to="/">Home</Link>
         </Navbar.Link>
         <Navbar.Link active={path === "/dashboard"} as={"div"}>
-          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/dashboard">Dashboard </Link>
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
