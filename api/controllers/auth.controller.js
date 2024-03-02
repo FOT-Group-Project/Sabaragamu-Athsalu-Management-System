@@ -86,12 +86,12 @@ function signIn(req, res) {
                 { id: user.id },
                 process.env.JWT_SECRET_KEY
               );
-              return res.status(200).json({
-                success: true,
-                message: "User logged in successfully",
-                token: token,
-                user: user,
-              });
+              const { password: pass, ...rest } = user.dataValues;
+
+              res
+                .status(200)
+                .cookie("access_token", token, { httpOnly: true })
+                .json(rest);
             } else {
               return res.status(400).json({
                 success: false,
