@@ -51,12 +51,6 @@ export default function Header() {
             </Button>
           </Link>
         )}
-
-        <Link to="/sign-in">
-          <Button color="blue" outline size="sm">
-            Sign In
-          </Button>
-        </Link>
         <Navbar.Toggle />
       </div>
 
