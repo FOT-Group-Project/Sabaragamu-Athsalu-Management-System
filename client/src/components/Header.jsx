@@ -7,6 +7,7 @@ import Logolight from "../assets/logolight.png";
 import Logodark from "../assets/logodark.png";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme } from "../redux/theme/themeSlice";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 export default function Header() {
   const path = useLocation().pathname;
@@ -14,6 +15,22 @@ export default function Header() {
 
   const { currentUser } = useSelector((state) => state.user);
   const theme = useSelector((state) => state.theme.theme);
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <Navbar className="border-b-2">
@@ -64,7 +81,7 @@ export default function Header() {
               </Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Link to="/dashboard?tab=profile">
+            <Link onClick={handleSignout}>
               <Dropdown.Item>
                 <span className="block text-sm">Sign out</span>
               </Dropdown.Item>
