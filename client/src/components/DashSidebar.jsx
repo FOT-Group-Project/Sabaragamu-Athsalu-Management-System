@@ -50,29 +50,30 @@ export default function DashSidebar() {
           </Link>
 
           <Link to="/dashboard?tab=users">
-            <Sidebar.Item
-              href="#"
-              icon={HiUsers}
-              active={tab === "users"}
-              as="div"
-            >
+            <Sidebar.Item icon={HiUsers} active={tab === "users"} as="div">
               Users
             </Sidebar.Item>
           </Link>
 
-          <Sidebar.Item icon={HiShoppingBag}>Products</Sidebar.Item>
+          <Link to="/dashboard?tab=products">
+            <Sidebar.Item icon={HiShoppingBag} active={tab === "products"}>
+              Products
+            </Sidebar.Item>
+          </Link>
 
-          <Sidebar.Item href="#" icon={IoMdHome}>
-            Shops
-          </Sidebar.Item>
+          <Link to="/dashboard?tab=shops">
+            <Sidebar.Item icon={IoMdHome} active={tab === "shops"}>
+              Shops
+            </Sidebar.Item>
+          </Link>
 
-          <Sidebar.Item href="#" icon={HiBuildingStorefront}>
-            Stores
-          </Sidebar.Item>
+          <Link to="/dashboard?tab=stores">
+            <Sidebar.Item icon={HiBuildingStorefront} active={tab === "stores"}>
+              Stores
+            </Sidebar.Item>
+          </Link>
 
-          <Sidebar.Item href="#" icon={HiShoppingBag}>
-            Documents
-          </Sidebar.Item>
+          <Sidebar.Item icon={HiShoppingBag}>Documents</Sidebar.Item>
 
           <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
             Sign Out
