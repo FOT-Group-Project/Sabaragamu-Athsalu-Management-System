@@ -30,7 +30,7 @@ export default function DashSidebar() {
   return (
     <Sidebar
       aria-label="Sidebar with multi-level dropdown example"
-      className="w-full md:w-56"
+      className="w-full md:w-56 "
     >
       <Sidebar.Items>
         <Sidebar.ItemGroup>
