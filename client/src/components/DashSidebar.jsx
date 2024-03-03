@@ -60,12 +60,8 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
 
-          <Sidebar.Collapse icon={HiShoppingBag} label="Inventory">
-            <Sidebar.Item href="#">Products</Sidebar.Item>
-            <Sidebar.Item href="#">Sales</Sidebar.Item>
-            <Sidebar.Item href="#">Refunds</Sidebar.Item>
-            <Sidebar.Item href="#">Shipping</Sidebar.Item>
-          </Sidebar.Collapse>
+          <Sidebar.Item icon={HiShoppingBag}>Products</Sidebar.Item>
+
           <Sidebar.Item href="#" icon={IoMdHome}>
             Shops
           </Sidebar.Item>
