@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sidebar } from "flowbite-react";
-import { HiUser, HiArrowSmRight } from "react-icons/hi";
+import { useSelector } from "react-redux";
+import {
+  HiArrowSmRight,
+  HiChartPie,
+  HiInbox,
+  HiShoppingBag,
+  HiTable,
+  HiUser,
+  HiUsers,
+} from "react-icons/hi";
+import { HiBuildingStorefront } from "react-icons/hi2";
+import { FaShoppingBag } from "react-icons/fa";
+import { IoMdHome } from "react-icons/io";
 
 export default function DashSidebar() {
+  const { currentUser } = useSelector((state) => state.user);
   const loaction = useLocation();
   const [tab, setTab] = useState("");
   useEffect(() => {
@@ -15,20 +28,56 @@ export default function DashSidebar() {
   }, [loaction.search]);
 
   return (
-    <Sidebar className="w-full md:w-56">
+    <Sidebar
+      aria-label="Sidebar with multi-level dropdown example"
+      className="w-full md:w-56"
+    >
       <Sidebar.Items>
         <Sidebar.ItemGroup>
+          <Sidebar.Item href="#" icon={HiChartPie}>
+            Dashboard
+          </Sidebar.Item>
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               active={tab === "profile"}
               icon={HiUser}
-              label={"User"}
+              label={currentUser.role}
               labelColor="dark"
               as="div"
             >
               Profile
             </Sidebar.Item>
           </Link>
+
+          <Link to="/dashboard?tab=users">
+            <Sidebar.Item
+              href="#"
+              icon={HiUsers}
+              active={tab === "users"}
+              as="div"
+            >
+              Users
+            </Sidebar.Item>
+          </Link>
+
+          <Sidebar.Collapse icon={HiShoppingBag} label="Inventory">
+            <Sidebar.Item href="#">Products</Sidebar.Item>
+            <Sidebar.Item href="#">Sales</Sidebar.Item>
+            <Sidebar.Item href="#">Refunds</Sidebar.Item>
+            <Sidebar.Item href="#">Shipping</Sidebar.Item>
+          </Sidebar.Collapse>
+          <Sidebar.Item href="#" icon={IoMdHome}>
+            Shops
+          </Sidebar.Item>
+
+          <Sidebar.Item href="#" icon={HiBuildingStorefront}>
+            Stores
+          </Sidebar.Item>
+
+          <Sidebar.Item href="#" icon={HiShoppingBag}>
+            Documents
+          </Sidebar.Item>
+
           <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
             Sign Out
           </Sidebar.Item>
