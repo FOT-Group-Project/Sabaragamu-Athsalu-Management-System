@@ -1,5 +1,5 @@
 const models = require("../models");
-const { trace } = require("../routes/user.route");
+const bcrypt = require("bcrypt");
 const errorHandler = require("../utils/error");
 
 function save(req, res) {
@@ -74,16 +74,42 @@ function updateUser(req, res, next) {
   }
   const updatedUser = {
     username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    profilepicurl: req.body.profilepicurl,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    phone: req.body.phone,
+    role: req.body.role,
   };
 
   models.User.update(updatedUser, {
-    where: { id: req.params.userId },
+    where: {
+      id: req.params.userId,
+    },
   })
     .then((result) => {
-      res.status(200).json({
-        success: true,
-        message: "User updated successfully",
-      });
+      if (result[0] === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      models.User.findByPk(req.params.userId)
+        .then((user) => {
+          res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            user: user,
+          });
+        })
+        .catch((error) => {
+          res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error,
+          });
+        });
     })
     .catch((error) => {
       res.status(500).json({
