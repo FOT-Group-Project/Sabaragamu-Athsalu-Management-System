@@ -122,7 +122,7 @@ export default function DashUsers() {
         <Modal.Header>Create New User</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
-            <form className="flex flex-col gap-4">
+            <form className="flex flex-col flex-grow gap-4">
               <input
                 type="file"
                 accept="image/*"
@@ -354,34 +354,7 @@ export default function DashUsers() {
                 </Button.Group>
               </TableCell>
             </TableRow>
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                <Avatar
-                  alt="user"
-                  img="https://avatars.githubusercontent.com/u/91375598?v=4"
-                  rounded
-                  className="mr-3"
-                />
 
-                {"Maleesha Herath"}
-              </TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Rathnapura</TableCell>
-              <TableCell>malisha27t@gmail.com</TableCell>
-              <TableCell>077-148 9635</TableCell>
-              <TableCell>
-                <Button.Group>
-                  <Button color="gray">
-                    <FaUserEdit className="mr-3 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button color="gray">
-                    <MdDeleteForever className="mr-3 h-4 w-4" />
-                    Delete
-                  </Button>
-                </Button.Group>
-              </TableCell>
-            </TableRow>
             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
               <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
                 <Avatar
