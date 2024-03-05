@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput, Label } from "flowbite-react";
+import { Alert, Button, TextInput, Spinner, Label } from "flowbite-react";
 import { React, useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -301,9 +301,15 @@ export default function DashProfile() {
             onChange={handleChange}
           />
         </div> */}
-
-        <Button className="mt-2" type="submit" color="blue">
-          Update
+        <Button color="blue" type="submit" disabled={loading}>
+          {loading ? (
+            <>
+              <Spinner size="sm" />
+              <span className="pl-3">Loading...</span>
+            </>
+          ) : (
+            "Update"
+          )}
         </Button>
       </form>
       <div className="text-red-500 flex justify-end mt-5">

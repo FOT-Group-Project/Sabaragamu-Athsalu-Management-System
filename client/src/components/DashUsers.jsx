@@ -29,6 +29,7 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import Profile from "../assets/profile.png";
 
 export default function DashUsers() {
   const [openModal, setOpenModal] = useState(false);
@@ -156,7 +157,7 @@ export default function DashUsers() {
                   />
                 )}
                 <img
-                  src={imageFileUrl || currentUser.profilepicurl}
+                  src={imageFileUrl || Profile}
                   alt="user"
                   className={`rounded-full w-full h-full object-cover border-4 border-[lightgray] ${
                     imageFileUploadProgress &&
