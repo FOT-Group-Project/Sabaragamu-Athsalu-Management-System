@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from "flowbite-react";
+import { Alert, Button, TextInput, Label } from "flowbite-react";
 import { React, useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -127,20 +127,100 @@ export default function DashProfile() {
         {imageFileUploadError && (
           <Alert color="failure">{imageFileUploadError}</Alert>
         )}
-        <TextInput
-          type="text"
-          id="username"
-          placeholder="username"
-          defaultValue={currentUser.username}
-        />
-        <TextInput
-          type="email"
-          id="email"
-          placeholder="email"
-          defaultValue={currentUser.email}
-        />
-        <TextInput type="password" id="password" placeholder="password" />
-        <Button type="submit" color="blue">
+
+        <div>
+          <div className="mb-2 block">
+            <Label value="Username" />
+          </div>
+          <TextInput
+            id="username"
+            type="text"
+            placeholder="@username"
+            defaultValue={currentUser.username}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="Email" />
+          </div>
+          <TextInput
+            id="email"
+            type="email"
+            placeholder="email@gmail.com"
+            defaultValue={currentUser.email}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="First Name" />
+          </div>
+          <TextInput
+            id="firstname"
+            type="text"
+            placeholder="First name"
+            defaultValue={currentUser.firstname}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="Last Name" />
+          </div>
+          <TextInput
+            id="lastname"
+            type="text"
+            placeholder="Last name"
+            defaultValue={currentUser.lastname}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="Phone Number" />
+          </div>
+          <TextInput
+            id="phone"
+            type="phone"
+            placeholder="Phone number"
+            defaultValue={currentUser.phone}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="Role" />
+          </div>
+          <TextInput
+            id="role"
+            type="text"
+            placeholder="Role"
+            defaultValue={currentUser.role}
+            required
+            shadow
+          />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label value="Password" />
+          </div>
+          <TextInput
+            id="password"
+            type="password"
+            placeholder="Password"
+            defaultValue={currentUser.password}
+            required
+            shadow
+          />
+        </div>
+
+        <Button className="mt-2" type="submit" color="blue">
           Update
         </Button>
       </form>
