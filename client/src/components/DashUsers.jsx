@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Table,
@@ -13,14 +13,91 @@ import {
   Modal,
   Checkbox,
   Label,
+  Alert,
   TextInput,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { HiHome } from "react-icons/hi";
+import { useSelector } from "react-redux";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../firebase";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 export default function DashUsers() {
   const [openModal, setOpenModal] = useState(false);
+
+  const { currentUser } = useSelector((state) => state.user);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageFileUrl, setImageFileUrl] = useState(null);
+  const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
+  const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [imageFileUploading, setImageFileUploading] = useState(false);
+
+  const filePickerRef = useRef();
+
+  const handelImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImageFileUrl(URL.createObjectURL(file));
+    }
+  };
+
+  useEffect(() => {
+    if (imageFile) {
+      uploadImage();
+    }
+  }, [imageFile]);
+
+  const uploadImage = async () => {
+    // service firebase.storage {
+    //   match /b/{bucket}/o {
+    //     match /{allPaths=**} {
+    //       allow read;
+    //       allow write: if
+    //       request.resource.size < 2 * 1024 * 1024 &&
+    //       request.resource.contentType.matches('image/.*')
+    //     }
+    //   }
+    // }
+    setImageFileUploadError(null);
+    setImageFileUploading(true);
+    setImageFileUploadError(null);
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + imageFile.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        setImageFileUploadProgress(progress.toFixed(0));
+      },
+      (error) => {
+        setImageFileUploadError(
+          "Could not upload image (File must be less than 2MB)"
+        );
+        setImageFileUploadProgress(null);
+        setImageFile(null);
+        setImageFileUrl(null);
+        setImageFileUploading(false);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageFileUrl(downloadURL);
+        });
+      }
+    );
+  };
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
@@ -41,11 +118,56 @@ export default function DashUsers() {
         Add User
       </Button>
 
-      <Modal className="" show={openModal} onClose={() => setOpenModal(false)}>
+      <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Create New User</Modal.Header>
         <Modal.Body>
-          <div className="space-y-6 ">
+          <div className="space-y-6">
             <form className="flex flex-col gap-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handelImageChange}
+                ref={filePickerRef}
+                hidden
+              />
+              <div
+                className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
+                onClick={() => filePickerRef.current.click()}
+              >
+                {imageFileUploadProgress && (
+                  <CircularProgressbar
+                    value={imageFileUploadProgress || 0}
+                    text={`${imageFileUploadProgress}%`}
+                    strokeWidth={5}
+                    styles={{
+                      root: {
+                        width: "100%",
+                        height: "100%",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                      },
+                      path: {
+                        stroke: `rgba(62, 152, 199, ${
+                          imageFileUploadProgress / 100
+                        })`,
+                      },
+                    }}
+                  />
+                )}
+                <img
+                  src={imageFileUrl || currentUser.profilepicurl}
+                  alt="user"
+                  className={`rounded-full w-full h-full object-cover border-4 border-[lightgray] ${
+                    imageFileUploadProgress &&
+                    imageFileUploadProgress < 100 &&
+                    "opacity-60"
+                  }`}
+                />
+              </div>
+              {imageFileUploadError && (
+                <Alert color="failure">{imageFileUploadError}</Alert>
+              )}
               <div className="flex gap-2">
                 <div>
                   <div className="mb-2 block">
@@ -163,7 +285,7 @@ export default function DashUsers() {
         </Modal.Footer>
       </Modal>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-lg">
         <Table hoverable className="shadow-md w-full">
           <TableHead>
             <TableHeadCell>name</TableHeadCell>
