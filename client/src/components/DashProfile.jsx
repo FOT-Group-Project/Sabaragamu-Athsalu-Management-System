@@ -287,7 +287,7 @@ export default function DashProfile() {
             onChange={handleChange}
           />
         </div>
-        {/* <div>
+        <div>
           <div className="mb-2 block">
             <Label value="Password" />
           </div>
@@ -300,12 +300,12 @@ export default function DashProfile() {
             shadow
             onChange={handleChange}
           />
-        </div> */}
-        <Button color="blue" type="submit" disabled={loading}>
+        </div>
+        <Button className="mt-3" color="blue" type="submit" disabled={loading}>
           {loading ? (
             <>
               <Spinner size="sm" />
-              <span className="pl-3">Loading...</span>
+              <span className="pl-3">Updating...</span>
             </>
           ) : (
             "Update"

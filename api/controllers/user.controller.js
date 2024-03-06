@@ -44,7 +44,6 @@ function updateUser(req, res, next) {
         message: "Password must be at least 6 characters",
       });
     }
-    req.body.password = bcryptjs.hashSync(req.body.password, 10);
   }
   if (req.body.username) {
     if (req.body.username.length < 7 || req.body.username.length > 20) {
@@ -72,36 +71,48 @@ function updateUser(req, res, next) {
       });
     }
   }
-  const updatedUser = {
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-    profilepicurl: req.body.profilepicurl,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-    phone: req.body.phone,
-    role: req.body.role,
-  };
 
-  models.User.update(updatedUser, {
-    where: {
-      id: req.params.userId,
-    },
-  })
-    .then((result) => {
-      if (result[0] === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found",
-        });
-      }
-      models.User.findByPk(req.params.userId)
-        .then((user) => {
-          res.status(200).json({
-            success: true,
-            message: "User updated successfully",
-            user: user,
-          });
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(req.body.password, salt, function (err, hash) {
+      const updatedUser = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        profilepicurl: req.body.profilepicurl,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        phone: req.body.phone,
+        role: req.body.role,
+        password: hash,
+      };
+
+      models.User.update(updatedUser, {
+        where: {
+          id: req.params.userId,
+        },
+      })
+        .then((result) => {
+          if (result[0] === 0) {
+            return res.status(404).json({
+              success: false,
+              message: "User not found",
+            });
+          }
+          models.User.findByPk(req.params.userId)
+            .then((user) => {
+              res.status(200).json({
+                success: true,
+                message: "User updated successfully",
+                user: user,
+              });
+            })
+            .catch((error) => {
+              res.status(500).json({
+                success: false,
+                message: "Internal Server Error",
+                error: error,
+              });
+            });
         })
         .catch((error) => {
           res.status(500).json({
@@ -110,14 +121,8 @@ function updateUser(req, res, next) {
             error: error,
           });
         });
-    })
-    .catch((error) => {
-      res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-        error: error,
-      });
     });
+  });
 }
 
 function signout(req, res) {
