@@ -202,7 +202,6 @@ export default function DashProfile() {
             {error}
           </Alert>
         )}
-
         <div>
           <div className="mb-2 block">
             <Label value="Username" />
