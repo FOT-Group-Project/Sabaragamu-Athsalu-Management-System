@@ -34,11 +34,16 @@ import "react-circular-progressbar/dist/styles.css";
 import Profile from "../assets/add-pic.png";
 
 export default function DashUsers() {
+  const { currentUser } = useSelector((state) => state.user);
+  const [users, setUsers] = useState([]);
+  const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [userIdToDelete, setUserIdToDelete] = useState("");
+
   const [openModal, setOpenModal] = useState(false);
 
   const [formData, setFormData] = useState({});
 
-  const { currentUser } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
@@ -60,11 +65,50 @@ export default function DashUsers() {
     }
   };
 
-  useEffect(() => {
-    if (imageFile) {
-      uploadImage();
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch(`/api/user/getusers`);
+      const data = await res.json();
+      if (res.ok) {
+        setUsers(data.users);
+        if (data.users.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
     }
-  }, [imageFile]);
+  };
+
+  const handleShowMore = async () => {
+    const startIndex = users.length;
+    try {
+      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) => [...prev, ...data.users]);
+        if (data.users.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(
+    () => {
+      if (currentUser.role == "Admin") {
+        fetchUsers();
+      }
+
+      if (imageFile) {
+        uploadImage();
+      }
+    },
+    [imageFile],
+    [users.id]
+  );
 
   const uploadImage = async () => {
     // service firebase.storage {
@@ -146,6 +190,7 @@ export default function DashUsers() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModal(false);
+        fetchUsers();
       }
     } catch (error) {
       setCreateUserError("Something went wrong");
@@ -387,135 +432,64 @@ export default function DashUsers() {
         </Modal.Body>
       </Modal>
 
-      <div className="overflow-x-auto rounded-lg">
-        <Table hoverable className="shadow-md w-full">
-          <TableHead>
-            <TableHeadCell>name</TableHeadCell>
-            <TableHeadCell>position</TableHeadCell>
-            <TableHeadCell>location</TableHeadCell>
-            <TableHeadCell>email</TableHeadCell>
-            <TableHeadCell>phone number</TableHeadCell>
-            <TableHeadCell>
-              <span className="sr-only">Edit</span>
-            </TableHeadCell>
-          </TableHead>
-          <TableBody className="divide-y">
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                <Avatar
-                  alt="user"
-                  img="https://avatars.githubusercontent.com/u/91375598?v=4"
-                  rounded
-                  className="mr-3"
-                />
+      {currentUser.role == "Admin" && users.length > 0 ? (
+        <>
+          <Table hoverable className="shadow-md w-full">
+            <TableHead>
+              <TableHeadCell>name</TableHeadCell>
+              <TableHeadCell>position</TableHeadCell>
+              <TableHeadCell>location</TableHeadCell>
+              <TableHeadCell>email</TableHeadCell>
+              <TableHeadCell>phone number</TableHeadCell>
+              <TableHeadCell>
+                <span className="sr-only">Edit</span>
+              </TableHeadCell>
+            </TableHead>
+            {users.map((user) => (
+              <Table.Body className="divide-y" key={user.id}>
+                <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
+                    <Avatar
+                      alt={user.username}
+                      img={user.profilepicurl}
+                      rounded
+                      className="mr-3"
+                    />
 
-                {"Maleesha Herath"}
-              </TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Rathnapura</TableCell>
-              <TableCell>malisha27t@gmail.com</TableCell>
-              <TableCell>077-148 9635</TableCell>
-              <TableCell>
-                <Button.Group>
-                  <Button color="gray">
-                    <FaUserEdit className="mr-3 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button color="gray">
-                    <MdDeleteForever className="mr-3 h-4 w-4" />
-                    Delete
-                  </Button>
-                </Button.Group>
-              </TableCell>
-            </TableRow>
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                <Avatar
-                  alt="user"
-                  img="https://avatars.githubusercontent.com/u/91375598?v=4"
-                  rounded
-                  className="mr-3"
-                />
-
-                {"Maleesha Herath"}
-              </TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Rathnapura</TableCell>
-              <TableCell>malisha27t@gmail.com</TableCell>
-              <TableCell>077-148 9635</TableCell>
-              <TableCell>
-                <Button.Group>
-                  <Button color="gray">
-                    <FaUserEdit className="mr-3 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button color="gray">
-                    <MdDeleteForever className="mr-3 h-4 w-4" />
-                    Delete
-                  </Button>
-                </Button.Group>
-              </TableCell>
-            </TableRow>
-
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                <Avatar
-                  alt="user"
-                  img="https://avatars.githubusercontent.com/u/91375598?v=4"
-                  rounded
-                  className="mr-3"
-                />
-
-                {"Maleesha Herath"}
-              </TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Rathnapura</TableCell>
-              <TableCell>malisha27t@gmail.com</TableCell>
-              <TableCell>077-148 9635</TableCell>
-              <TableCell>
-                <Button.Group>
-                  <Button color="gray">
-                    <FaUserEdit className="mr-3 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button color="gray">
-                    <MdDeleteForever className="mr-3 h-4 w-4" />
-                    Delete
-                  </Button>
-                </Button.Group>
-              </TableCell>
-            </TableRow>
-            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                <Avatar
-                  alt="user"
-                  img="https://avatars.githubusercontent.com/u/91375598?v=4"
-                  rounded
-                  className="mr-3"
-                />
-
-                {"Maleesha Herath"}
-              </TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Rathnapura</TableCell>
-              <TableCell>malisha27t@gmail.com</TableCell>
-              <TableCell>077-148 9635</TableCell>
-              <TableCell>
-                <Button.Group>
-                  <Button color="gray">
-                    <FaUserEdit className="mr-3 h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button color="gray">
-                    <MdDeleteForever className="mr-3 h-4 w-4" />
-                    Delete
-                  </Button>
-                </Button.Group>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
+                    {user.firstname + " " + user.lastname}
+                  </TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>Rathnapura</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone}</TableCell>
+                  <TableCell>
+                    <Button.Group>
+                      <Button color="gray">
+                        <FaUserEdit className="mr-3 h-4 w-4" />
+                        Edit
+                      </Button>
+                      <Button color="gray">
+                        <MdDeleteForever className="mr-3 h-4 w-4" />
+                        Delete
+                      </Button>
+                    </Button.Group>
+                  </TableCell>
+                </TableRow>
+              </Table.Body>
+            ))}
+          </Table>
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="w-full text-teal-500 self-center text-sm py-7"
+            >
+              Show more
+            </button>
+          )}
+        </>
+      ) : (
+        <p>You have no users yet!</p>
+      )}
     </div>
   );
 }

@@ -2,6 +2,27 @@ const models = require("../models");
 const bcrypt = require("bcrypt");
 const errorHandler = require("../utils/error");
 
+function getUsers(req, res, next) {
+  const limit = parseInt(req.query.limit) || 9;
+  const startIndex = parseInt(req.query.startIndex) || 0;
+
+  models.User.findAll({ limit: limit, startIndex: startIndex })
+    .then((users) => {
+      res.status(200).json({
+        success: true,
+        message: "Users retrieved successfully",
+        users: users,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
 function save(req, res) {
   const user = {
     firstname: req.body.firstname,
@@ -256,6 +277,7 @@ function signout(req, res) {
 }
 
 module.exports = {
+  getUsers: getUsers,
   save: save,
   createUser: createUser,
   updateUser: updateUser,
