@@ -5,6 +5,7 @@ const verifyToken = require("../utils/verifyUser");
 const router = express.Router();
 
 router.post("/save", userController.save);
+router.post("/create", verifyToken, userController.createUser);
 router.put("/update/:userId", verifyToken, userController.updateUser);
 router.post("/signout", userController.signout);
 
