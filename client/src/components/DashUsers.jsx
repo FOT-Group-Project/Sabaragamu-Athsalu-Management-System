@@ -15,6 +15,7 @@ import {
   Label,
   Alert,
   TextInput,
+  Select,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -33,6 +34,8 @@ import Profile from "../assets/add-pic.png";
 
 export default function DashUsers() {
   const [openModal, setOpenModal] = useState(false);
+
+  const [formData, setFormData] = useState({});
 
   const { currentUser } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
@@ -95,10 +98,18 @@ export default function DashUsers() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL);
+          setFormData({ ...formData, profilepicurl: downloadURL });
+          setImageFileUploading(false);
         });
       }
     );
   };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    console.log(formData);
+  };
+
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
@@ -180,6 +191,7 @@ export default function DashUsers() {
                     placeholder="@username"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -192,6 +204,7 @@ export default function DashUsers() {
                     placeholder="First name"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -204,6 +217,7 @@ export default function DashUsers() {
                     placeholder="Last name"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -218,6 +232,7 @@ export default function DashUsers() {
                     placeholder="+94 xx xxx xxxx"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -230,19 +245,28 @@ export default function DashUsers() {
                     placeholder="name@gmail.com"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
                   <div className="mb-2 block">
                     <Label htmlFor="email2" value="Role" />
                   </div>
-                  <TextInput
-                    id="email2"
-                    type="email"
-                    placeholder="name@flowbite.com"
+                  <Select
+                    onChange={(e) =>
+                      setFormData({ ...formData, role: e.target.value })
+                    }
+                    id="role"
                     required
                     shadow
-                  />
+                  >
+                    <option value="Admin">Admin</option>
+                    <option value="Director">Director</option>
+                    <option value="Seller">Seller</option>
+                    <option value="StoreKeeper">Store Keeper</option>
+                    <option value="StockQA">StockQA</option>
+                    <option value="Accountant">Accountant</option>
+                  </Select>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -256,6 +280,7 @@ export default function DashUsers() {
                     placeholder="**********"
                     required
                     shadow
+                    onChange={handleChange}
                   />
                 </div>
                 <div>
@@ -264,11 +289,12 @@ export default function DashUsers() {
                       <Label htmlFor="email2" value="Confirm password" />
                     </div>
                     <TextInput
-                      id="password"
+                      id="confirmPassword"
                       type="password"
                       placeholder="**********"
                       required
                       shadow
+                      onChange={handleChange}
                     />
                   </div>
                 </div>
