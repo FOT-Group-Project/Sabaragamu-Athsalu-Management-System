@@ -16,6 +16,7 @@ import {
   Alert,
   TextInput,
   Select,
+  Spinner,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -43,6 +44,11 @@ export default function DashUsers() {
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
   const [imageFileUploading, setImageFileUploading] = useState(false);
+  const [imageFileUploadingComplete, setImageFileUploadingComplete] =
+    useState(false);
+
+  const [createUserError, setCreateUserError] = useState(null);
+  const [createLoding, setCreateLoding] = useState(null);
 
   const filePickerRef = useRef();
 
@@ -71,6 +77,10 @@ export default function DashUsers() {
     //     }
     //   }
     // }
+
+    setCreateLoding(true);
+    setImageFileUploadingComplete(false);
+
     setImageFileUploadError(null);
     setImageFileUploading(true);
     setImageFileUploadError(null);
@@ -94,12 +104,16 @@ export default function DashUsers() {
         setImageFile(null);
         setImageFileUrl(null);
         setImageFileUploading(false);
+        setCreateLoding(false);
+        setImageFileUploadingComplete(false);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL);
           setFormData({ ...formData, profilepicurl: downloadURL });
           setImageFileUploading(false);
+          setCreateLoding(false);
+          setImageFileUploadingComplete(true);
         });
       }
     );
@@ -108,6 +122,35 @@ export default function DashUsers() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/user/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModal(false);
+      }
+    } catch (error) {
+      setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
   };
 
   return (
@@ -134,7 +177,11 @@ export default function DashUsers() {
         <Modal.Header>Create New User</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
-            <form className="flex flex-col flex-grow gap-4">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col flex-grow gap-4"
+              disabled={imageFileUploading}
+            >
               <input
                 type="file"
                 accept="image/*"
@@ -180,6 +227,13 @@ export default function DashUsers() {
               {imageFileUploadError && (
                 <Alert color="failure">{imageFileUploadError}</Alert>
               )}
+              {imageFileUploadingComplete && (
+                <Alert color="success">Image uploaded successfully</Alert>
+              )}
+
+              {createUserError && (
+                <Alert color="failure">{createUserError}</Alert>
+              )}
               <div className="flex gap-2">
                 <div>
                   <div className="mb-2 block">
@@ -192,6 +246,7 @@ export default function DashUsers() {
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
                 <div>
@@ -205,6 +260,7 @@ export default function DashUsers() {
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
                 <div>
@@ -218,6 +274,7 @@ export default function DashUsers() {
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
               </div>
@@ -227,12 +284,13 @@ export default function DashUsers() {
                     <Label htmlFor="email2" value="Phone number" />
                   </div>
                   <TextInput
-                    id="phonenumber"
+                    id="phone"
                     type="text"
                     placeholder="+94 xx xxx xxxx"
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
                 <div>
@@ -246,6 +304,7 @@ export default function DashUsers() {
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
                 <div>
@@ -259,7 +318,9 @@ export default function DashUsers() {
                     id="role"
                     required
                     shadow
+                    disabled={imageFileUploading}
                   >
+                    <option value="SelectRole">Select Role</option>
                     <option value="Admin">Admin</option>
                     <option value="Director">Director</option>
                     <option value="Seller">Seller</option>
@@ -281,6 +342,7 @@ export default function DashUsers() {
                     required
                     shadow
                     onChange={handleChange}
+                    disabled={imageFileUploading}
                   />
                 </div>
                 <div>
@@ -295,21 +357,34 @@ export default function DashUsers() {
                       required
                       shadow
                       onChange={handleChange}
+                      disabled={imageFileUploading}
                     />
                   </div>
                 </div>
               </div>
+
+              <div className="flex gap-2">
+                <Button color="blue" type="submit" disabled={createLoding}>
+                  {createLoding ? (
+                    <>
+                      <Spinner size="sm" />
+                      <span className="pl-3">Loading...</span>
+                    </>
+                  ) : (
+                    "Create User"
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  color="gray"
+                  onClick={() => setOpenModal(false)}
+                >
+                  Decline
+                </Button>
+              </div>
             </form>
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <Button color="blue" size="sm" onClick={() => setOpenModal(true)}>
-            Add User
-          </Button>
-          <Button size="sm" color="gray" onClick={() => setOpenModal(false)}>
-            Decline
-          </Button>
-        </Modal.Footer>
       </Modal>
 
       <div className="overflow-x-auto rounded-lg">

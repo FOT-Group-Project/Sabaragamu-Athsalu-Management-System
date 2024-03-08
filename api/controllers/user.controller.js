@@ -47,7 +47,7 @@ function createUser(req, res, next) {
     }
   }
 
-  if (!req.body.password == req.body.confirmPassword) {
+  if (!(req.body.password.toString() === req.body.confirmPassword.toString())) {
     return res.status(400).json({
       success: false,
       message: "Password not same as confirm password",
