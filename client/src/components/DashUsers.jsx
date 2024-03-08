@@ -29,7 +29,7 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/profile.png";
+import Profile from "../assets/add-pic.png";
 
 export default function DashUsers() {
   const [openModal, setOpenModal] = useState(false);
