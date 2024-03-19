@@ -33,7 +33,7 @@ export default function Header() {
   };
 
   return (
-    <Navbar className="border-b-2">
+    <Navbar className="border-b-2 sticky top-0 z-50 ">
       <Link
         to="/"
         className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
@@ -68,9 +68,7 @@ export default function Header() {
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">
-                @{currentUser.firstname} {currentUser.lastname}
-              </span>
+              <span className="block text-sm">@{currentUser.username}</span>
               <span className="block text-sm font-medium truncate">
                 {currentUser.email}
               </span>

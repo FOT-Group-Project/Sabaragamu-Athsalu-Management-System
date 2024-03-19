@@ -54,11 +54,12 @@ export default function DashSidebar() {
     >
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <Sidebar.Item href="#" icon={HiChartPie}>
+          <Sidebar.Item className="mt-2 mb-2" href="#" icon={HiChartPie}>
             Dashboard
           </Sidebar.Item>
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
+              className="mt-2 mb-2"
               active={tab === "profile"}
               icon={HiUser}
               label={currentUser.role}
@@ -70,33 +71,55 @@ export default function DashSidebar() {
           </Link>
 
           <Link to="/dashboard?tab=users">
-            <Sidebar.Item icon={HiUsers} active={tab === "users"} as="div">
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              icon={HiUsers}
+              active={tab === "users"}
+              as="div"
+            >
               Users
             </Sidebar.Item>
           </Link>
 
           <Link to="/dashboard?tab=products">
-            <Sidebar.Item icon={HiShoppingBag} active={tab === "products"}>
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              icon={HiShoppingBag}
+              active={tab === "products"}
+            >
               Products
             </Sidebar.Item>
           </Link>
 
           <Link to="/dashboard?tab=shops">
-            <Sidebar.Item icon={IoMdHome} active={tab === "shops"}>
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              icon={IoMdHome}
+              active={tab === "shops"}
+            >
               Shops
             </Sidebar.Item>
           </Link>
 
           <Link to="/dashboard?tab=stores">
-            <Sidebar.Item icon={HiBuildingStorefront} active={tab === "stores"}>
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              icon={HiBuildingStorefront}
+              active={tab === "stores"}
+            >
               Stores
             </Sidebar.Item>
           </Link>
 
-          <Sidebar.Item icon={HiShoppingBag}>Documents</Sidebar.Item>
+          <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
+            Documents
+          </Sidebar.Item>
 
           <Link onClick={handleSignout}>
-            <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
+            <Sidebar.Item
+              icon={HiArrowSmRight}
+              className="mt-2 mb-2 cursor-pointer"
+            >
               Sign Out
             </Sidebar.Item>
           </Link>

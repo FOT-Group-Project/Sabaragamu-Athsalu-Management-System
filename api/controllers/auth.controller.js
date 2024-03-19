@@ -83,7 +83,7 @@ function signIn(req, res) {
           function (err, result) {
             if (result) {
               const token = jwt.sign(
-                { id: user.id },
+                { id: user.id, role: user.role },
                 process.env.JWT_SECRET_KEY
               );
               const { password: pass, ...rest } = user.dataValues;
