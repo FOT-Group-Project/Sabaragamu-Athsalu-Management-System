@@ -32,7 +32,11 @@ import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Profile from "../assets/add-pic.png";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import {
+  HiOutlineExclamationCircle,
+  HiPlusCircle,
+  HiUserAdd,
+} from "react-icons/hi";
 
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
@@ -261,14 +265,18 @@ export default function DashUsers() {
 
       <h1 className="mt-3 mb-3 text-left font-semibold text-xl">All Users</h1>
 
-      <Button
-        className="mb-3"
-        color="blue"
-        size="sm"
-        onClick={() => setOpenModal(true)}
-      >
-        Add User
-      </Button>
+      <div className="flex gap-3 justify-end">
+        <Button
+          className="mb-3"
+          color="blue"
+          size="sm"
+          onClick={() => setOpenModal(true)}
+        >
+          <HiPlusCircle className="mr-2 h-4 w-4" />
+          Add Users
+        </Button>
+        
+      </div>
 
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Create New User</Modal.Header>
@@ -460,7 +468,7 @@ export default function DashUsers() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-end">
                 <Button color="blue" type="submit" disabled={createLoding}>
                   {createLoding ? (
                     <>
@@ -648,7 +656,7 @@ export default function DashUsers() {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-end">
                 <Button color="blue" type="submit" disabled={createLoding}>
                   {createLoding ? (
                     <>
