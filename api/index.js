@@ -17,7 +17,11 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/addProduct", productRoutes); //products route
+app.use("/api/addproduct", productRoutes); //products 
+app.use("/api/getproduct", productRoutes); //products
+app.use("/api/getallproducts", productRoutes); //products
+app.use("/api/updateproduct", productRoutes); //products
+app.use("/api/deleteproduct", productRoutes); //products
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
