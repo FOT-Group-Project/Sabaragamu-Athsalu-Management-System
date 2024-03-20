@@ -32,6 +32,7 @@ import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Profile from "../assets/add-pic.png";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
@@ -41,6 +42,7 @@ export default function DashUsers() {
   const [userIdToDelete, setUserIdToDelete] = useState("");
 
   const [openModal, setOpenModal] = useState(false);
+  const [openModalEdit, setOpenModalEdit] = useState(false);
 
   const [formData, setFormData] = useState({});
 
@@ -195,6 +197,56 @@ export default function DashUsers() {
     } catch (error) {
       setCreateUserError("Something went wrong");
       setCreateLoding(false);
+    }
+  };
+
+  const handleSubmitUpdate = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    console.log(formData.id);
+    try {
+      const res = await fetch(`/api/user/updateuser/${formData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModalEdit(false);
+        fetchUsers();
+        navigate("/dashboard?tab=users");
+      }
+    } catch (error) {
+      setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      const res = await fetch(`/api/user/deleteuser/${userIdToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+        setShowModal(false);
+        fetchUsers();
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -432,6 +484,194 @@ export default function DashUsers() {
         </Modal.Body>
       </Modal>
 
+      <Modal show={openModalEdit} onClose={() => setOpenModalEdit(false)}>
+        <Modal.Header>Edit User</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+            <form
+              onSubmit={handleSubmitUpdate}
+              className="flex flex-col flex-grow gap-4"
+              disabled={imageFileUploading}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handelImageChange}
+                ref={filePickerRef}
+                hidden
+              />
+              <div
+                className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
+                onClick={() => filePickerRef.current.click()}
+              >
+                {imageFileUploadProgress && (
+                  <CircularProgressbar
+                    value={imageFileUploadProgress || 0}
+                    text={`${imageFileUploadProgress}%`}
+                    strokeWidth={5}
+                    styles={{
+                      root: {
+                        width: "100%",
+                        height: "100%",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                      },
+                      path: {
+                        stroke: `rgba(62, 152, 199, ${
+                          imageFileUploadProgress / 100
+                        })`,
+                      },
+                    }}
+                  />
+                )}
+                <img
+                  src={formData.profilepicurl || Profile}
+                  alt="user"
+                  className={`rounded-full w-full h-full object-cover border-4 border-[lightgray] ${
+                    imageFileUploadProgress &&
+                    imageFileUploadProgress < 100 &&
+                    "opacity-60"
+                  }`}
+                />
+              </div>
+              {imageFileUploadError && (
+                <Alert color="failure">{imageFileUploadError}</Alert>
+              )}
+              {imageFileUploadingComplete && (
+                <Alert color="success">Image uploaded successfully</Alert>
+              )}
+
+              {createUserError && (
+                <Alert color="failure">{createUserError}</Alert>
+              )}
+              <div className="flex gap-2">
+                <div>
+                  <div className="mb-2 block">
+                    <Label value="User name" />
+                  </div>
+                  <TextInput
+                    id="username"
+                    type="text"
+                    placeholder="@username"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                    value={formData.username}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label value="First name" />
+                  </div>
+                  <TextInput
+                    id="firstname"
+                    type="text"
+                    placeholder="First name"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                    value={formData.firstname}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label value="Last Name" />
+                  </div>
+                  <TextInput
+                    id="lastname"
+                    type="text"
+                    placeholder="Last name"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                    value={formData.lastname}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 mb-5">
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="email2" value="Phone number" />
+                  </div>
+                  <TextInput
+                    id="phone"
+                    type="text"
+                    placeholder="+94 xx xxx xxxx"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                    value={formData.phone}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="email2" value="Email address" />
+                  </div>
+                  <TextInput
+                    id="email"
+                    type="email"
+                    placeholder="name@gmail.com"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                    value={formData.email}
+                  />
+                </div>
+                <div>
+                  <div className="mb-2 block">
+                    <Label htmlFor="email2" value="Role" />
+                  </div>
+                  <Select
+                    onChange={(e) =>
+                      setFormData({ ...formData, role: e.target.value })
+                    }
+                    id="role"
+                    required
+                    shadow
+                    disabled={imageFileUploading}
+                    value={formData.role}
+                  >
+                    <option value="SelectRole">Select Role</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Director">Director</option>
+                    <option value="Seller">Seller</option>
+                    <option value="StoreKeeper">Store Keeper</option>
+                    <option value="StockQA">StockQA</option>
+                    <option value="Accountant">Accountant</option>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button color="blue" type="submit" disabled={createLoding}>
+                  {createLoding ? (
+                    <>
+                      <Spinner size="sm" />
+                      <span className="pl-3">Loading...</span>
+                    </>
+                  ) : (
+                    "Update User"
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  color="gray"
+                  onClick={() => setOpenModalEdit(false)}
+                >
+                  Decline
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       {currentUser.role == "Admin" && users.length > 0 ? (
         <>
           <Table hoverable className="shadow-md w-full">
@@ -464,11 +704,23 @@ export default function DashUsers() {
                   <TableCell>{user.phone}</TableCell>
                   <TableCell>
                     <Button.Group>
-                      <Button color="gray">
+                      <Button
+                        onClick={() => {
+                          setOpenModalEdit(true);
+                          setFormData(user);
+                        }}
+                        color="gray"
+                      >
                         <FaUserEdit className="mr-3 h-4 w-4" />
                         Edit
                       </Button>
-                      <Button color="gray">
+                      <Button
+                        onClick={() => {
+                          setShowModal(true);
+                          setUserIdToDelete(user.id);
+                        }}
+                        color="gray"
+                      >
                         <MdDeleteForever className="mr-3 h-4 w-4" />
                         Delete
                       </Button>
@@ -490,6 +742,30 @@ export default function DashUsers() {
       ) : (
         <p>You have no users yet!</p>
       )}
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this user?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeleteUser}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
