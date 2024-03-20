@@ -5,8 +5,8 @@ const verifyToken = require("../utils/verifyUser");
 const router = express.Router();
 
 router.post("/create", verifyToken, storeController.createStore);
-router.get("/getstores", verifyToken, storeController.getStores);
-router.delete("/deletestore/:storeId", verifyToken, storeController.deleteStore);
-router.put("/updatestore/:storeId", verifyToken, storeController.updateStoreTable);
+// router.get("/getstores", verifyToken, storeController.getStores);
+// router.delete("/deletestore/:storeId", verifyToken, storeController.deleteStore);
+// router.put("/updatestore/:storeId", verifyToken, storeController.updateStoreTable);
 
 module.exports = router;
