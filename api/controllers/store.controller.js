@@ -49,16 +49,15 @@ function createStore(req, res) {
 function getStores(req, res) {
   models.Store.findAll()
     .then((data) => {
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Stores retrieved successfully",
-          stores: data,
-        });
+      res.status(200).json({
+        success: true,
+        message: "Stores retrieved successfully",
+        stores: data,
+      });
     })
     .catch((err) => {
-      res.status(500).json({ success: false, message: "Some error occurred" });
+      console.error("Error fetching stores:", err);
+      res.status(500).json({ success: false, message: err });
     });
 }
 
@@ -120,7 +119,7 @@ function updateStore(req, res) {
       if (data == 1) {
         res.status(200).json({
           success: true,
-          message: "Store updated successfully"
+          message: "Store updated successfully",
         });
       } else {
         res.status(404).json({
@@ -128,12 +127,10 @@ function updateStore(req, res) {
           message: "Store not found",
         });
       }
-
     })
     .catch((err) => {
       res.status(500).json({ success: false, message: "Some error occurred" });
     });
-
 }
 
 module.exports = {
