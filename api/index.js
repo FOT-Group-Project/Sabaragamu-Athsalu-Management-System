@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/user.route");
 const authRoutes = require("./routes/auth.route");
+const storeRoutes = require("./routes/store.route");
 const productRoutes = require("./routes/products.route"); // products route
 const cookieParser = require("cookie-parser");
 
@@ -17,7 +18,9 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/store", storeRoutes);
 app.use("/api/product", productRoutes);
+
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
