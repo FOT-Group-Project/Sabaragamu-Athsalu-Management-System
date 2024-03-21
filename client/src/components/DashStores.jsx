@@ -299,7 +299,7 @@ export default function DashStores() {
                     <Label value="Store Address" />
                   </div>
                   <TextInput
-                    id="storeaddress"
+                    id="address"
                     type="text"
                     placeholder="Raathnapura"
                     required
@@ -313,7 +313,7 @@ export default function DashStores() {
                     <Label value="Store Phone Number" />
                   </div>
                   <TextInput
-                    id="storephone"
+                    id="phone"
                     type="text"
                     placeholder="+94XX XXX XXXX"
                     required
