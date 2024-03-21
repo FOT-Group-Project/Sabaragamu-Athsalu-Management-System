@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Seller.hasOne(sequelize.define('Shop'));
     }
   }
   Seller.init({
