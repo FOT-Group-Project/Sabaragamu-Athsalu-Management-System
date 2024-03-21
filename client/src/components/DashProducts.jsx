@@ -41,10 +41,10 @@ import {
 
 export default function DashProducts() {
   const { currentUser } = useSelector((state) => state.user);
-  const [stores, setStores] = useState([]);
+  const [products, setProducts] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [storeIdToDelete, setStoreIdToDelete] = useState("");
+  const [productIdToDelete, setproductIdToDelete] = useState("");
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -54,13 +54,13 @@ export default function DashProducts() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
 
-  const fetchStores = async () => {
+  const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/store/getstores`);
+      const res = await fetch(`/api/product/getallproducts`);
       const data = await res.json();
       if (res.ok) {
-        setStores(data.stores);
-        if (data.store.length < 9) {
+        setProducts(data.products);
+        if (data.product.length < 9) {
           setShowMore(false);
         }
       }
@@ -71,10 +71,10 @@ export default function DashProducts() {
 
   useEffect(() => {
     if (currentUser.role == "Admin") {
-      fetchStores();
+      fetchProducts();
     }
 
-  }, [stores.id]);
+  }, [products.id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -85,7 +85,7 @@ export default function DashProducts() {
     e.preventDefault();
     setCreateLoding(true);
     try {
-      const res = await fetch("/api/store/create", {
+      const res = await fetch("/api/product/addproduct", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default function DashProducts() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModal(false);
-        fetchStores();
+        fetchProducts();
       }
     } catch (error) {
       setCreateUserError("Something went wrong");
@@ -116,8 +116,8 @@ export default function DashProducts() {
     setCreateLoding(true);
     console.log(formData.id);
     try {
-      const res = await fetch(`/api/store/updatestore/${formData.id}`, {
-        method: "PUT",
+      const res = await fetch(`/api/product/updateproduct/${formData.id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -134,7 +134,7 @@ export default function DashProducts() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModalEdit(false);
-        fetchStores();
+        fetchProducts();
         navigate("/dashboard?tab=store");
       }
     } catch (error) {
@@ -143,16 +143,16 @@ export default function DashProducts() {
     }
   };
 
-  const handleDeleteStore = async () => {
+  const handleDeleteProduct = async () => {
     try {
-      const res = await fetch(`/api/store/deletestore/${storeIdToDelete}`, {
+      const res = await fetch(`/api/product/deleteproduct/${productIdToDelete}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (res.ok) {
-        setStores((prev) => prev.filter((store) => store.id !== storeIdToDelete));
+        setProducts((prev) => prev.filter((store) => store.id !== productIdToDelete));
         setShowModal(false);
-        fetchStores();
+        fetchProducts();
       } else {
         console.log(data.message);
       }
@@ -160,6 +160,8 @@ export default function DashProducts() {
       console.log(error.message);
     }
   };
+
+  
 
   return (
     <div className="p-3 w-full">
@@ -296,6 +298,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.itemName}
                   />
                 </div>
                 <div>
@@ -309,6 +312,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.itemType}
                   />
                 </div>
                 <div>
@@ -322,6 +326,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value = {formData.manufacturer}
                   />
                 </div>
                 <div>
@@ -335,6 +340,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value = {formData.itemPrice}
                   />
                 </div>
               </div>
@@ -362,7 +368,7 @@ export default function DashProducts() {
         </Modal.Body>
       </Modal>
 
-      {currentUser.role == "Admin" && stores.length > 0 ? (
+      {currentUser.role == "Admin" && products.length > 0 ? (
         <>
           <Table hoverable className="shadow-md w-full">
             <TableHead>
@@ -376,21 +382,22 @@ export default function DashProducts() {
                 <span className="sr-only">Edit</span>
               </TableHeadCell>
             </TableHead>
-            {stores.map((store) => (
-              <Table.Body className="divide-y" key={store.id}>
+            {products.map((product) => (
+              <Table.Body className="divide-y" key={product.id}>
                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                  
-                  <TableCell>ST:{store.id}</TableCell>
-                  <TableCell>{store.storeName}</TableCell>
-                  <TableCell>{store.address}</TableCell>
-                  <TableCell>{store.phone}</TableCell>
+                  <TableCell>PR:{product.id}</TableCell>
+                  <TableCell>{product.itemName}</TableCell>
+                  <TableCell>{product.itemType}</TableCell>
+                  <TableCell>{product.manufacturer}</TableCell>
+                  <TableCell>{product.itemPrice}</TableCell>
                   <TableCell></TableCell>
                   <TableCell>
                     <Button.Group>
                       <Button
                         onClick={() => {
                           setOpenModalEdit(true);
-                          setFormData(store);
+                          setFormData(product);
                         }}
                         color="gray"
                       >
@@ -400,7 +407,7 @@ export default function DashProducts() {
                       <Button
                         onClick={() => {
                           setShowModal(true);
-                          setStoreIdToDelete(store.id);
+                          setproductIdToDelete(product.id);
                         }}
                         color="gray"
                       >
@@ -439,7 +446,7 @@ export default function DashProducts() {
               Are you sure you want to delete this user?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteStore}>
+              <Button color="failure" onClick={handleDeleteProduct}>
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
