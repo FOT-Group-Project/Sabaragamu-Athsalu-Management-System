@@ -269,7 +269,7 @@ export default function DashStores() {
       </Modal>
 
       <Modal show={openModalEdit} onClose={() => setOpenModalEdit(false)}>
-        <Modal.Header>Edit Stores</Modal.Header>
+        <Modal.Header>Edit Store</Modal.Header>
         <Modal.Body>
           <div className="space-y-6">
             <form
@@ -331,7 +331,7 @@ export default function DashStores() {
                       <span className="pl-3">Loading...</span>
                     </>
                   ) : (
-                    "Update Stores"
+                    "Update Store"
                   )}
                 </Button>
                 <Button
