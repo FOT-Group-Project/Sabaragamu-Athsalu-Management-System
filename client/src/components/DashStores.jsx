@@ -40,52 +40,26 @@ import {
 
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
-  const [users, setUsers] = useState([]);
+  const [stores, setStores] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [userIdToDelete, setUserIdToDelete] = useState("");
+  const [storeIdToDelete, setStoreIdToDelete] = useState("");
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
 
   const [formData, setFormData] = useState({});
 
-  const [imageFile, setImageFile] = useState(null);
-  const [imageFileUrl, setImageFileUrl] = useState(null);
-  const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
-  const [imageFileUploadError, setImageFileUploadError] = useState(null);
-  const [imageFileUploading, setImageFileUploading] = useState(false);
-  const [imageFileUploadingComplete, setImageFileUploadingComplete] =
-    useState(false);
-
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
 
-  const filePickerRef = useRef();
-
-  const fetchUsers = async () => {
+  const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/user/getusers`);
+      const res = await fetch(`/api/store/getstores`);
       const data = await res.json();
       if (res.ok) {
-        setUsers(data.users);
-        if (data.users.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const handleShowMore = async () => {
-    const startIndex = users.length;
-    try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUsers((prev) => [...prev, ...data.users]);
-        if (data.users.length < 9) {
+        setStores(data.stores);
+        if (data.store.length < 9) {
           setShowMore(false);
         }
       }
@@ -96,9 +70,10 @@ export default function DashStores() {
 
   useEffect(() => {
     if (currentUser.role == "Admin") {
-      fetchUsers();
+      fetchStores();
     }
-  }, [users.id]);
+
+  }, [stores.id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -109,7 +84,7 @@ export default function DashStores() {
     e.preventDefault();
     setCreateLoding(true);
     try {
-      const res = await fetch("/api/user/create", {
+      const res = await fetch("/api/store/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +102,7 @@ export default function DashStores() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModal(false);
-        fetchUsers();
+        fetchStores();
       }
     } catch (error) {
       setCreateUserError("Something went wrong");
@@ -140,7 +115,7 @@ export default function DashStores() {
     setCreateLoding(true);
     console.log(formData.id);
     try {
-      const res = await fetch(`/api/user/updateuser/${formData.id}`, {
+      const res = await fetch(`/api/store/updatestore/${formData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -158,8 +133,8 @@ export default function DashStores() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModalEdit(false);
-        fetchUsers();
-        navigate("/dashboard?tab=users");
+        fetchStores();
+        navigate("/dashboard?tab=store");
       }
     } catch (error) {
       setCreateUserError("Something went wrong");
@@ -167,16 +142,16 @@ export default function DashStores() {
     }
   };
 
-  const handleDeleteUser = async () => {
+  const handleDeleteStore = async () => {
     try {
-      const res = await fetch(`/api/user/deleteuser/${userIdToDelete}`, {
+      const res = await fetch(`/api/store/deletestore/${storeIdToDelete}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (res.ok) {
-        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+        setStores((prev) => prev.filter((store) => store.id !== storeIdToDelete));
         setShowModal(false);
-        fetchUsers();
+        fetchStores();
       } else {
         console.log(data.message);
       }
@@ -233,7 +208,7 @@ export default function DashStores() {
                     <Label value="Store Name" />
                   </div>
                   <TextInput
-                    id="storename"
+                    id="storeName"
                     type="text"
                     placeholder="Main Store"
                     required
@@ -246,7 +221,7 @@ export default function DashStores() {
                     <Label value="Store Address" />
                   </div>
                   <TextInput
-                    id="storeaddress"
+                    id="address"
                     type="text"
                     placeholder="Raathnapura"
                     required
@@ -259,7 +234,7 @@ export default function DashStores() {
                     <Label value="Store Phone Number" />
                   </div>
                   <TextInput
-                    id="storephone"
+                    id="phone"
                     type="text"
                     placeholder="+94XX XXX XXXX"
                     required
@@ -316,6 +291,7 @@ export default function DashStores() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.storeName}
                   />
                 </div>
                 <div>
@@ -329,6 +305,7 @@ export default function DashStores() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.storeName}
                   />
                 </div>
                 <div>
@@ -342,6 +319,7 @@ export default function DashStores() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.storeName}
                   />
                 </div>
               </div>
@@ -369,42 +347,34 @@ export default function DashStores() {
         </Modal.Body>
       </Modal>
 
-      {currentUser.role == "Admin" && users.length > 0 ? (
+      {currentUser.role == "Admin" && stores.length > 0 ? (
         <>
           <Table hoverable className="shadow-md w-full">
             <TableHead>
-              <TableHeadCell>name</TableHeadCell>
-              <TableHeadCell>user name</TableHeadCell>
-              <TableHeadCell>position</TableHeadCell>
-              <TableHeadCell>email</TableHeadCell>
-              <TableHeadCell>phone number</TableHeadCell>
+              <TableHeadCell>Store ID</TableHeadCell>
+              <TableHeadCell>Store Name</TableHeadCell>
+              <TableHeadCell>Address</TableHeadCell>
+              <TableHeadCell>Phone Number</TableHeadCell>
+              <TableHeadCell></TableHeadCell>
               <TableHeadCell>
                 <span className="sr-only">Edit</span>
               </TableHeadCell>
             </TableHead>
-            {users.map((user) => (
-              <Table.Body className="divide-y" key={user.id}>
+            {stores.map((store) => (
+              <Table.Body className="divide-y" key={store.id}>
                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                  <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
-                    <Avatar
-                      alt={user.username}
-                      img={user.profilepicurl}
-                      rounded
-                      className="mr-3"
-                    />
-
-                    {user.firstname + " " + user.lastname}
-                  </TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
+                 
+                  <TableCell>ST:{store.id}</TableCell>
+                  <TableCell>{store.storeName}</TableCell>
+                  <TableCell>{store.address}</TableCell>
+                  <TableCell>{store.phone}</TableCell>
+                  <TableCell></TableCell>
                   <TableCell>
                     <Button.Group>
                       <Button
                         onClick={() => {
                           setOpenModalEdit(true);
-                          setFormData(user);
+                          setFormData(store);
                         }}
                         color="gray"
                       >
@@ -414,7 +384,7 @@ export default function DashStores() {
                       <Button
                         onClick={() => {
                           setShowModal(true);
-                          setUserIdToDelete(user.id);
+                          setStoreIdToDelete(store.id);
                         }}
                         color="gray"
                       >
@@ -427,17 +397,17 @@ export default function DashStores() {
               </Table.Body>
             ))}
           </Table>
-          {showMore && (
+          {/* {showMore && (
             <button
               onClick={handleShowMore}
               className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
             </button>
-          )}
+          )} */}
         </>
       ) : (
-        <p>You have no users yet!</p>
+        <p>You have no store yet!</p>
       )}
       <Modal
         show={showModal}
@@ -453,7 +423,7 @@ export default function DashStores() {
               Are you sure you want to delete this user?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={handleDeleteUser}>
+              <Button color="failure" onClick={handleDeleteStore}>
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
