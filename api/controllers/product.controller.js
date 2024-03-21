@@ -104,7 +104,7 @@ function updateProduct(req, res) {
     itemName: { type: "string", optional: false, max: "100" },
     itemType: { type: "string", optional: false, max: "100" },
     manufacturer: { type: "string", optional: false, max: "100" },
-    itemPrice: { type: "number", optional: false },
+    itemPrice: { type: "string", optional: false },
   };
 
   const v = new Validator();

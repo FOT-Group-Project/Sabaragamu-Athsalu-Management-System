@@ -116,8 +116,8 @@ export default function DashProducts() {
     setCreateLoding(true);
     console.log(formData.id);
     try {
-      const res = await fetch(`/api/store/updatestore/${formData.id}`, {
-        method: "PUT",
+      const res = await fetch(`/api/product/updateproduct/${formData.id}`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -134,7 +134,7 @@ export default function DashProducts() {
         setCreateUserError(null);
         setCreateLoding(false);
         setOpenModalEdit(false);
-        fetchStores();
+        fetchProducts();
         navigate("/dashboard?tab=store");
       }
     } catch (error) {
@@ -298,6 +298,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.itemName}
                   />
                 </div>
                 <div>
@@ -311,6 +312,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value={formData.itemType}
                   />
                 </div>
                 <div>
@@ -324,6 +326,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value = {formData.manufacturer}
                   />
                 </div>
                 <div>
@@ -337,6 +340,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
+                    value = {formData.itemPrice}
                   />
                 </div>
               </div>
