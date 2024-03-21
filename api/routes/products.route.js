@@ -3,7 +3,7 @@ const productsController = require('../controllers/product.controller');
 const verifyToken = require("../utils/verifyUser");
 const router = express.Router();
 
-router.post('/addproduct/', verifyToken, productsController.addProduct);
+router.post('/addproduct/',  productsController.addProduct);
 router.get('/getproduct/:id', productsController.getProduct);
 router.get('/getallproducts/', productsController.getAllProducts);
 router.patch('/updateproduct/:id', verifyToken, productsController.updateProduct);
