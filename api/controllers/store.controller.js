@@ -46,6 +46,23 @@ function createStore(req, res) {
     });
 }
 
+function getStores(req, res) {
+  models.Store.findAll()
+    .then((data) => {
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Stores retrieved successfully",
+          stores: data,
+        });
+    })
+    .catch((err) => {
+      res.status(500).json({ success: false, message: "Some error occurred" });
+    });
+}
+
 module.exports = {
   createStore: createStore,
+  getStores: getStores,
 };
