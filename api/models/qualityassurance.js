@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      
+      models.QualityAssurance.belongsTo(models.User, {foreignKey: 'userId'})
+      models.QualityAssurance.hasMany(models.QaCheckStore, {foreignKey: 'qaId'})
     }
   }
   QualityAssurance.init({
