@@ -285,7 +285,7 @@ export default function DashStores() {
                     <Label value="Store Name" />
                   </div>
                   <TextInput
-                    id="storename"
+                    id="storeName"
                     type="text"
                     placeholder="Main Store"
                     required
@@ -305,7 +305,7 @@ export default function DashStores() {
                     required
                     shadow
                     onChange={handleChange}
-                    value={formData.storeName}
+                    value={formData.address}
                   />
                 </div>
                 <div>
@@ -319,7 +319,7 @@ export default function DashStores() {
                     required
                     shadow
                     onChange={handleChange}
-                    value={formData.storeName}
+                    value={formData.phone}
                   />
                 </div>
               </div>
