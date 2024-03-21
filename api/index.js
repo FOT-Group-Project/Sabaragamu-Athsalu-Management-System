@@ -3,7 +3,6 @@ const bodyParser = require("body-parser");
 const userRoutes = require("./routes/user.route");
 const authRoutes = require("./routes/auth.route");
 const productRoutes = require("./routes/products.route"); // products route
-const associationRoutes = require("./routes/association.route"); // associations route
 const cookieParser = require("cookie-parser");
 
 const app = express();
