@@ -257,9 +257,11 @@ export default function DashUsers() {
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
-        <Breadcrumb.Item href="#" icon={HiHome}>
-          Home
-        </Breadcrumb.Item>
+        <Link to="/dashboard?tab=dash">
+          <Breadcrumb.Item href="" icon={HiHome}>
+            Home
+          </Breadcrumb.Item>
+        </Link>
         <Breadcrumb.Item>Users</Breadcrumb.Item>
       </Breadcrumb>
 

@@ -67,8 +67,8 @@ export default function SignIn() {
             )}
           </Link>
           <p className="text-sm mt-5">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex
-            officiis harum vel magni, tenetur neque officia ducimus..
+            SABARAGAMU ATHSALU, a government business, specializes in selling
+            finishing textiles.
           </p>
         </div>
 
