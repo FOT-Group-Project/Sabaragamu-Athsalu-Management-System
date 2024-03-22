@@ -40,7 +40,7 @@ function getShops(req,res){
 }
 
 function deleteShop(req,res){
-    const shopId = req.params.id;
+    const shopId = req.params.shopId;
     models.Shop.destroy({
         where: {id: shopId}
     })
@@ -57,7 +57,7 @@ function deleteShop(req,res){
 }
 
 function updateShop(req,res){
-    const shopId = req.params.id;
+    const shopId = req.params.shopId;
     if(!req.body.shopName || !req.body.phone || !req.body.address){
         return res.status(400).json({success:false, message:"Some data is missing"});
     }
