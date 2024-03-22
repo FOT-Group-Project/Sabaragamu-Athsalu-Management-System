@@ -541,7 +541,7 @@ export default function DashUsers() {
               {createUserError && (
                 <Alert color="failure">{createUserError}</Alert>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label value="User name" />
@@ -588,7 +588,7 @@ export default function DashUsers() {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 mb-5">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label htmlFor="email2" value="Phone number" />
@@ -621,6 +621,22 @@ export default function DashUsers() {
                 </div>
                 <div>
                   <div className="mb-2 block">
+                    <Label htmlFor="email2" value="Password" />
+                  </div>
+                  <TextInput
+                    id="password"
+                    type="password"
+                    placeholder="**********"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                  />
+                </div>
+              </div>
+              <div className="gap-2">
+                <div>
+                  <div className="mb-2 block">
                     <Label htmlFor="email2" value="Role" />
                   </div>
                   <Select
@@ -630,8 +646,7 @@ export default function DashUsers() {
                     id="role"
                     required
                     shadow
-                    disabled={imageFileUploading}
-                    value={formData.role}
+                    defaultValue={formData.role}
                   >
                     <option value="SelectRole">Select Role</option>
                     <option value="Admin">Admin</option>
