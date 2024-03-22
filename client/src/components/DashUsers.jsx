@@ -275,7 +275,6 @@ export default function DashUsers() {
           <HiPlusCircle className="mr-2 h-4 w-4" />
           Add Users
         </Button>
-        
       </div>
 
       <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -416,6 +415,7 @@ export default function DashUsers() {
                   <div className="mb-2 block">
                     <Label htmlFor="email2" value="Role" />
                   </div>
+
                   <Select
                     onChange={(e) =>
                       setFormData({ ...formData, role: e.target.value })

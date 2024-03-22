@@ -277,19 +277,28 @@ export default function DashProfile() {
             onChange={handleChange}
           />
         </div>
+
         <div>
           <div className="mb-2 block">
-            <Label value="Role" />
+            <Label htmlFor="email2" value="Role" />
           </div>
-          <TextInput
+
+          <Select
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             id="role"
-            type="text"
-            placeholder="Role"
-            defaultValue={currentUser.role}
             required
             shadow
-            onChange={handleChange}
-          />
+            disabled={imageFileUploading}
+            value={currentUser.role}
+          >
+            <option value="SelectRole">Select Role</option>
+            <option value="Admin">Admin</option>
+            <option value="Director">Director</option>
+            <option value="Seller">Seller</option>
+            <option value="StoreKeeper">Store Keeper</option>
+            <option value="StockQA">StockQA</option>
+            <option value="Accountant">Accountant</option>
+          </Select>
         </div>
         <div>
           <div className="mb-2 block">
