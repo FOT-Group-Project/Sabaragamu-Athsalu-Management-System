@@ -38,7 +38,6 @@ import {
   HiUserAdd,
 } from "react-icons/hi";
 
-
 export default function DashProducts() {
   const { currentUser } = useSelector((state) => state.user);
   const [products, setProducts] = useState([]);
@@ -73,7 +72,6 @@ export default function DashProducts() {
     if (currentUser.role == "Admin") {
       fetchProducts();
     }
-
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -145,12 +143,17 @@ export default function DashProducts() {
 
   const handleDeleteProduct = async () => {
     try {
-      const res = await fetch(`/api/product/deleteproduct/${productIdToDelete}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/product/deleteproduct/${productIdToDelete}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (res.ok) {
-        setProducts((prev) => prev.filter((store) => store.id !== productIdToDelete));
+        setProducts((prev) =>
+          prev.filter((store) => store.id !== productIdToDelete)
+        );
         setShowModal(false);
         fetchProducts();
       } else {
@@ -161,18 +164,20 @@ export default function DashProducts() {
     }
   };
 
-  
-
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
-        <Breadcrumb.Item href="#" icon={HiHome}>
-          Home
-        </Breadcrumb.Item>
+        <Link to="/dashboard?tab=dash">
+          <Breadcrumb.Item href="" icon={HiHome}>
+            Home
+          </Breadcrumb.Item>
+        </Link>
         <Breadcrumb.Item>Products</Breadcrumb.Item>
       </Breadcrumb>
 
-      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">All Products</h1>
+      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+        All Products
+      </h1>
       <div className="flex gap-3 justify-end">
         <Button
           className="mb-3"
@@ -285,7 +290,7 @@ export default function DashProducts() {
             >
               {createUserError && (
                 <Alert color="failure">{createUserError}</Alert>
-              )}              
+              )}
               <div className="flex gap-5 mb-4">
                 <div>
                   <div className="mb-2 block">
@@ -326,7 +331,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
-                    value = {formData.manufacturer}
+                    value={formData.manufacturer}
                   />
                 </div>
                 <div>
@@ -340,7 +345,7 @@ export default function DashProducts() {
                     required
                     shadow
                     onChange={handleChange}
-                    value = {formData.itemPrice}
+                    value={formData.itemPrice}
                   />
                 </div>
               </div>
@@ -385,7 +390,6 @@ export default function DashProducts() {
             {products.map((product) => (
               <Table.Body className="divide-y" key={product.id}>
                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                 
                   <TableCell>PR:{product.id}</TableCell>
                   <TableCell>{product.itemName}</TableCell>
                   <TableCell>{product.itemType}</TableCell>
@@ -459,4 +463,3 @@ export default function DashProducts() {
     </div>
   );
 }
-

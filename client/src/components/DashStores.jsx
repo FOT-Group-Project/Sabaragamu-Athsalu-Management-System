@@ -72,7 +72,6 @@ export default function DashStores() {
     if (currentUser.role == "Admin") {
       fetchStores();
     }
-
   }, [stores.id]);
 
   const handleChange = (e) => {
@@ -149,7 +148,9 @@ export default function DashStores() {
       });
       const data = await res.json();
       if (res.ok) {
-        setStores((prev) => prev.filter((store) => store.id !== storeIdToDelete));
+        setStores((prev) =>
+          prev.filter((store) => store.id !== storeIdToDelete)
+        );
         setShowModal(false);
         fetchStores();
       } else {
@@ -163,9 +164,11 @@ export default function DashStores() {
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
-        <Breadcrumb.Item href="#" icon={HiHome}>
-          Home
-        </Breadcrumb.Item>
+        <Link to="/dashboard?tab=dash">
+          <Breadcrumb.Item href="" icon={HiHome}>
+            Home
+          </Breadcrumb.Item>
+        </Link>
         <Breadcrumb.Item>Stores</Breadcrumb.Item>
       </Breadcrumb>
 
@@ -363,7 +366,6 @@ export default function DashStores() {
             {stores.map((store) => (
               <Table.Body className="divide-y" key={store.id}>
                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                 
                   <TableCell>ST:{store.id}</TableCell>
                   <TableCell>{store.storeName}</TableCell>
                   <TableCell>{store.address}</TableCell>
