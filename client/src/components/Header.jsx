@@ -35,7 +35,7 @@ export default function Header() {
   return (
     <Navbar className="border-b-2 sticky top-0 z-50">
       <Link
-        to="/dashboard"
+        to="/dashboard?tab=dash"
         className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
       >
         {theme === "light" ? (
