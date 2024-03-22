@@ -5,6 +5,7 @@ const authRoutes = require("./routes/auth.route");
 const storeRoutes = require("./routes/store.route");
 const productRoutes = require("./routes/products.route"); // products route
 const associationRoutes = require("./routes/association.route"); // association route
+const shopRoutes = require("./routes/shop.route");
 const cookieParser = require("cookie-parser");
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/associations", associationRoutes);
+app.use("/api/shop", shopRoutes);
 
 
 app.use((err, req, res, next) => {
