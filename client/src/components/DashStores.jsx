@@ -190,7 +190,7 @@ export default function DashStores() {
           onClick={() => setOpenModal(true)}
         >
           <HiUserAdd className="mr-2 h-4 w-4" />
-          Assing Store Keeper
+          Assign Store Keeper
         </Button>
       </div>
 
