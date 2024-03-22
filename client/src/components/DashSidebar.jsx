@@ -54,9 +54,17 @@ export default function DashSidebar() {
     >
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <Sidebar.Item className="mt-2 mb-2" href="#" icon={HiChartPie}>
-            Dashboard
-          </Sidebar.Item>
+          <Link to="/dashboard?tab=dash">
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              active={tab === "dash"}
+              icon={HiChartPie}
+              labelColor="dark"
+              as="div"
+            >
+              Dashboard
+            </Sidebar.Item>
+          </Link>
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               className="mt-2 mb-2"
