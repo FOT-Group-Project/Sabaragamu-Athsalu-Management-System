@@ -5,6 +5,7 @@ import {
   Spinner,
   Label,
   Select,
+  Breadcrumb,
 } from "flowbite-react";
 import { React, useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -27,7 +28,7 @@ import {
   signoutSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
-import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { HiOutlineExclamationCircle, HiHome } from "react-icons/hi";
 import { Link } from "react-router-dom";
 
 export default function DashProfile() {
@@ -143,181 +144,217 @@ export default function DashProfile() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-3 w-full">
-      <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handelImageChange}
-          ref={filePickerRef}
-          hidden
-        />
-        <div
-          className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
-          onClick={() => filePickerRef.current.click()}
-        >
-          {imageFileUploadProgress && (
-            <CircularProgressbar
-              value={imageFileUploadProgress || 0}
-              text={`${imageFileUploadProgress}%`}
-              strokeWidth={5}
-              styles={{
-                root: {
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                },
-                path: {
-                  stroke: `rgba(62, 152, 199, ${
-                    imageFileUploadProgress / 100
-                  })`,
-                },
-              }}
-            />
-          )}
-          <img
-            src={imageFileUrl || currentUser.profilepicurl}
-            alt="user"
-            className={`rounded-full w-full h-full object-cover border-4 border-[lightgray] ${
-              imageFileUploadProgress &&
-              imageFileUploadProgress < 100 &&
-              "opacity-60"
-            }`}
-          />
-        </div>
-        {imageFileUploadError && (
-          <Alert color="failure">{imageFileUploadError}</Alert>
-        )}
+    <div className="p-3 w-full">
+      <Breadcrumb aria-label="Default breadcrumb example">
+        <Link to="/dashboard?tab=dash">
+          <Breadcrumb.Item href="" icon={HiHome}>
+            Home
+          </Breadcrumb.Item>
+        </Link>
+        <Breadcrumb.Item>Stores</Breadcrumb.Item>
+      </Breadcrumb>
 
-        {updateUserSuccess && (
-          <Alert color="success" className="mt-5">
-            {updateUserSuccess}
-          </Alert>
-        )}
-        {updateUserError && (
-          <Alert color="failure" className="mt-5">
-            {updateUserError}
-          </Alert>
-        )}
-        {error && (
-          <Alert color="failure" className="mt-5">
-            {error}
-          </Alert>
-        )}
-        <div>
-          <div className="mb-2 block">
-            <Label value="Username" />
-          </div>
-          <TextInput
-            id="username"
-            type="text"
-            placeholder="@username"
-            defaultValue={currentUser.username}
-            required
-            shadow
-            onChange={handleChange}
+      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+        User Profile
+      </h1>
+
+      <div className="max-w-lg mx-auto p-3 w-full">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handelImageChange}
+            ref={filePickerRef}
+            hidden
           />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="Email" />
+          <div
+            className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
+            onClick={() => filePickerRef.current.click()}
+          >
+            {imageFileUploadProgress && (
+              <CircularProgressbar
+                value={imageFileUploadProgress || 0}
+                text={`${imageFileUploadProgress}%`}
+                strokeWidth={5}
+                styles={{
+                  root: {
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  },
+                  path: {
+                    stroke: `rgba(62, 152, 199, ${
+                      imageFileUploadProgress / 100
+                    })`,
+                  },
+                }}
+              />
+            )}
+            <img
+              src={imageFileUrl || currentUser.profilepicurl}
+              alt="user"
+              className={`rounded-full w-full h-full object-cover border-4 border-[lightgray] ${
+                imageFileUploadProgress &&
+                imageFileUploadProgress < 100 &&
+                "opacity-60"
+              }`}
+            />
           </div>
-          <TextInput
-            id="email"
-            type="email"
-            placeholder="email@gmail.com"
-            defaultValue={currentUser.email}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="First Name" />
-          </div>
-          <TextInput
-            id="firstname"
-            type="text"
-            placeholder="First name"
-            defaultValue={currentUser.firstname}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="Last Name" />
-          </div>
-          <TextInput
-            id="lastname"
-            type="text"
-            placeholder="Last name"
-            defaultValue={currentUser.lastname}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="Phone Number" />
-          </div>
-          <TextInput
-            id="phone"
-            type="phone"
-            placeholder="Phone number"
-            defaultValue={currentUser.phone}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="Role" />
-          </div>
-          <TextInput
-            id="role"
-            type="text"
-            placeholder="Role"
-            defaultValue={currentUser.role}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <div className="mb-2 block">
-            <Label value="Password" />
-          </div>
-          <TextInput
-            id="password"
-            type="password"
-            placeholder="Password"
-            defaultValue={currentUser.password}
-            required
-            shadow
-            onChange={handleChange}
-          />
-        </div>
-        <Button className="mt-3" color="blue" type="submit" disabled={loading}>
-          {loading ? (
-            <>
-              <Spinner size="sm" />
-              <span className="pl-3">Updating...</span>
-            </>
-          ) : (
-            "Update"
+          {imageFileUploadError && (
+            <Alert color="failure">{imageFileUploadError}</Alert>
           )}
-        </Button>
-      </form>
-      <div className="text-red-500 flex justify-end mt-5">
-        <p className="cursor-pointer">Sign Out</p>
+
+          {updateUserSuccess && (
+            <Alert color="success" className="mt-5">
+              {updateUserSuccess}
+            </Alert>
+          )}
+          {updateUserError && (
+            <Alert color="failure" className="mt-5">
+              {updateUserError}
+            </Alert>
+          )}
+          {error && (
+            <Alert color="failure" className="mt-5">
+              {error}
+            </Alert>
+          )}
+
+          <div className="flex gap-4">
+            <div>
+              <div className="mb-2 block">
+                <Label value="Username" />
+              </div>
+              <TextInput
+                id="username"
+                type="text"
+                placeholder="@username"
+                defaultValue={currentUser.username}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 block">
+                <Label value="First Name" />
+              </div>
+              <TextInput
+                id="firstname"
+                type="text"
+                placeholder="First name"
+                defaultValue={currentUser.firstname}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 block">
+                <Label value="Last Name" />
+              </div>
+              <TextInput
+                id="lastname"
+                type="text"
+                placeholder="Last name"
+                defaultValue={currentUser.lastname}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div>
+              <div className="mb-2 block">
+                <Label value="Email" />
+              </div>
+              <TextInput
+                id="email"
+                type="email"
+                placeholder="email@gmail.com"
+                defaultValue={currentUser.email}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label value="Phone Number" />
+              </div>
+              <TextInput
+                id="phone"
+                type="phone"
+                placeholder="Phone number"
+                defaultValue={currentUser.phone}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <div className="mb-2 block">
+                <Label value="Password" />
+              </div>
+              <TextInput
+                id="password"
+                type="password"
+                placeholder="Password"
+                defaultValue={currentUser.password}
+                required
+                shadow
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 block">
+              <Label htmlFor="email2" value="Role" />
+            </div>
+
+            <Select
+              onChange={(e) =>
+                setFormData({ ...formData, role: e.target.value })
+              }
+              id="role"
+              required
+              shadow
+              defaultValue={currentUser.role}
+              disabled={imageFileUploading}
+            >
+              <option value="SelectRole">Select Role</option>
+              <option value="Admin">Admin</option>
+              <option value="Director">Director</option>
+              <option value="Seller">Seller</option>
+              <option value="StoreKeeper">Store Keeper</option>
+              <option value="StockQA">StockQA</option>
+              <option value="Accountant">Accountant</option>
+            </Select>
+          </div>
+
+          <Button
+            className="mt-3"
+            color="blue"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Spinner size="sm" />
+                <span className="pl-3">Updating...</span>
+              </>
+            ) : (
+              "Update"
+            )}
+          </Button>
+        </form>
       </div>
     </div>
   );
