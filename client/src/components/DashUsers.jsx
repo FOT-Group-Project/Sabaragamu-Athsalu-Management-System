@@ -199,7 +199,7 @@ export default function DashUsers() {
         fetchUsers();
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
@@ -231,7 +231,7 @@ export default function DashUsers() {
         navigate("/dashboard?tab=users");
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError(null);
       setCreateLoding(false);
     }
   };
@@ -741,14 +741,14 @@ export default function DashUsers() {
               </Table.Body>
             ))}
           </Table>
-          {showMore && (
+          {/* {showMore && (
             <button
               onClick={handleShowMore}
               className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
             </button>
-          )}
+          )} */}
         </>
       ) : (
         <p>You have no users yet!</p>

@@ -68,13 +68,6 @@ function createUser(req, res, next) {
     }
   }
 
-  if (!(req.body.password.toString() === req.body.confirmPassword.toString())) {
-    return res.status(400).json({
-      success: false,
-      message: "Password not same as confirm password",
-    });
-  }
-
   if (req.body.username) {
     if (req.body.username.length < 7 || req.body.username.length > 20) {
       return res.status(400).json({
@@ -316,7 +309,7 @@ function updateUserTable(req, res, next) {
       const updatedUser = {
         username: req.body.username,
         email: req.body.email,
-        password: req.body.password,
+        password: hash,
         profilepicurl: req.body.profilepicurl,
         firstname: req.body.firstname,
         lastname: req.body.lastname,

@@ -104,7 +104,7 @@ export default function DashStores() {
         fetchStores();
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
@@ -136,7 +136,7 @@ export default function DashStores() {
         navigate("/dashboard?tab=store");
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
