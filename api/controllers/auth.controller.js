@@ -74,7 +74,7 @@ function signIn(req, res) {
       if (user === null) {
         return res.status(400).json({
           success: false,
-          message: "Invalid credentials",
+          message: "Invalid User Name",
         });
       } else {
         bcrypt.compare(
@@ -95,7 +95,7 @@ function signIn(req, res) {
             } else {
               return res.status(400).json({
                 success: false,
-                message: "Invalid password",
+                message: "Invalid Password",
               });
             }
           }

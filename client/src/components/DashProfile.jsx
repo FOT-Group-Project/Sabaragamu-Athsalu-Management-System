@@ -325,9 +325,6 @@ export default function DashProfile() {
           )}
         </Button>
       </form>
-      <div className="text-red-500 flex justify-end mt-5">
-        <p className="cursor-pointer">Sign Out</p>
-      </div>
     </div>
   );
 }
