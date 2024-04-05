@@ -4,7 +4,7 @@ import {
   HiAnnotation,
   HiArrowNarrowUp,
   HiDocumentText,
-  HiOutlineUserGroup,
+  HiUserGroup,
   HiHome,
   HiTrendingUp,
   HiOutlineCurrencyDollar,
@@ -14,12 +14,13 @@ import { Link } from "react-router-dom";
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/user/getusers");
+        const res = await fetch("/api/user//getusers");
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -29,6 +30,19 @@ export default function DashboardComp() {
       }
     };
     fetchUsers();
+
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/product/getallproducts");
+        const data = await res.json();
+        if (res.ok) {
+          setProducts(data.products);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchProducts();
   }, [currentUser]);
 
   return (
@@ -100,7 +114,7 @@ export default function DashboardComp() {
               </h3>
               <p className="text-2xl font-semibold">896</p>
             </div>
-            <HiOutlineUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+            <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
           <div className="flex gap-4 text-sm">
             <span className="text-green-500 font-semibold flex items-center ">
@@ -110,11 +124,11 @@ export default function DashboardComp() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 py-3 mx-auto justify-center">
+      <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
         <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
           <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent users</h1>
-            <Link to={"/dashboard?tab=users"}>
+            <h1 className="text-center p-2">Recent Users</h1>
+            <Link to={"/dashboard?tab=products"}>
               {" "}
               <Button color="green">See all</Button>
             </Link>
@@ -122,7 +136,7 @@ export default function DashboardComp() {
           <Table hoverable>
             <Table.Head>
               <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
+              <Table.HeadCell>user name</Table.HeadCell>
               <Table.HeadCell>position</Table.HeadCell>
             </Table.Head>
             {users &&
@@ -132,7 +146,7 @@ export default function DashboardComp() {
                     <Table.Cell>
                       <img
                         src={user.profilepicurl}
-                        alt="user"
+                        alt="product"
                         className="w-10 h-10 rounded-full bg-gray-500"
                       />
                     </Table.Cell>
@@ -146,31 +160,27 @@ export default function DashboardComp() {
 
         <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
           <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent users</h1>
-            <Link to={"/dashboard?tab=users"}>
+            <h1 className="text-center p-2">Recent products</h1>
+            <Link to={"/dashboard?tab=products"}>
               {" "}
               <Button color="green">See all</Button>
             </Link>
           </div>
           <Table hoverable>
             <Table.Head>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>Username</Table.HeadCell>
-              <Table.HeadCell>position</Table.HeadCell>
+              <Table.HeadCell>Product Name</Table.HeadCell>
+              <Table.HeadCell>Type</Table.HeadCell>
+              <Table.HeadCell>Manufacturer</Table.HeadCell>
+              <Table.HeadCell>Price</Table.HeadCell>
             </Table.Head>
-            {users &&
-              users.map((user) => (
-                <Table.Body key={user.id} className="divide-y">
+            {products &&
+              products.map((product) => (
+                <Table.Body key={product.id} className="divide-y">
                   <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>
-                      <img
-                        src={user.profilepicurl}
-                        alt="user"
-                        className="w-10 h-10 rounded-full bg-gray-500"
-                      />
-                    </Table.Cell>
-                    <Table.Cell>{user.username}</Table.Cell>
-                    <Table.Cell>{user.role}</Table.Cell>
+                    <Table.Cell>{product.itemName}</Table.Cell>
+                    <Table.Cell>{product.itemType}</Table.Cell>
+                    <Table.Cell>{product.manufacturer}</Table.Cell>
+                    <Table.Cell>{product.itemPrice}</Table.Cell>
                   </Table.Row>
                 </Table.Body>
               ))}

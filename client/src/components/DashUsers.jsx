@@ -199,7 +199,7 @@ export default function DashUsers() {
         fetchUsers();
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
@@ -231,7 +231,7 @@ export default function DashUsers() {
         navigate("/dashboard?tab=users");
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError(null);
       setCreateLoding(false);
     }
   };
@@ -285,7 +285,7 @@ export default function DashUsers() {
           <div className="space-y-6">
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col flex-grow gap-4"
+              className="flex flex-col flex-grow gap-4 "
               disabled={imageFileUploading}
             >
               <input
@@ -340,7 +340,7 @@ export default function DashUsers() {
               {createUserError && (
                 <Alert color="failure">{createUserError}</Alert>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label value="User name" />
@@ -384,7 +384,7 @@ export default function DashUsers() {
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label htmlFor="email2" value="Phone number" />
@@ -415,31 +415,6 @@ export default function DashUsers() {
                 </div>
                 <div>
                   <div className="mb-2 block">
-                    <Label htmlFor="email2" value="Role" />
-                  </div>
-
-                  <Select
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    id="role"
-                    required
-                    shadow
-                    disabled={imageFileUploading}
-                  >
-                    <option value="SelectRole">Select Role</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Director">Director</option>
-                    <option value="Seller">Seller</option>
-                    <option value="StoreKeeper">Store Keeper</option>
-                    <option value="StockQA">StockQA</option>
-                    <option value="Accountant">Accountant</option>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div>
-                  <div className="mb-2 block">
                     <Label htmlFor="email2" value="Password" />
                   </div>
                   <TextInput
@@ -452,20 +427,31 @@ export default function DashUsers() {
                     disabled={imageFileUploading}
                   />
                 </div>
+              </div>
+              <div className="gap-2">
                 <div>
                   <div>
                     <div className="mb-2 block">
-                      <Label htmlFor="email2" value="Confirm password" />
+                      <Label htmlFor="email2" value="Role" />
                     </div>
-                    <TextInput
-                      id="confirmPassword"
-                      type="password"
-                      placeholder="**********"
+
+                    <Select
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
+                      id="role"
                       required
                       shadow
-                      onChange={handleChange}
                       disabled={imageFileUploading}
-                    />
+                    >
+                      <option value="SelectRole">Select Role</option>
+                      <option value="Admin">Admin</option>
+                      <option value="Director">Director</option>
+                      <option value="Seller">Seller</option>
+                      <option value="StoreKeeper">Store Keeper</option>
+                      <option value="StockQA">StockQA</option>
+                      <option value="Accountant">Accountant</option>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -555,7 +541,7 @@ export default function DashUsers() {
               {createUserError && (
                 <Alert color="failure">{createUserError}</Alert>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label value="User name" />
@@ -602,7 +588,7 @@ export default function DashUsers() {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 mb-5">
+              <div className="flex gap-2 justify-between">
                 <div>
                   <div className="mb-2 block">
                     <Label htmlFor="email2" value="Phone number" />
@@ -635,6 +621,22 @@ export default function DashUsers() {
                 </div>
                 <div>
                   <div className="mb-2 block">
+                    <Label htmlFor="email2" value="Password" />
+                  </div>
+                  <TextInput
+                    id="password"
+                    type="password"
+                    placeholder="**********"
+                    required
+                    shadow
+                    onChange={handleChange}
+                    disabled={imageFileUploading}
+                  />
+                </div>
+              </div>
+              <div className="gap-2">
+                <div>
+                  <div className="mb-2 block">
                     <Label htmlFor="email2" value="Role" />
                   </div>
                   <Select
@@ -644,8 +646,7 @@ export default function DashUsers() {
                     id="role"
                     required
                     shadow
-                    disabled={imageFileUploading}
-                    value={formData.role}
+                    defaultValue={formData.role}
                   >
                     <option value="SelectRole">Select Role</option>
                     <option value="Admin">Admin</option>
@@ -740,14 +741,14 @@ export default function DashUsers() {
               </Table.Body>
             ))}
           </Table>
-          {showMore && (
+          {/* {showMore && (
             <button
               onClick={handleShowMore}
               className="w-full text-teal-500 self-center text-sm py-7"
             >
               Show more
             </button>
-          )}
+          )} */}
         </>
       ) : (
         <p>You have no users yet!</p>

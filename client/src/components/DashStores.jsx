@@ -104,7 +104,7 @@ export default function DashStores() {
         fetchStores();
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
@@ -136,7 +136,7 @@ export default function DashStores() {
         navigate("/dashboard?tab=store");
       }
     } catch (error) {
-      setCreateUserError("Something went wrong");
+      // setCreateUserError("Something went wrong");
       setCreateLoding(false);
     }
   };
@@ -190,7 +190,7 @@ export default function DashStores() {
           onClick={() => setOpenModal(true)}
         >
           <HiUserAdd className="mr-2 h-4 w-4" />
-          Assing Store Keeper
+          Assign Store Keeper
         </Button>
       </div>
 
