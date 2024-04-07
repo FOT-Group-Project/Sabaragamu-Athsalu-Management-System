@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
   StoreSendToShop.init({
     date: DataTypes.DATE,
     quantity: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'StoreSendToShop',
