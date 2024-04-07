@@ -17,8 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   QaCheckStore.init({
     date: DataTypes.DATE,
     report: DataTypes.STRING,
-    qaId: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'QaCheckStore',

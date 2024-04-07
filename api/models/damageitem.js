@@ -17,9 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   DamageItem.init({
     newUnitPrice: DataTypes.DOUBLE,
-    itemId: DataTypes.INTEGER,
-    shopId: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'DamageItem',
