@@ -12,12 +12,7 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
-      shopId: {
-        type: Sequelize.INTEGER
-      },
-      itemId: {
-        type: Sequelize.INTEGER
-      },
+      
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

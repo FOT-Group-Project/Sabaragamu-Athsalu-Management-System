@@ -24,12 +24,7 @@ module.exports = {
       dueAmount: {
         type: Sequelize.DOUBLE
       },
-      customerId: {
-        type: Sequelize.INTEGER
-      },
-      itemId: {
-        type: Sequelize.INTEGER
-      },
+      
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
