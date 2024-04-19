@@ -2,6 +2,8 @@ const express = require('express');
 const associationController = require('../controllers/association.controller');
 const router = express.Router();
 
-router.get('/association', associationController.checkAssociation);
+router.get('/getSellerInfoShop', associationController.getSellerInfoShop);
+router.get('/getAllShops', associationController.getAllShops);
+
 
 module.exports = router;
