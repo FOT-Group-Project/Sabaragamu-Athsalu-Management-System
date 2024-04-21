@@ -204,7 +204,16 @@ export default function DashPOS() {
 
         <div className="md:w-1/3">
           <div className="flex gap-3 justify-between">
-            <Button
+            <div>
+              <p>
+                <b>Customer Name : </b>Lahiru Prasad
+              </p>
+              <p>
+                <b>Date & Time : </b>2024-09-09 12:00:00
+              </p>
+            </div>
+
+            {/* <Button
               className="mb-3"
               color="blue"
               size="sm"
@@ -212,19 +221,18 @@ export default function DashPOS() {
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Customer
-            </Button>
+            </Button> */}
             <Button
               className="mb-3"
-              color="blue"
+              color="gray"
               size="sm"
               onClick={() => setOpenModal(true)}
             >
-              <MdDeleteForever className="mr-2 h-4 w-4" />
-              Remove
+              <MdDeleteForever className="h-4 w-4" />
             </Button>
           </div>
           <div className="justify-between text-center ">
-            <p>Lahiru Prasad</p>
+            <p>Product List</p>
             <hr className="md-2 mt-2" />
           </div>
           <div>
@@ -256,6 +264,7 @@ export default function DashPOS() {
                               style={{ cursor: "pointer" }}
                             />
                             <span>{product.quantity}</span>
+
                             <MdAdd
                               onClick={() => handleIncreaseQuantity(product.id)}
                               style={{ cursor: "pointer" }}
