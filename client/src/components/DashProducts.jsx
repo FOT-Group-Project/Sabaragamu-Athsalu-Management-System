@@ -69,9 +69,7 @@ export default function DashProducts() {
   };
 
   useEffect(() => {
-    if (currentUser.role == "Admin") {
-      fetchProducts();
-    }
+    fetchProducts();
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -373,7 +371,7 @@ export default function DashProducts() {
         </Modal.Body>
       </Modal>
 
-      {currentUser.role == "Admin" && products.length > 0 ? (
+      {products.length > 0 ? (
         <>
           <Table hoverable className="shadow-md w-full">
             <TableHead>
@@ -394,7 +392,7 @@ export default function DashProducts() {
                   <TableCell>{product.itemName}</TableCell>
                   <TableCell>{product.itemType}</TableCell>
                   <TableCell>{product.manufacturer}</TableCell>
-                  <TableCell>{product.itemPrice}</TableCell>
+                  <TableCell>Rs. {product.itemPrice}</TableCell>
                   <TableCell></TableCell>
                   <TableCell>
                     <Button.Group>
