@@ -95,7 +95,9 @@ export default function DashPOS() {
                 {products.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell><b>{product.itemName}</b></TableCell>
+                      <TableCell>
+                        <b>{product.itemName}</b>
+                      </TableCell>
                       <TableCell>PD{product.id}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
@@ -144,9 +146,47 @@ export default function DashPOS() {
               Remove
             </Button>
           </div>
-          <div className="justify-between text-center">
+          <div className="justify-between text-center ">
             <p>Lahiru Prasad</p>
             <hr className="md-2 mt-2" />
+          </div>
+          <div>
+            {products.length > 0 ? (
+              <>
+                <Table hoverable className="shadow-md w-full mt-2">
+                  <TableHead>
+                    <TableHeadCell>Product Name</TableHeadCell>
+                    <TableHeadCell>QTY</TableHeadCell>
+                    <TableHeadCell>Price</TableHeadCell>
+                    <TableHeadCell></TableHeadCell>
+                  </TableHead>
+                  {products.map((product) => (
+                    <Table.Body className="divide-y" key={product.id}>
+                      <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <TableCell>
+                          <b>{product.itemName}</b>
+                        </TableCell>
+                        <TableCell>86</TableCell>
+                        <TableCell>Rs.{product.itemPrice}</TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => {
+                              setOpenModalEdit(true);
+                              setFormData(product);
+                            }}
+                            color="gray"
+                          >
+                            <MdDeleteForever className=" h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    </Table.Body>
+                  ))}
+                </Table>
+              </>
+            ) : (
+              <p>You have no store yet!</p>
+            )}
           </div>
         </div>
       </div>
