@@ -11,6 +11,7 @@ import {
   HiTable,
   HiUser,
   HiUsers,
+  HiColorSwatch,
 } from "react-icons/hi";
 import { HiBuildingStorefront } from "react-icons/hi2";
 import { FaShoppingBag } from "react-icons/fa";
@@ -65,6 +66,19 @@ export default function DashSidebar() {
               Dashboard
             </Sidebar.Item>
           </Link>
+
+          <Link to="/dashboard?tab=pos">
+            <Sidebar.Item
+              className="mt-2 mb-2"
+              active={tab === "pos"}
+              icon={HiColorSwatch}
+              labelColor="dark"
+              as="div"
+            >
+              POS
+            </Sidebar.Item>
+          </Link>
+
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               className="mt-2 mb-2"
