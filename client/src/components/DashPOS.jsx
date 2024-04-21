@@ -53,6 +53,38 @@ export default function DashPOS() {
       <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
         Point of Sale
       </h1>
+
+      <div className="min-h-screen flex flex-col md:flex-row">
+        <div className="md:w-full bg-slate-700">
+          <h1>Test</h1>
+        </div>
+        <div className="md:w-96 bg-slate-100">
+          <div className="flex gap-3 justify-between">
+            <Button
+              className="mb-3"
+              color="blue"
+              size="sm"
+              onClick={() => setOpenModal(true)}
+            >
+              <HiPlusCircle className="mr-2 h-4 w-4" />
+              Add Customer
+            </Button>
+            <Button
+              className="mb-3"
+              color="blue"
+              size="sm"
+              onClick={() => setOpenModal(true)}
+            >
+              <MdDeleteForever className="mr-2 h-4 w-4" />
+              Remove
+            </Button>
+          </div>
+          <div className="justify-between text-center">
+            <p>Lahiru Prasad</p>
+            <hr className="md-2 mt-2" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
