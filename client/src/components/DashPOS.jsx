@@ -37,10 +37,16 @@ import {
   HiPlusCircle,
   HiUserAdd,
   HiOutlineArrowCircleRight,
+  HiInformationCircle,
+  HiOutlineCheckCircle,
 } from "react-icons/hi";
+import { MdAdd, MdRemove } from "react-icons/md";
 
 export default function DashPOS() {
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+
   const [showMore, setShowMore] = useState(true);
 
   useEffect(() => {
@@ -52,7 +58,7 @@ export default function DashPOS() {
       const res = await fetch(`/api/product/getallproducts`);
       const data = await res.json();
       if (res.ok) {
-        setProducts(data.products);
+        setAllProducts(data.products);
         if (data.product.length < 9) {
           setShowMore(false);
         }
@@ -60,6 +66,53 @@ export default function DashPOS() {
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const handleAddToSelected = (productId) => {
+    setShowAlert(false);
+    const productToAdd = allProducts.find(
+      (product) => product.id === productId
+    );
+    if (productToAdd) {
+      const existingProductIndex = selectedProducts.findIndex(
+        (product) => product.id === productId
+      );
+      if (existingProductIndex !== -1) {
+        setShowAlert(true); // Show alert if product already exists
+      } else {
+        setSelectedProducts([
+          ...selectedProducts,
+          { ...productToAdd, quantity: 1 },
+        ]);
+      }
+    }
+  };
+
+  const handleIncreaseQuantity = (productId) => {
+    setSelectedProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? { ...product, quantity: product.quantity + 1 }
+          : product
+      )
+    );
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    setSelectedProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId && product.quantity > 1
+          ? { ...product, quantity: product.quantity - 1 }
+          : product
+      )
+    );
+  };
+
+  const handleRemoveFromSelected = (productId) => {
+    setShowAlert(false);
+    setSelectedProducts(
+      selectedProducts.filter((product) => product.id !== productId)
+    );
   };
   return (
     <div className="p-3 w-full">
@@ -77,10 +130,17 @@ export default function DashPOS() {
       </h1>
 
       <div className="min-h-screen flex flex-col md:flex-row">
-        <div className="md:w-full mr-5">
-          {products.length > 0 ? (
+        <div className="md:w-2/3 mr-5">
+          {showAlert && (
+            <Alert color="failure" icon={HiInformationCircle}>
+              <span className="font-medium">Info alert!</span> Product already
+              in the cart !
+            </Alert>
+          )}
+
+          {allProducts.length > 0 ? (
             <>
-              <Table hoverable className="shadow-md w-full">
+              <Table hoverable className="mt-2 shadow-md w-full">
                 <TableHead>
                   <TableHeadCell>Product Name</TableHeadCell>
                   <TableHeadCell>SKU</TableHeadCell>
@@ -92,7 +152,7 @@ export default function DashPOS() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {products.map((product) => (
+                {allProducts.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>
@@ -104,15 +164,32 @@ export default function DashPOS() {
                       <TableCell>86 </TableCell>
                       <TableCell></TableCell>
                       <TableCell>
-                        <Button
-                          onClick={() => {
-                            setOpenModalEdit(true);
-                            setFormData(product);
-                          }}
+                        {/* <Button
+                          onClick={() => handleAddToSelected(product.id)}
                           color="gray"
                         >
                           Add
                           <HiOutlineArrowCircleRight className="ml-3 h-4 w-4" />
+                        </Button> */}
+                        <Button
+                          onClick={() => handleAddToSelected(product.id)}
+                          color={
+                            selectedProducts.some((p) => p.id === product.id)
+                              ? "green"
+                              : "gray"
+                          }
+                        >
+                          {selectedProducts.some((p) => p.id === product.id) ? (
+                            <>
+                              Added
+                              <HiOutlineCheckCircle className="ml-3 h-4 w-4" />
+                            </>
+                          ) : (
+                            <>
+                              Add
+                              <HiOutlineArrowCircleRight className="ml-3 h-4 w-4" />
+                            </>
+                          )}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -125,7 +202,7 @@ export default function DashPOS() {
           )}
         </div>
 
-        <div className="md:w-96">
+        <div className="md:w-1/3">
           <div className="flex gap-3 justify-between">
             <Button
               className="mb-3"
@@ -151,7 +228,7 @@ export default function DashPOS() {
             <hr className="md-2 mt-2" />
           </div>
           <div>
-            {products.length > 0 ? (
+            {selectedProducts.length > 0 ? (
               <>
                 <Table hoverable className="shadow-md w-full mt-2">
                   <TableHead>
@@ -160,20 +237,37 @@ export default function DashPOS() {
                     <TableHeadCell>Price</TableHeadCell>
                     <TableHeadCell></TableHeadCell>
                   </TableHead>
-                  {products.map((product) => (
+                  {selectedProducts.map((product) => (
                     <Table.Body className="divide-y" key={product.id}>
                       <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                         <TableCell>
                           <b>{product.itemName}</b>
                         </TableCell>
-                        <TableCell>86</TableCell>
-                        <TableCell>Rs.{product.itemPrice}</TableCell>
+                        <TableCell>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.5rem",
+                            }}
+                          >
+                            <MdRemove
+                              onClick={() => handleDecreaseQuantity(product.id)}
+                              style={{ cursor: "pointer" }}
+                            />
+                            <span>{product.quantity}</span>
+                            <MdAdd
+                              onClick={() => handleIncreaseQuantity(product.id)}
+                              style={{ cursor: "pointer" }}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          Rs.{product.itemPrice * product.quantity}
+                        </TableCell>
                         <TableCell>
                           <Button
-                            onClick={() => {
-                              setOpenModalEdit(true);
-                              setFormData(product);
-                            }}
+                            onClick={() => handleRemoveFromSelected(product.id)}
                             color="gray"
                           >
                             <MdDeleteForever className=" h-4 w-4" />
