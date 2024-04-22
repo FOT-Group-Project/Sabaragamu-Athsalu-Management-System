@@ -37,6 +37,7 @@ import {
   HiPlusCircle,
   HiUserAdd,
 } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
@@ -163,6 +164,13 @@ export default function DashStores() {
 
   return (
     <div className="p-3 w-full">
+            <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+        >
       <Breadcrumb aria-label="Default breadcrumb example">
         <Link to="/dashboard?tab=dash">
           <Breadcrumb.Item href="" icon={HiHome}>
@@ -435,6 +443,9 @@ export default function DashStores() {
           </div>
         </Modal.Body>
       </Modal>
+      </motion.div>
+      </AnimatePresence>
     </div>
+
   );
 }
