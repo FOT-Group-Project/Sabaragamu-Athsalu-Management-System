@@ -486,18 +486,32 @@ export default function DashPOS() {
                 </>
               ) : (
                 <>
-                  {/* Customer selection dropdown */}
-                  <Select
-                    value={selectedCustomer}
-                    onChange={handleCustomerChange}
-                  >
-                    <option value="">Select a customer</option>
-                    {customers.map((customer) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.firstname + " " + customer.lastname}
-                      </option>
-                    ))}
-                  </Select>
+                  <div className="flex justify-center">
+                    <div>
+                      <p>
+                        Select already existing customer or add new customer
+                      </p>
+
+                      <div className="mt-4 flex gap-4">
+                        <Select
+                          value={selectedCustomer}
+                          onChange={handleCustomerChange}
+                        >
+                          <option value="">Select a customer</option>
+                          {customers.map((customer) => (
+                            <option key={customer.id} value={customer.id}>
+                              {customer.firstname + " " + customer.lastname}
+                            </option>
+                          ))}
+                        </Select>
+
+                        <Button color="blue" className="">
+                          <MdAdd className="h-4 w-4 mr-2" />
+                          Add new customer
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
