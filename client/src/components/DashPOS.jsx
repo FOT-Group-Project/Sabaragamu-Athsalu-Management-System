@@ -209,19 +209,11 @@ export default function DashPOS() {
                 <b>Customer Name : </b>Lahiru Prasad
               </p>
               <p>
-                <b>Date & Time : </b>2024-09-09 12:00:00
+                <b>Date & Time : </b>
+                {new Date().toLocaleString()}
               </p>
             </div>
 
-            {/* <Button
-              className="mb-3"
-              color="blue"
-              size="sm"
-              onClick={() => setOpenModal(true)}
-            >
-              <HiPlusCircle className="mr-2 h-4 w-4" />
-              Add Customer
-            </Button> */}
             <Button
               className="mb-3"
               color="gray"
@@ -231,8 +223,11 @@ export default function DashPOS() {
               <MdDeleteForever className="h-4 w-4" />
             </Button>
           </div>
-          <div className="justify-between text-center ">
-            <p>Product List</p>
+          <div className="mt-5 justify-between text-center ">
+            <b>
+              <p>Product List</p>
+            </b>
+
             <hr className="md-2 mt-2" />
           </div>
           <div>
