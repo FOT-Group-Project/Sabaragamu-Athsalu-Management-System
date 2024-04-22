@@ -39,6 +39,8 @@ import {
   HiOutlineArrowCircleRight,
   HiInformationCircle,
   HiOutlineCheckCircle,
+  HiXCircle,
+  HiCurrencyDollar,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
 
@@ -48,6 +50,19 @@ export default function DashPOS() {
   const [showAlert, setShowAlert] = useState(false);
 
   const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Function to handle search query change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Filter products based on search query
+  const filteredProducts = allProducts.filter((product) =>
+    product.itemName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     fetchProducts();
@@ -123,6 +138,12 @@ export default function DashPOS() {
     return totalPrice;
   };
 
+  // Function to clear the selected products array
+  const handleClearCart = () => {
+    setSelectedProducts([]);
+    setShowModal(false);
+  };
+
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
@@ -140,6 +161,14 @@ export default function DashPOS() {
 
       <div className="min-h-screen flex flex-col md:flex-row">
         <div className="md:w-2/3 mr-5">
+          <TextInput
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search products..."
+            className="w-1/3 mb-3"
+            size="sm"
+          />
           {showAlert && (
             <Alert color="failure" icon={HiInformationCircle}>
               <span className="font-medium">Info alert!</span> Product already
@@ -147,7 +176,7 @@ export default function DashPOS() {
             </Alert>
           )}
 
-          {allProducts.length > 0 ? (
+          {filteredProducts.length > 0 ? (
             <>
               <Table hoverable className="mt-2 shadow-md w-full">
                 <TableHead>
@@ -161,7 +190,7 @@ export default function DashPOS() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {allProducts.map((product) => (
+                {filteredProducts.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>
@@ -297,35 +326,84 @@ export default function DashPOS() {
               </div>
             )}
           </div>
-          <div className="mt-5 justify-between text-center ">
-            <b>
-              <p>Totale Price</p>
-            </b>
 
-            <hr className="md-2 mt-2" />
-          </div>
+          {selectedProducts.length > 0 ? (
+            <>
+              <div className="mt-5 justify-between text-center ">
+                <b>
+                  <p>Totale Price</p>
+                </b>
 
-          <div className="mt-5  text-center ">
-            <div className="mr-2 ml-2 mb-3 flex justify-between">
-              <p>
-                <b>Sub Total :</b>
-              </p>
-              <p>Rs. {calculateTotalPrice()}</p>
-            </div>
+                <hr className="md-2 mt-2" />
+              </div>
 
-            <div className="mr-2 ml-2 flex justify-between">
-              <p>
-                <b>Paybale Amount :</b>
-              </p>
-              <p>
-                <b>Rs. {calculateTotalPrice()}</b>
-              </p>
-            </div>
+              <div className="mt-5  text-center ">
+                <div className="mr-2 ml-2 mb-3 flex justify-between">
+                  <p>
+                    <b>Sub Total :</b>
+                  </p>
+                  <p>Rs. {calculateTotalPrice()}</p>
+                </div>
 
-            <hr className="md-2 mt-2" />
-          </div>
+                <div className="mr-2 ml-2 flex justify-between">
+                  <p>
+                    <b>Paybale Amount :</b>
+                  </p>
+                  <p>
+                    <b>Rs. {calculateTotalPrice()}</b>
+                  </p>
+                </div>
+
+                <hr className="md-2 mt-2" />
+
+                <div className="mt-4 flex gap-4">
+                  <Button color="blue" className="w-full">
+                    <HiCurrencyDollar className="h-4 w-4 mr-2" />
+                    Pay - Rs. {calculateTotalPrice()}
+                  </Button>
+                  <Button
+                    onClick={() => setShowModal(true)}
+                    color="red"
+                    className="w-full"
+                  >
+                    <HiXCircle className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                </div>
+
+                <hr className="md-2 mt-2" />
+              </div>
+            </>
+          ) : (
+            <div className="mt-5 justify-between text-center "></div>
+          )}
         </div>
       </div>
+
+      <Modal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to clear the cart?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleClearCart}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
