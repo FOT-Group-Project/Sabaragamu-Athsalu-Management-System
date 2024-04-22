@@ -17,6 +17,7 @@ import {
   TextInput,
   Select,
   Spinner,
+  Toast,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -41,6 +42,7 @@ import {
   HiOutlineCheckCircle,
   HiXCircle,
   HiCurrencyDollar,
+  HiCheck,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
 
@@ -214,11 +216,11 @@ export default function DashPOS() {
         <Breadcrumb.Item>POS</Breadcrumb.Item>
       </Breadcrumb>
 
-      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+      {/* <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
         Point of Sale
-      </h1>
+      </h1> */}
 
-      <div className="min-h-screen flex flex-col md:flex-row">
+      <div className="mt-4 min-h-screen flex flex-col md:flex-row">
         <div className="md:w-2/3 mr-5">
           <TextInput
             type="text"
@@ -412,9 +414,11 @@ export default function DashPOS() {
                       <TextInput
                         type="number"
                         value={discountPercentage}
-                        onChange={(e) => setDiscountPercentage(e.target.value)}
+                        onChange={(e) =>
+                          setDiscountPercentage(Math.max(0, e.target.value))
+                        }
                         placeholder="Enter discount percentage"
-                        className="w-2/4 h-8 mb-3"
+                        className=" w-20 h-8 mb-3"
                         size="sm"
                       />
                     </div>
