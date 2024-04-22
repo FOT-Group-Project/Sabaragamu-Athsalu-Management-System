@@ -48,11 +48,13 @@ export default function DashPOS() {
   const [allProducts, setAllProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
-
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
+  const [showModal1, setShowModal1] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCustomer, setSelectedCustomer] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [discountPercentage, setDiscountPercentage] = useState(0);
 
   // Function to handle search query change
   const handleSearchChange = (e) => {
@@ -66,6 +68,7 @@ export default function DashPOS() {
 
   useEffect(() => {
     fetchProducts();
+    fetchCustomers();
   }, []);
 
   const fetchProducts = async () => {
@@ -81,6 +84,24 @@ export default function DashPOS() {
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      // Fetch customers from API
+      const res = await fetch(`/api/user/getusers`);
+      const data = await res.json();
+      if (res.ok) {
+        setCustomers(data.users);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Function to handle customer selection
+  const handleCustomerChange = (e) => {
+    setSelectedCustomer(e.target.value);
   };
 
   const handleAddToSelected = (productId) => {
@@ -130,18 +151,56 @@ export default function DashPOS() {
     );
   };
 
+  // const calculateTotalPrice = () => {
+  //   let totalPrice = 0;
+  //   selectedProducts.forEach((product) => {
+  //     totalPrice += product.itemPrice * product.quantity;
+  //   });
+  //   return totalPrice;
+  // };
+
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     selectedProducts.forEach((product) => {
       totalPrice += product.itemPrice * product.quantity;
     });
-    return totalPrice;
+
+    // Calculate discount amount
+    const discountAmount = (totalPrice * discountPercentage) / 100;
+
+    // Apply discount to total price
+    const discountedPrice = totalPrice - discountAmount;
+
+    return discountedPrice;
+  };
+
+  // Function to calculate the subtotal
+  const calculateSubtotal = () => {
+    let subtotal = 0;
+    selectedProducts.forEach((product) => {
+      subtotal += product.itemPrice * product.quantity;
+    });
+    return subtotal;
+  };
+
+  // Function to calculate the discounted price
+  const calculateDiscountedPrice = () => {
+    const totalPrice = calculateTotalPrice(); // Calculate total price of selected products
+    const discountedPrice =
+      totalPrice - totalPrice * (discountPercentage / 100);
+    return discountedPrice;
   };
 
   // Function to clear the selected products array
   const handleClearCart = () => {
     setSelectedProducts([]);
     setShowModal(false);
+  };
+
+  const handeleClearCustomer = () => {
+    setSelectedCustomer([]);
+    handleClearCart();
+    setShowModal1(false);
   };
 
   return (
@@ -202,14 +261,8 @@ export default function DashPOS() {
                       <TableCell>86 </TableCell>
                       <TableCell></TableCell>
                       <TableCell>
-                        {/* <Button
-                          onClick={() => handleAddToSelected(product.id)}
-                          color="gray"
-                        >
-                          Add
-                          <HiOutlineArrowCircleRight className="ml-3 h-4 w-4" />
-                        </Button> */}
                         <Button
+                          disabled={selectedCustomer <= 0}
                           onClick={() => handleAddToSelected(product.id)}
                           color={
                             selectedProducts.some((p) => p.id === product.id)
@@ -241,141 +294,192 @@ export default function DashPOS() {
         </div>
 
         <div className="md:w-1/3">
-          <div className="flex gap-3 justify-between">
-            <div>
-              <p>
-                <b>Customer Name : </b>Lahiru Prasad
-              </p>
-              <p>
-                <b>Date & Time : </b>
-                {new Date().toLocaleString()}
-              </p>
-            </div>
-
-            <Button
-              className="mb-3"
-              color="gray"
-              size="sm"
-              onClick={() => setOpenModal(true)}
-            >
-              <MdDeleteForever className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="mt-5 justify-between text-center ">
-            <b>
-              <p>Product List</p>
-            </b>
-
-            <hr className="md-2 mt-2" />
-          </div>
-          <div>
-            {selectedProducts.length > 0 ? (
-              <>
-                <Table hoverable className="shadow-md w-full mt-2">
-                  <TableHead>
-                    <TableHeadCell>Product Name</TableHeadCell>
-                    <TableHeadCell>QTY</TableHeadCell>
-                    <TableHeadCell>Price</TableHeadCell>
-                    <TableHeadCell></TableHeadCell>
-                  </TableHead>
-                  {selectedProducts.map((product) => (
-                    <Table.Body className="divide-y" key={product.id}>
-                      <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                        <TableCell>
-                          <b>{product.itemName}</b>
-                        </TableCell>
-                        <TableCell>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.5rem",
-                            }}
-                          >
-                            <MdRemove
-                              onClick={() => handleDecreaseQuantity(product.id)}
-                              style={{ cursor: "pointer" }}
-                            />
-                            <span>{product.quantity}</span>
-
-                            <MdAdd
-                              onClick={() => handleIncreaseQuantity(product.id)}
-                              style={{ cursor: "pointer" }}
-                            />
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          Rs.{product.itemPrice * product.quantity}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={() => handleRemoveFromSelected(product.id)}
-                            color="gray"
-                          >
-                            <MdDeleteForever className=" h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    </Table.Body>
-                  ))}
-                </Table>
-              </>
-            ) : (
-              <div className="mt-5 justify-between text-center text-gray-400 text-sm">
-                <p>You have not selected items yet!</p>
-              </div>
-            )}
-          </div>
-
-          {selectedProducts.length > 0 ? (
+          {selectedCustomer > 0 ? (
             <>
+              <div className="flex gap-3 justify-between">
+                <div>
+                  <p>
+                    <b>Customer Name : </b> {selectedCustomer}
+                  </p>
+                  <p>
+                    <b>Date & Time : </b>
+                    {new Date().toLocaleString()}
+                  </p>
+                </div>
+
+                <Button
+                  className="mb-3"
+                  color="gray"
+                  size="sm"
+                  onClick={() => setShowModal1(true)}
+                >
+                  <MdDeleteForever className="h-4 w-4" />
+                </Button>
+              </div>
               <div className="mt-5 justify-between text-center ">
                 <b>
-                  <p>Totale Price</p>
+                  <p>Product List</p>
                 </b>
 
                 <hr className="md-2 mt-2" />
               </div>
+              <div>
+                {selectedProducts.length > 0 ? (
+                  <>
+                    <Table hoverable className="shadow-md w-full mt-2">
+                      <TableHead>
+                        <TableHeadCell>Product Name</TableHeadCell>
+                        <TableHeadCell>QTY</TableHeadCell>
+                        <TableHeadCell>Price</TableHeadCell>
+                        <TableHeadCell></TableHeadCell>
+                      </TableHead>
+                      {selectedProducts.map((product) => (
+                        <Table.Body className="divide-y" key={product.id}>
+                          <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                            <TableCell>
+                              <b>{product.itemName}</b>
+                            </TableCell>
+                            <TableCell>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.5rem",
+                                }}
+                              >
+                                <MdRemove
+                                  onClick={() =>
+                                    handleDecreaseQuantity(product.id)
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                />
+                                <span>{product.quantity}</span>
 
-              <div className="mt-5  text-center ">
-                <div className="mr-2 ml-2 mb-3 flex justify-between">
-                  <p>
-                    <b>Sub Total :</b>
-                  </p>
-                  <p>Rs. {calculateTotalPrice()}</p>
-                </div>
-
-                <div className="mr-2 ml-2 flex justify-between">
-                  <p>
-                    <b>Paybale Amount :</b>
-                  </p>
-                  <p>
-                    <b>Rs. {calculateTotalPrice()}</b>
-                  </p>
-                </div>
-
-                <hr className="md-2 mt-2" />
-
-                <div className="mt-4 flex gap-4">
-                  <Button color="blue" className="w-full">
-                    <HiCurrencyDollar className="h-4 w-4 mr-2" />
-                    Pay - Rs. {calculateTotalPrice()}
-                  </Button>
-                  <Button
-                    onClick={() => setShowModal(true)}
-                    color="red"
-                    className="w-full"
-                  >
-                    <HiXCircle className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                </div>
-
-                <hr className="md-2 mt-2" />
+                                <MdAdd
+                                  onClick={() =>
+                                    handleIncreaseQuantity(product.id)
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                />
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              Rs.{product.itemPrice * product.quantity}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() =>
+                                  handleRemoveFromSelected(product.id)
+                                }
+                                color="gray"
+                              >
+                                <MdDeleteForever className=" h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        </Table.Body>
+                      ))}
+                    </Table>
+                  </>
+                ) : (
+                  <div className="mt-5 justify-between text-center text-gray-400 text-sm">
+                    <p>You have not selected items yet!</p>
+                  </div>
+                )}
               </div>
+
+              {selectedProducts.length > 0 ? (
+                <>
+                  <div className="mt-5 justify-between text-center ">
+                    <b>
+                      <p>Totale Price</p>
+                    </b>
+
+                    <hr className="md-2 mt-2" />
+                  </div>
+
+                  <div className="mt-5  text-center ">
+                    <div className="mr-2 ml-2 mb-3 flex justify-between">
+                      <p>
+                        <b>Sub Total :</b>
+                      </p>
+                      <p>Rs. {calculateSubtotal()}</p>
+                    </div>
+                    <div className="mr-2 ml-2 mb-3 flex justify-between">
+                      <p>
+                        <b>Discont % :</b>
+                      </p>
+                      <TextInput
+                        type="number"
+                        value={discountPercentage}
+                        onChange={(e) => setDiscountPercentage(e.target.value)}
+                        placeholder="Enter discount percentage"
+                        className="w-2/4 h-8 mb-3"
+                        size="sm"
+                      />
+                    </div>
+
+                    {discountPercentage > 0 && (
+                      <div className="mr-2 ml-2 mb-3 flex justify-between">
+                        <p>
+                          <b>Discounte Price : </b>
+                        </p>
+                        <p>
+                          Rs.{" "}
+                          {(
+                            calculateTotalPrice() - calculateSubtotal()
+                          ).toFixed(2)}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="mr-2 ml-2 flex justify-between">
+                      <p>
+                        <b>Paybale Amount :</b>
+                      </p>
+                      <p>
+                        <b className=" text-red-600 text-xl">
+                          Rs. {calculateTotalPrice()}
+                        </b>
+                      </p>
+                    </div>
+
+                    <hr className="md-2 mt-2" />
+
+                    <div className="mt-4 flex gap-4">
+                      <Button color="blue" className="w-full">
+                        <HiCurrencyDollar className="h-4 w-4 mr-2" />
+                        Pay - Rs. {calculateTotalPrice()}
+                      </Button>
+                      <Button
+                        onClick={() => setShowModal(true)}
+                        color="red"
+                        className="w-full"
+                      >
+                        <HiXCircle className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </div>
+
+                    <hr className="md-2 mt-2" />
+                  </div>
+                </>
+              ) : (
+                <div className="mt-5 justify-between text-center "></div>
+              )}
             </>
           ) : (
-            <div className="mt-5 justify-between text-center "></div>
+            <>
+              {/* Customer selection dropdown */}
+              <Select value={selectedCustomer} onChange={handleCustomerChange}>
+                <option value="">Select a customer</option>
+                {customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.firstname + " " + customer.lastname}
+                  </option>
+                ))}
+              </Select>
+            </>
           )}
         </div>
       </div>
@@ -398,6 +502,31 @@ export default function DashPOS() {
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showModal1}
+        onClose={() => setShowModal1(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to clear the customer?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handeleClearCustomer}>
+                Yes, I'm sure
+              </Button>
+              <Button color="gray" onClick={() => setShowModal1(false)}>
                 No, cancel
               </Button>
             </div>
