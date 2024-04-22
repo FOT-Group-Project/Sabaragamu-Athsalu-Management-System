@@ -114,6 +114,15 @@ export default function DashPOS() {
       selectedProducts.filter((product) => product.id !== productId)
     );
   };
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    selectedProducts.forEach((product) => {
+      totalPrice += product.itemPrice * product.quantity;
+    });
+    return totalPrice;
+  };
+
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
@@ -283,8 +292,37 @@ export default function DashPOS() {
                 </Table>
               </>
             ) : (
-              <p>You have no store yet!</p>
+              <div className="mt-5 justify-between text-center text-gray-400 text-sm">
+                <p>You have not selected items yet!</p>
+              </div>
             )}
+          </div>
+          <div className="mt-5 justify-between text-center ">
+            <b>
+              <p>Totale Price</p>
+            </b>
+
+            <hr className="md-2 mt-2" />
+          </div>
+
+          <div className="mt-5  text-center ">
+            <div className="mr-2 ml-2 mb-3 flex justify-between">
+              <p>
+                <b>Sub Total :</b>
+              </p>
+              <p>Rs. {calculateTotalPrice()}</p>
+            </div>
+
+            <div className="mr-2 ml-2 flex justify-between">
+              <p>
+                <b>Paybale Amount :</b>
+              </p>
+              <p>
+                <b>Rs. {calculateTotalPrice()}</b>
+              </p>
+            </div>
+
+            <hr className="md-2 mt-2" />
           </div>
         </div>
       </div>
