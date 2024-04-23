@@ -23,6 +23,25 @@ function getUsers(req, res, next) {
     });
 }
 
+//get all sellers
+function getSellers(req, res, next) {
+  models.User.findAll({ where: { role: "Seller" } })
+    .then((sellers) => {
+      res.status(200).json({
+        success: true,
+        message: "Sellers retrieved successfully",
+        sellers: sellers,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
 function save(req, res) {
   const user = {
     firstname: req.body.firstname,
@@ -391,4 +410,5 @@ module.exports = {
   signout: signout,
   updateUserTable: updateUserTable,
   deleteUser: deleteUser,
+  getSellers: getSellers,
 };
