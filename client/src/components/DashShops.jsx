@@ -52,20 +52,6 @@ export default function DashShops() {
 
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
-  
-  const [seller, setSellers] = useState([]);
-
-  const fetchSeller = async () => {
-    try {
-      const res = await fetch(`/api/user/getsellers`);
-      const data = await res.json();
-      if (res.ok) {
-        setSellers(data.sellers);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   const fetchShops = async () => {
     try {
@@ -85,7 +71,6 @@ export default function DashShops() {
   useEffect(() => {
     if (currentUser.role == "Admin") {
       fetchShops();
-      fetchSeller();
     }
 
   }, [shops.id]);
@@ -175,8 +160,6 @@ export default function DashShops() {
     }
   };
 
- 
-
   return (
     <div className="p-3 w-full">
       <Breadcrumb aria-label="Default breadcrumb example">
@@ -259,26 +242,7 @@ export default function DashShops() {
                     onChange={handleChange}
                   />
                 </div>
-                <div>
-                  <div className="mb-2 block">
-                    <Label value="Select Seller" />
-                  </div>
-                  <Select
-                    id="sellerId"
-                    onChange={handleChange}
-                    required
-                    shadow
-                  >
-                    <option value="">Select Seller</option>
-                    {seller.map((seller) => (
-                      <option key={seller.id} value={seller.id}>
-                        {seller.firstname}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                </div>
-                  
+              </div>
 
               <div className="flex gap-2 justify-end">
                 <Button color="blue" type="submit" disabled={createLoding}>
