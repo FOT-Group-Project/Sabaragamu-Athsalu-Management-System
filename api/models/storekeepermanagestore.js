@@ -11,14 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // models.StoreKeeperManageStore.belongsTo(models.Store, {foreignKey: 'storeId'})
-      // models.StoreKeeperManageStore.belongsTo(models.StoreKeeper, {foreignKey: 'storeKeeperId'})
     }
   }
   StoreKeeperManageStore.init({
     date: DataTypes.DATE,
-    storeKeeperId: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'StoreKeeperManageStore',

@@ -11,13 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.hasMany(sequelize.define('Accountant'));
-      User.hasMany(sequelize.define('Admin'));
-      User.hasMany(sequelize.define('Customer'));
-      User.hasMany(sequelize.define('Director'));
-      User.hasMany(sequelize.define('QualityAssurance'));
-      User.hasMany(sequelize.define('Seller'));
-      User.hasMany(sequelize.define('StoreKeeper'));      
+      User.hasOne(models.Shop, {
+        foreignKey: 'sellerId',
+        as: 'seller',
+      });
     }
   }
   User.init({

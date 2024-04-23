@@ -12,15 +12,7 @@ module.exports = {
       newUnitPrice: {
         type: Sequelize.DOUBLE
       },
-      itemId: {
-        type: Sequelize.INTEGER
-      },
-      shopId: {
-        type: Sequelize.INTEGER
-      },
-      storeId: {
-        type: Sequelize.INTEGER
-      },
+     
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

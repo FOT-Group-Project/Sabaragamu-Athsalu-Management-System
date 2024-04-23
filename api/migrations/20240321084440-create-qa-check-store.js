@@ -15,12 +15,6 @@ module.exports = {
       report: {
         type: Sequelize.STRING
       },
-      qaId: {
-        type: Sequelize.INTEGER
-      },
-      storeId: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
