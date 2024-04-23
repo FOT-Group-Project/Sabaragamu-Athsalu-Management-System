@@ -1,11 +1,12 @@
 const models = require("../models");
 
+//Get the seller of a shop
 async function getSellerInfoShop(req, res) {
-  // Find shop with id and include the seller
-  const shop = await models.Shop.findOne({
-    where: {
-      id: 2,
-    },
+  // Get the shop id from the request
+  const shopId = req.params.shopId;
+
+  // Find the shop and include the seller
+  const shop = await models.Shop.findAll( {
     include: [
       {
         model: models.User,

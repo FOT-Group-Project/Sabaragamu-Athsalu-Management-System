@@ -54,6 +54,20 @@ export default function DashShops() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
 
+  const [seller, setSeller] = useState([]);
+
+  const fetchSellers = async () => {
+    try {
+      const res = await fetch(`/api/user/getsellers`);
+      const data = await res.json();
+      if (res.ok) {
+        setSeller(data.sellers);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const fetchShops = async () => {
     try {
       const res = await fetch(`/api/shop/getshops`);
@@ -72,6 +86,7 @@ export default function DashShops() {
   useEffect(() => {
     if (currentUser.role == "Admin") {
       fetchShops();
+      fetchSellers();
     }
   }, [shops.id]);
 
@@ -256,6 +271,25 @@ export default function DashShops() {
                           shadow
                           onChange={handleChange}
                         />
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Seller" />
+                        </div>
+                        <Select
+                          id="sellerId"
+                          onChange={handleChange}
+                          required
+                          shadow
+                        >
+                          <option value="">Select Seller</option>
+                          {seller.map((seller) => (
+                            <option key={seller.id} value={seller.id}>
+                              {seller.firstname}
+                            </option>
+                          ))}
+                        </Select>
+                    
                       </div>
                     </div>
 
