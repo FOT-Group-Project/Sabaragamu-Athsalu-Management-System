@@ -11,10 +11,12 @@ import {
   HiTable,
   HiUser,
   HiUsers,
+  HiColorSwatch,
 } from "react-icons/hi";
 import { HiBuildingStorefront } from "react-icons/hi2";
 import { FaShoppingBag } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
+import { motion } from "framer-motion";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -52,87 +54,107 @@ export default function DashSidebar() {
       aria-label="Sidebar with multi-level dropdown example"
       className="w-full md:w-56 "
     >
-      <Sidebar.Items>
-        <Sidebar.ItemGroup>
-          <Link to="/dashboard?tab=dash">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              active={tab === "dash"}
-              icon={HiChartPie}
-              labelColor="dark"
-              as="div"
-            >
-              Dashboard
-            </Sidebar.Item>
-          </Link>
-          <Link to="/dashboard?tab=profile">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              active={tab === "profile"}
-              icon={HiUser}
-              label={currentUser.role}
-              labelColor="dark"
-              as="div"
-            >
-              Profile
-            </Sidebar.Item>
-          </Link>
+      <motion.div
+        initial={{ x: -300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -300, opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Sidebar.Items>
+          <Sidebar.ItemGroup>
+            <Link to="/dashboard?tab=dash">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                active={tab === "dash"}
+                icon={HiChartPie}
+                labelColor="dark"
+                as="div"
+              >
+                Dashboard
+              </Sidebar.Item>
+            </Link>
 
-          <Link to="/dashboard?tab=users">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              icon={HiUsers}
-              active={tab === "users"}
-              as="div"
-            >
-              Users
-            </Sidebar.Item>
-          </Link>
+            <Link to="/dashboard?tab=pos">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                active={tab === "pos"}
+                icon={HiColorSwatch}
+                labelColor="dark"
+                as="div"
+              >
+                POS
+              </Sidebar.Item>
+            </Link>
 
-          <Link to="/dashboard?tab=products">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              icon={HiShoppingBag}
-              active={tab === "products"}
-            >
-              Products
-            </Sidebar.Item>
-          </Link>
+            <Link to="/dashboard?tab=profile">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                active={tab === "profile"}
+                icon={HiUser}
+                label={currentUser.role}
+                labelColor="dark"
+                as="div"
+              >
+                Profile
+              </Sidebar.Item>
+            </Link>
 
-          <Link to="/dashboard?tab=shops">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              icon={IoMdHome}
-              active={tab === "shops"}
-            >
-              Shops
-            </Sidebar.Item>
-          </Link>
+            <Link to="/dashboard?tab=users">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                icon={HiUsers}
+                active={tab === "users"}
+                as="div"
+              >
+                Users
+              </Sidebar.Item>
+            </Link>
 
-          <Link to="/dashboard?tab=stores">
-            <Sidebar.Item
-              className="mt-2 mb-2"
-              icon={HiBuildingStorefront}
-              active={tab === "stores"}
-            >
-              Stores
-            </Sidebar.Item>
-          </Link>
+            <Link to="/dashboard?tab=products">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                icon={HiShoppingBag}
+                active={tab === "products"}
+              >
+                Products
+              </Sidebar.Item>
+            </Link>
 
-          {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
+            <Link to="/dashboard?tab=shops">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                icon={IoMdHome}
+                active={tab === "shops"}
+              >
+                Shops
+              </Sidebar.Item>
+            </Link>
+
+            <Link to="/dashboard?tab=stores">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                icon={HiBuildingStorefront}
+                active={tab === "stores"}
+              >
+                Stores
+              </Sidebar.Item>
+            </Link>
+
+            {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
             Documents
           </Sidebar.Item> */}
 
-          <Link onClick={handleSignout}>
-            <Sidebar.Item
-              icon={HiArrowSmRight}
-              className="mt-2 mb-2 cursor-pointer"
-            >
-              Sign Out
-            </Sidebar.Item>
-          </Link>
-        </Sidebar.ItemGroup>
-      </Sidebar.Items>
+            <Link onClick={handleSignout}>
+              <Sidebar.Item
+                icon={HiArrowSmRight}
+                className="mt-2 mb-2 cursor-pointer"
+              >
+                Sign Out
+              </Sidebar.Item>
+            </Link>
+          </Sidebar.ItemGroup>
+        </Sidebar.Items>
+      </motion.div>
     </Sidebar>
   );
 }

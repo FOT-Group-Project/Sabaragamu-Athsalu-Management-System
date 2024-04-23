@@ -11,6 +11,7 @@ import {
 } from "react-icons/hi";
 import { Button, Table, Breadcrumb } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,13 @@ export default function DashboardComp() {
 
   return (
     <div className="p-3 w-full md:mx-auto">
+            <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5 }}
+        >
       <Breadcrumb aria-label="Default breadcrumb example">
         <Breadcrumb.Item href="#" icon={HiHome}>
           Home
@@ -187,6 +195,8 @@ export default function DashboardComp() {
           </Table>
         </div>
       </div>
+      </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
