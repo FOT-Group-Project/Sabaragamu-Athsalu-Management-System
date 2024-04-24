@@ -70,7 +70,7 @@ export default function DashShops() {
 
   const fetchShops = async () => {
     try {
-      const res = await fetch(`/api/shop/getshops`);
+      const res = await fetch(`/api/associations/getSellerInfoShop`);
       const data = await res.json();
       if (res.ok) {
         setShops(data.shops);
@@ -420,7 +420,7 @@ export default function DashShops() {
                   <TableHeadCell>Shop Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
-                  <TableHeadCell></TableHeadCell>
+                  <TableHeadCell>Seller Name</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -432,7 +432,7 @@ export default function DashShops() {
                       <TableCell>{shop.shopName}</TableCell>
                       <TableCell>{shop.address}</TableCell>
                       <TableCell>{shop.phone}</TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>{shop.seller.firstname}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button
