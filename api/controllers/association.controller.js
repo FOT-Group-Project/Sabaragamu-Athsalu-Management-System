@@ -16,7 +16,7 @@ async function getSellerInfoShop(req, res) {
   });
 
   res.status(200).json({
-    data: shop,
+    shops: shop,
   });
 }
 
