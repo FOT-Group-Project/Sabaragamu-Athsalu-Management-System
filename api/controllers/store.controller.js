@@ -28,6 +28,7 @@ function createStore(req, res) {
     storeName: req.body.storeName,
     phone: req.body.phone,
     address: req.body.address,
+    storeKeeperId: req.body.storeKeeperId,
   };
   models.Store.create(store)
     .then((data) => {
