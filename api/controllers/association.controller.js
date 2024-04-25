@@ -22,6 +22,26 @@ async function getSellerInfoShop(req, res) {
 }
 
 
+//Get the storeKeeper of a store
+async function getStoreKeeperInfoStore(req, res) {
+  // Get the store id from the request
+  const storeId = req.params.storeId;
+
+  // Find the store and include the storeKeeper
+  const store = await models.Store.findAll( {
+    include: [
+      {
+        model: models.User,
+        as: "storeKeeper",
+      },
+    ],
+  });
+
+  res.status(200).json({
+    stores: store,
+  });
+}
+ 
 //Get all shops with their sellers
 async function getAllShops(req, res) {
   // Find all shops and include the seller
@@ -42,4 +62,5 @@ async function getAllShops(req, res) {
 module.exports = {
   getSellerInfoShop: getSellerInfoShop,
   getAllShops: getAllShops,
+  getStoreKeeperInfoStore: getStoreKeeperInfoStore,
 };
