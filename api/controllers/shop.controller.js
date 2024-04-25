@@ -75,7 +75,8 @@ function updateShop(req,res){
     const shop = {
         shopName: req.body.shopName,
         phone: req.body.phone,
-        address: req.body.address
+        address: req.body.address,
+        sellerId: req.body.sellerId
     };
     models.Shop.update(shop, {
         where: {id: shopId}

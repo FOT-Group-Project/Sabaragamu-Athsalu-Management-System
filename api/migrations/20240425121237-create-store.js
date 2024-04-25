@@ -18,6 +18,9 @@ module.exports = {
       address: {
         type: Sequelize.STRING
       },
+      storeKeeperId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

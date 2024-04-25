@@ -1,3 +1,4 @@
+const { on } = require("nodemon");
 const models = require("../models");
 
 //Get the seller of a shop
@@ -19,6 +20,7 @@ async function getSellerInfoShop(req, res) {
     shops: shop,
   });
 }
+
 
 //Get all shops with their sellers
 async function getAllShops(req, res) {
