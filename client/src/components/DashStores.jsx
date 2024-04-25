@@ -208,15 +208,7 @@ export default function DashStores() {
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Stores
             </Button>
-            <Button
-              className="mb-3"
-              color="blue"
-              size="sm"
-              onClick={() => setOpenModal(true)}
-            >
-              <HiUserAdd className="mr-2 h-4 w-4" />
-              Assign Store Keeper
-            </Button>
+           
           </div>
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -387,6 +379,28 @@ export default function DashStores() {
                           value={formData.phone}
                         />
                       </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Store Keeper" />
+                        </div>                        
+                      
+                      <Select
+                        id="storeKeeperId"
+                        onChange={handleChange}
+                        required
+                        shadow
+                        defaultValue={formData.storeKeeperId}
+                        
+                      >
+                        <option value="">Select Store Keeper</option>
+                        {storeKeeper.map((storeKeeper) => (
+                          <option value={storeKeeper.id}>
+                            {storeKeeper.firstname}
+                          </option>
+                        ))}
+                      </Select>
+                      </div>
+
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
