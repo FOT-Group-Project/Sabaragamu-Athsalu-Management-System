@@ -54,9 +54,23 @@ export default function DashStores() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
 
+  const [storeKeeper, setStoreKeeper] = useState([]);
+
+  const fetchStoreKeeper = async () => {
+    try {
+      const res = await fetch(`/api/user/getstorekeepers`);
+      const data = await res.json();
+      if (res.ok) {
+        setStoreKeeper(data.storekeepers);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/store/getstores`);
+      const res = await fetch(`/api/associations/getStoreKeeperInfoStore`);
       const data = await res.json();
       if (res.ok) {
         setStores(data.stores);
@@ -72,6 +86,7 @@ export default function DashStores() {
   useEffect(() => {
     if (currentUser.role == "Admin") {
       fetchStores();
+      fetchStoreKeeper();
     }
   }, [stores.id]);
 
@@ -193,15 +208,7 @@ export default function DashStores() {
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Stores
             </Button>
-            <Button
-              className="mb-3"
-              color="blue"
-              size="sm"
-              onClick={() => setOpenModal(true)}
-            >
-              <HiUserAdd className="mr-2 h-4 w-4" />
-              Assign Store Keeper
-            </Button>
+           
           </div>
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -250,7 +257,7 @@ export default function DashStores() {
                       </div>
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Store Phone Number" />
+                          <Label value="Phone Number" />
                         </div>
                         <TextInput
                           id="phone"
@@ -261,6 +268,26 @@ export default function DashStores() {
                           onChange={handleChange}
                         />
                       </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Store Keeper" />
+                        </div>                        
+                      
+                      <Select
+                        id="storeKeeperId"
+                        onChange={handleChange}
+                        required
+                        shadow
+                      >
+                        <option value="">Select Store Keeper</option>
+                        {storeKeeper.map((storeKeeper) => (
+                          <option value={storeKeeper.id}>
+                            {storeKeeper.firstname}
+                          </option>
+                        ))}
+                      </Select>
+                      </div>
+
                     </div>
 
                     <div className="flex gap-2 justify-end">
@@ -352,6 +379,28 @@ export default function DashStores() {
                           value={formData.phone}
                         />
                       </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Store Keeper" />
+                        </div>                        
+                      
+                      <Select
+                        id="storeKeeperId"
+                        onChange={handleChange}
+                        required
+                        shadow
+                        defaultValue={formData.storeKeeperId}
+                        
+                      >
+                        <option value="">Select Store Keeper</option>
+                        {storeKeeper.map((storeKeeper) => (
+                          <option value={storeKeeper.id}>
+                            {storeKeeper.firstname}
+                          </option>
+                        ))}
+                      </Select>
+                      </div>
+
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
@@ -390,7 +439,7 @@ export default function DashStores() {
                   <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
-                  <TableHeadCell></TableHeadCell>
+                  <TableHeadCell>Store Keeper Name</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -402,7 +451,7 @@ export default function DashStores() {
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>{store.storeKeeper.firstname}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button

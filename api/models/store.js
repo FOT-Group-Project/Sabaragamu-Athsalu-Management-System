@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Store.belongsTo(models.User, {
+        foreignKey: 'storeKeeperId',
+        as: 'storeKeeper',
+      });
     }
   }
   Store.init({

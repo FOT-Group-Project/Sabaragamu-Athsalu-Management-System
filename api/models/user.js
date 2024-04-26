@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         as: 'seller',
         onDelete: 'RESTRICT',
       });
-      
     }
   }
   User.init({

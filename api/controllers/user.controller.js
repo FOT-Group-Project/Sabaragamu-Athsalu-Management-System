@@ -42,6 +42,26 @@ function getSellers(req, res, next) {
     });
 }
 
+//get all storekeepers
+function getStorekeepers(req, res, next) {  
+  models.User.findAll({ where: { role: "Storekeeper" } })
+    .then((storekeepers) => {
+      res.status(200).json({
+        success: true,
+        message: "Storekeepers retrieved successfully",
+        storekeepers: storekeepers,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
+
 function save(req, res) {
   const user = {
     firstname: req.body.firstname,
@@ -417,4 +437,5 @@ module.exports = {
   updateUserTable: updateUserTable,
   deleteUser: deleteUser,
   getSellers: getSellers,
+  getStorekeepers: getStorekeepers,
 };

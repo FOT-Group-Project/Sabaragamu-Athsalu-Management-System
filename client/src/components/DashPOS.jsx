@@ -230,14 +230,17 @@ export default function DashPOS() {
 
           <div className="mt-4 min-h-screen flex flex-col md:flex-row">
             <div className="md:w-2/3 mr-5">
-              <TextInput
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Search products..."
-                className="w-1/3 mb-3"
-                size="sm"
-              />
+              <div className="flex items-center justify-end">
+                <div className="flex items-center">
+                  <TextInput
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search products"
+                    className="w-72 h-10"
+                  />
+                </div>
+              </div>
+
               {showAlert && (
                 <Alert color="failure" icon={HiInformationCircle}>
                   <span className="font-medium">Info alert!</span> Product

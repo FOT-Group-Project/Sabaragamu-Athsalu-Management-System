@@ -12,5 +12,6 @@ router.post("/signout", userController.signout);
 router.delete("/deleteuser/:userId", verifyToken, userController.deleteUser);
 router.put("/updateuser/:userId", verifyToken, userController.updateUserTable);
 router.get("/getsellers", verifyToken, userController.getSellers);
+router.get("/getstorekeepers", verifyToken, userController.getStorekeepers);
 
 module.exports = router;
