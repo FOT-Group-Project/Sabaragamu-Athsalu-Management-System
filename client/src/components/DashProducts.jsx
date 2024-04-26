@@ -45,6 +45,7 @@ export default function DashProducts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [productIdToDelete, setproductIdToDelete] = useState("");
+  const [stores, setStores] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -69,8 +70,21 @@ export default function DashProducts() {
     }
   };
 
+  const fetchStore = async () => {
+    try {
+      const res = await fetch(`/api/store/getstores`);
+      const data = await res.json();
+      if (res.ok) {
+        setStores(data.stores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchStore();
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -196,7 +210,11 @@ export default function DashProducts() {
             </Button>
           </div>
 
-          <Modal show={openModal} onClose={() => setOpenModal(false)}>
+          <Modal
+            show={openModal}
+            onClose={() => setOpenModal(false)}
+            size="4xl"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -229,6 +247,20 @@ export default function DashProducts() {
                       </div>
                       <div>
                         <div className="mb-2 block">
+                          <Label value="SKU" />
+                        </div>
+                        <TextInput
+                          id="sku"
+                          type="text"
+                          placeholder="PHS-001"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
                           <Label value="Product Type" />
                         </div>
                         <TextInput
@@ -253,9 +285,37 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Product Price" />
+                          <Label value="Store" />
+                        </div>
+                        <Select id="storeId" onChange={handleChange}>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Quantity" />
+                        </div>
+                        <TextInput
+                          id="itemQuantity"
+                          type="number"
+                          placeholder="100"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Price" />
                         </div>
                         <TextInput
                           id="itemPrice"
