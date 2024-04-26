@@ -373,7 +373,7 @@ export default function DashProducts() {
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
-                    <div className="flex gap-5 mb-4">
+                    <div className="flex gap-5">
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Name" />
@@ -385,9 +385,24 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemName}
+                          defaultValue={formData.itemName}
                         />
                       </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="SKU" />
+                        </div>
+                        <TextInput
+                          id="sku"
+                          type="text"
+                          placeholder="PHS-001"
+                          required
+                          shadow
+                          onChange={handleChange}
+                          defaultValue={formData.sku}
+                        />
+                      </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Type" />
@@ -399,9 +414,10 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemType}
+                          defaultValue={formData.itemType}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Manufacturer" />
@@ -413,12 +429,46 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.manufacturer}
+                          defaultValue={formData.manufacturer}
                         />
                       </div>
+                    </div>
+
+                    <div className="flex gap-5 mb-4">
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Product Price" />
+                          <Label value="Store" />
+                        </div>
+                        <Select id="storeId" onChange={handleChange}
+                          defaultValue={formData.storeId}
+                        >
+
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Quantity" />
+                        </div>
+                        <TextInput
+                          id="itemQuantity"
+                          type="number"
+                          placeholder="100"
+                          required
+                          shadow
+                          onChange={handleChange}
+                          defaultValue={formData.itemQuantity}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Price" />
                         </div>
                         <TextInput
                           id="itemPrice"
@@ -427,10 +477,11 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemPrice}
+                          defaultValue={formData.itemPrice}
                         />
                       </div>
                     </div>
+
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"

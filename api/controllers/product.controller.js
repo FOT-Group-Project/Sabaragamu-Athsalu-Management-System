@@ -107,6 +107,9 @@ function updateProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
+    sku: req.body.sku,
+    storeId: req.body.storeId,
+    itemQuantity: req.body.itemQuantity,
   };
 
   //Validation of the request
@@ -115,17 +118,20 @@ function updateProduct(req, res) {
     itemType: { type: "string", optional: false, max: "100" },
     manufacturer: { type: "string", optional: false, max: "100" },
     itemPrice: { type: "string", optional: false },
+    sku: { type: "string", optional: false, max: "100" },
+    storeId: { type: "string", optional: false },
+    itemQuantity: { type: "string", optional: false },
   };
 
   const v = new Validator();
   const validationResponse = v.validate(updatedProduct, schema);
 
-  if (validationResponse !== true) {
-    return res.status(400).json({
-      message: "Validation failed",
-      errors: validationResponse,
-    });
-  }
+  // if (validationResponse !== true) {
+  //   return res.status(400).json({
+  //     message: "Validation failed for the input data provided",
+  //     errors: validationResponse,
+  //   });
+  // }
 
   models.Product.update(updatedProduct, { where: { id: id } })
     .then((result) => {
