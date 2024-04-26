@@ -14,7 +14,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   StoreKeeperManageStore.init({
-    date: DataTypes.DATE,
+    storeKeeperId: DataTypes.INTEGER,
+    storeId: DataTypes.INTEGER,
+    date: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'StoreKeeperManageStore',

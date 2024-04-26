@@ -9,6 +9,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      shopId: {
+        type: Sequelize.INTEGER
+      },
+      itemId: {
+        type: Sequelize.INTEGER
+      },
       date: {
         type: Sequelize.DATE
       },
@@ -18,7 +24,6 @@ module.exports = {
       reason: {
         type: Sequelize.STRING
       },
-      
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
