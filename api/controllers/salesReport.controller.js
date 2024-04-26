@@ -64,7 +64,25 @@ function save(req, res){
 }
 
 function showSalesReport(req, res) {
-  models.CustomerBuyItem.findAll()
+  models.CustomerBuyItem.findAll({
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
     .then((result) => {
       res.status(200).json({
         success: true,

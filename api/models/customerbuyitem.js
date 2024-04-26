@@ -12,17 +12,17 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association of CustomerBuyItem with User
       CustomerBuyItem.belongsTo(models.User, {
-        foreignKey: 'id',
+        foreignKey: 'customerId',
         as: 'Customer',
       });
       // define association of CustomerBuyItem with Shop
       CustomerBuyItem.belongsTo(models.Shop, {
-        foreignKey: 'id',
+        foreignKey: 'shopId',
         as: 'Shop',
       });
       // define association of CustomerBuyItem with Item
       CustomerBuyItem.belongsTo(models.Product, {
-        foreignKey: 'id',
+        foreignKey: 'itemId',
         as: 'Product',
       });
     }
