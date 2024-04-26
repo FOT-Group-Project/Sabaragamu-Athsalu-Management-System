@@ -2,18 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('StoreSendToShops', {
+    await queryInterface.createTable('QaCheckStores', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      qaId: {
+        type: Sequelize.INTEGER
+      },
+      storeId: {
+        type: Sequelize.INTEGER
+      },
       date: {
         type: Sequelize.DATE
       },
-      quantity: {
-        type: Sequelize.INTEGER
+      report: {
+        type: Sequelize.BLOB
       },
       createdAt: {
         allowNull: false,
@@ -26,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('StoreSendToShops');
+    await queryInterface.dropTable('QaCheckStores');
   }
 };
