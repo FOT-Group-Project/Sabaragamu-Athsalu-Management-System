@@ -34,6 +34,7 @@ import "react-circular-progressbar/dist/styles.css";
 import Profile from "../assets/add-pic.png";
 import {
   HiOutlineExclamationCircle,
+  HiInformationCircle,
   HiPlusCircle,
   HiUserAdd,
 } from "react-icons/hi";
@@ -45,6 +46,7 @@ export default function DashUsers() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -238,6 +240,12 @@ export default function DashUsers() {
   };
 
   const handleDeleteUser = async () => {
+    if (currentUser.id === userIdToDelete) {
+      setShowAlert(true);
+      setShowModal(false);
+      return;
+    }
+
     try {
       const res = await fetch(`/api/user/deleteuser/${userIdToDelete}`, {
         method: "DELETE",
@@ -714,6 +722,13 @@ export default function DashUsers() {
               </Modal.Body>
             </motion.div>
           </Modal>
+
+          {showAlert && (
+            <Alert className="mb-3" color="failure" icon={HiInformationCircle}>
+              <span className="font-medium">Info alert!</span> You can't delete
+              user account you are currently logged in.
+            </Alert>
+          )}
 
           {currentUser.role == "Admin" && users.length > 0 ? (
             <>
