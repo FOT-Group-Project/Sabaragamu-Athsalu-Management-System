@@ -9,6 +9,9 @@ function addProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
+    sku: req.body.sku,
+    storeId: req.body.storeId,
+    itemQuantity: req.body.itemQuantity,
   };
 
   //Validation of the request
@@ -67,7 +70,14 @@ function getProduct(req, res) {
 
 //Get all Products
 function getAllProducts(req, res) {
-  models.Product.findAll()
+  models.Product.findAll({
+    include: [
+      {
+        model: models.Store,
+        as: "store",
+      },
+    ],
+  })
     .then((result) => {
       if (result) {
         res.status(200).json({

@@ -210,11 +210,7 @@ export default function DashProducts() {
             </Button>
           </div>
 
-          <Modal
-            show={openModal}
-            onClose={() => setOpenModal(false)}
-            size="4xl"
-          >
+          <Modal show={openModal} onClose={() => setOpenModal(false)}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -231,7 +227,7 @@ export default function DashProducts() {
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
-                    <div className="flex gap-5 mb-4">
+                    <div className="flex gap-5">
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Name" />
@@ -272,6 +268,7 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Manufacturer" />
@@ -285,7 +282,9 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
+                    </div>
 
+                    <div className="flex gap-5 mb-4">
                       <div>
                         <div className="mb-2 block">
                           <Label value="Store" />
@@ -465,10 +464,12 @@ export default function DashProducts() {
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
-                  <TableHeadCell>Product ID</TableHeadCell>
                   <TableHeadCell>Product Name</TableHeadCell>
+                  <TableHeadCell>SKU</TableHeadCell>
                   <TableHeadCell>Type</TableHeadCell>
                   <TableHeadCell>Manufacturer</TableHeadCell>
+                  <TableHeadCell>Store Name</TableHeadCell>
+                  <TableHeadCell>Quantity</TableHeadCell>
                   <TableHeadCell>Price</TableHeadCell>
                   <TableHeadCell></TableHeadCell>
                   <TableHeadCell>
@@ -478,10 +479,14 @@ export default function DashProducts() {
                 {products.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell>PR:{product.id}</TableCell>
-                      <TableCell>{product.itemName}</TableCell>
+                      <TableCell>
+                        <b>{product.itemName}</b>
+                      </TableCell>
+                      <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
+                      <TableCell>{product.store.storeName}</TableCell>
+                      <TableCell>{product.itemQuantity}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
