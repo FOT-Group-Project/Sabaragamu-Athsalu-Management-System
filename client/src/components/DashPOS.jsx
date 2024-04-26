@@ -229,15 +229,8 @@ export default function DashPOS() {
     </h1> */}
 
           <div className="mt-4 min-h-screen flex flex-col md:flex-row">
-
             <div className="md:w-2/3 mr-5">
-             
-            
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <HiUserAdd className="h-6 w-6 text-gray-400" />
-                  <h1 className="ml-2 text-lg font-semibold">Point of Sale</h1>
-                </div>
+              <div className="flex items-center justify-end">
                 <div className="flex items-center">
                   <TextInput
                     value={searchQuery}
@@ -245,13 +238,8 @@ export default function DashPOS() {
                     placeholder="Search products"
                     className="w-72 h-10"
                   />
-
+                </div>
               </div>
-
-</div>
-             
-
-        
 
               {showAlert && (
                 <Alert color="failure" icon={HiInformationCircle}>
