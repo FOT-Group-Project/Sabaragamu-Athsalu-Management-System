@@ -44,6 +44,7 @@ export default function DashUsers() {
   const [users, setUsers] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showModalDeletelock, setShowModalDeletelock] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState("");
 
   const [openModal, setOpenModal] = useState(false);
@@ -61,6 +62,8 @@ export default function DashUsers() {
 
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
+
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const filePickerRef = useRef();
 
@@ -243,11 +246,17 @@ export default function DashUsers() {
         method: "DELETE",
       });
       const data = await res.json();
+      if(res.status == 400) {
+        setShowModalDeletelock(true);
+        setErrorMessage(data.message);
+        setShowModal(false);
+      }
       if (res.ok) {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
-      } else {
+      }
+      else {
         console.log(data.message);
       }
     } catch (error) {
@@ -810,6 +819,34 @@ export default function DashUsers() {
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>
                       No, cancel
+                    </Button>
+                  </div>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+          <Modal
+            show={showModalDeletelock}
+            onClose={() => setShowModalDeletelock(false)}
+            popup
+            size="md"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header />
+              <Modal.Body>
+                <div className="text-center">
+                  <HiOutlineExclamationCircle className="h-14 w-14 text-yellow-400 dark:text-gray-200 mb-4 mx-auto" />
+                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                    {errorMessage}
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    <Button color="blue" onClick={() => setShowModalDeletelock(false)}>
+                      Okay
                     </Button>
                   </div>
                 </div>
