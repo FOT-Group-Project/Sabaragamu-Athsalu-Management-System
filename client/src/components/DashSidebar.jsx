@@ -140,16 +140,6 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/dashboard?tab=reports">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={HiTable}
-                active={tab === "reports"}
-              >
-                Reports
-              </Sidebar.Item>
-            </Link>
-
             {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
             Documents
           </Sidebar.Item> */}
