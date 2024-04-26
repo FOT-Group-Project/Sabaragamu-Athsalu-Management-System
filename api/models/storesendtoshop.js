@@ -14,8 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   StoreSendToShop.init({
+    storeId: DataTypes.INTEGER,
+    shopId: DataTypes.INTEGER,
+    itemId: DataTypes.INTEGER,
     date: DataTypes.DATE,
-    quantity: DataTypes.INTEGER,
+    quantity: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'StoreSendToShop',

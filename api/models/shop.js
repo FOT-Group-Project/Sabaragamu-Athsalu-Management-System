@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Shop.belongsTo(models.User, {
         foreignKey: 'sellerId',
         as: 'seller',
+        onDelete: 'RESTRICT',
       });
     }
   }
