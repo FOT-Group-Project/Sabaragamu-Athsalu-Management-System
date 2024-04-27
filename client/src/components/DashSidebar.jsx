@@ -12,7 +12,8 @@ import {
   HiUser,
   HiUsers,
   HiColorSwatch,
-  HiClipboardList
+  HiClipboardList,
+  HiSortAscending,
 } from "react-icons/hi";
 import { HiBuildingStorefront } from "react-icons/hi2";
 import { FaShoppingBag } from "react-icons/fa";
@@ -88,6 +89,7 @@ export default function DashSidebar() {
                     POS
                   </Sidebar.Item>
                 </Link>
+
                 <Link to="/dashboard?tab=invetory">
                   <Sidebar.Item
                     className="mt-2 mb-2"
@@ -97,6 +99,18 @@ export default function DashSidebar() {
                     as="div"
                   >
                     Invetory
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=invetory">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    active={tab === "pos"}
+                    icon={HiSortAscending}
+                    labelColor="dark"
+                    as="div"
+                  >
+                    Send Stock
                   </Sidebar.Item>
                 </Link>
               </>
