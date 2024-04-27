@@ -59,6 +59,11 @@ export default function DashSellerSendStock() {
     0
   );
 
+  // Calculate total price
+  const totalPrice = selectedProducts.reduce((total, product) => {
+    return total + product.item.itemPrice * product.quantity;
+  }, 0);
+
   // Function to handle search query change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -418,6 +423,13 @@ export default function DashSellerSendStock() {
                                 <b>Number of Products :</b>
                               </p>
                               <p>{selectedProducts.length}</p>
+                            </div>
+
+                            <div className="mr-2 ml-2 mb-3 flex justify-between">
+                              <p>
+                                <b>Total Price :</b>
+                              </p>
+                              <p>Rs {totalPrice}</p>
                             </div>
 
                             <div className="mr-2 ml-2 flex justify-between">
