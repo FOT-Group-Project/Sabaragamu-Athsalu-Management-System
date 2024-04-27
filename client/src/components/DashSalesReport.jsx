@@ -89,6 +89,34 @@ export default function DashSalesReport() {
                 <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
                     All Sales
                 </h1>
+
+                {currentUser.role == "Admin" && sales.length > 0 ? (
+                    <>
+                        <Table hoverable className="shadow-md w-full">
+                            <TableHead>
+                                <TableHeadCell>Customer</TableHeadCell>
+                                <TableHeadCell>Product</TableHeadCell>
+                                <TableHeadCell>Shop</TableHeadCell>
+                                <TableHeadCell>Quantity</TableHeadCell>
+                                <TableHeadCell>Amount</TableHeadCell>
+                                <TableHeadCell>Date</TableHeadCell>
+                            </TableHead>
+                            {sales.map((sale)=>(
+                                <Table.Body className="divide-y" key={sale.id}>
+                                    <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                        <TableCell>{sale.Product.itemName}</TableCell>
+                                        <TableCell>{sale.Shop.shopName}</TableCell>
+                                        <TableCell>{sale.quantity}</TableCell>
+                                        <TableCell>{sale.amount}</TableCell>
+                                        <TableCell>{sale.createdAt}</TableCell>
+                                    </TableRow>
+                                </Table.Body>
+                            ))} 
+                        </Table>
+                    </>
+                ) : (
+                    <p>You have no Sales yet!</p>
+                )}
             </motion.div>
             </AnimatePresence>
         </div>
