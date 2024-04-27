@@ -94,26 +94,31 @@ export default function DashSalesReport() {
                     <>
                     <Table hoverable className="shadow-md w-full">
                         <TableHead>
-                            <TableHeadCell>Customer ID</TableHeadCell>
-                            <TableHeadCell>Item ID</TableHeadCell>
-                            <TableHeadCell>Shop ID</TableHeadCell>
+                            <TableHeadCell>Customer Name</TableHeadCell>
+                            <TableHeadCell>Item Name</TableHeadCell>
+                            <TableHeadCell>Shop Name</TableHeadCell>
                             <TableHeadCell>buy Date Time</TableHeadCell>
                             <TableHeadCell>Unit Price</TableHeadCell>
                             <TableHeadCell>Type</TableHeadCell>
                             <TableHeadCell>Quantity</TableHeadCell>
-                            <TableHeadCell>Due Amount</TableHeadCell>
+                            <TableHeadCell>Amount Paid</TableHeadCell>
+                            {/* <TableHeadCell>Due Amount</TableHeadCell> */}
+                            {/* <TableHeadCell>Total Amount</TableHeadCell> */}
                         </TableHead>
                         {sales.map((sale) => (
                         <Table.Body key={sale.id} className="divide-y">
                             <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                <TableCell>{sale.customerId}</TableCell>
-                                <TableCell>{sale.itemId}</TableCell>
-                                <TableCell>{sale.shopId}</TableCell>
+                                <TableCell>{sale.Customer.firstname}</TableCell>
+                                <TableCell>{sale.Product.itemName}</TableCell>
+                                <TableCell>{sale.Shop.shopName}</TableCell>
                                 <TableCell>{sale.buyDateTime}</TableCell>
                                 <TableCell>{sale.unitPrice}</TableCell>
                                 <TableCell>{sale.type}</TableCell>
                                 <TableCell>{sale.quantity}</TableCell>
-                                <TableCell>{sale.dueAmount}</TableCell>
+                                <TableCell>
+                                    {sale.unitPrice * sale.quantity}
+                                </TableCell>
+                                {/* <TableCell>{sale.dueAmount}</TableCell> */}
                             </TableRow>
                         </Table.Body>
                     ))}
