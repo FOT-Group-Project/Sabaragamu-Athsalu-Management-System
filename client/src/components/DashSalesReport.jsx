@@ -122,14 +122,21 @@ export default function DashSalesReport() {
             'Unit Price': sale.unitPrice,
             'Amount Paid': sale.unitPrice * sale.quantity
         }));
-
+    
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    
+        // Get current date and time
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().replace(/[-T:\.Z]/g, '');
+    
+        const fileName = `SalesReport_${formattedDate}${fileExtension}`;
         const data = new Blob([excelBuffer], { type: fileType });
-        const fileName = 'SalesReport' + fileExtension;
+    
         saveAs(data, fileName); // Use saveAs function from file-saver
     };
+    
 
 
     return (
