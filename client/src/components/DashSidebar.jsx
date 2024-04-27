@@ -140,9 +140,11 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
-            Documents
-          </Sidebar.Item> */}
+            <Sidebar.Item 
+            className="mt-2 mb-2" 
+            icon={HiTable}>
+              Sales Report
+            </Sidebar.Item>
 
             <Link onClick={handleSignout}>
               <Sidebar.Item
