@@ -102,7 +102,7 @@ export default function DashSidebar() {
                   </Sidebar.Item>
                 </Link>
 
-                <Link to="/dashboard?tab=invetory">
+                <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
                     active={tab === "pos"}
