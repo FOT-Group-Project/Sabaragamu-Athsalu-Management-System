@@ -47,6 +47,37 @@ function addProduct(req, res) {
     });
 }
 
+//Add Products
+function addProducts(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const products = req.body.map(product => ({
+    itemName: product.itemName,
+    itemType: product.itemType,
+    manufacturer: product.manufacturer,
+    itemPrice: product.itemPrice,
+    sku: product.sku,
+    storeId: product.storeId,
+    itemQuantity: product.itemQuantity
+  }));
+
+  models.Product.bulkCreate(products)
+    .then((result) => {
+      res.status(201).json({
+        message: "Products added successfully",
+        products: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding products",
+        error: error,
+      });
+    });
+}
+
 //Get Product by PK
 function getProduct(req, res) {
   const id = req.params.id;
@@ -183,4 +214,5 @@ module.exports = {
   getAllProducts: getAllProducts,
   updateProduct: updateProduct,
   deleteProduct: deleteProduct,
+  addProducts: addProducts,
 };
