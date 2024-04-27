@@ -68,7 +68,7 @@ export default function DashSalesReport() {
     return (
         <div className="p-3 w-full">
             <Link to="/dashboard?tab=dash">Home</Link>
-            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report Dashboard</h1>
+            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report</h1>
             <div className="flex items-center justify-end">
                 <div className="flex items-center">
                     <TextInput
