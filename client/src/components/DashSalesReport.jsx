@@ -35,6 +35,7 @@ export default function DashSalesReport() {
 
     // Filter sales based on search query and selected date
     const filterSales = () => {
+        const aggregatedSales = {};
         const filtered = sales.filter((sale) => {
             const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
             const matchesSearch = sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase());
@@ -42,12 +43,31 @@ export default function DashSalesReport() {
             return matchesSearch && isInDateRange;
         });
 
+        // Aggregate sales by itemId
+        filtered.forEach((sale) => {
+            const { itemId, quantity, unitPrice } = sale;
+            if (aggregatedSales[itemId]) {
+                aggregatedSales[itemId].quantity += quantity;
+                aggregatedSales[itemId].amountPaid += quantity * unitPrice;
+            } else {
+                aggregatedSales[itemId] = {
+                    itemId,
+                    productName: sale.Product.itemName,
+                    type: sale.type,
+                    quantity,
+                    unitPrice,
+                    amountPaid: quantity * unitPrice,
+                };
+            }
+        });
+
         // Calculate the total sale amount
-        const totalAmount = filtered.reduce((acc, sale) => acc + sale.unitPrice * sale.quantity, 0);
+        const totalAmount = Object.values(aggregatedSales).reduce((acc, sale) => acc + sale.amountPaid, 0);
         setTotalSaleAmount(Number(totalAmount.toFixed(2)));
-        
-        setFilteredSales(filtered);
+
+        setFilteredSales(Object.values(aggregatedSales));
     };
+
 
     // Clear filters
     const clearFilters = () => {
@@ -73,11 +93,13 @@ export default function DashSalesReport() {
         }
     };
 
+   
     useEffect(() => {
         if (currentUser.role === "Admin") {
             fetchSales();
         }
     }, []);
+    
 
     useEffect(() => {
         if (sales.length > 0) {
@@ -136,7 +158,7 @@ export default function DashSalesReport() {
                             {filteredSales.map((sale) => (
                                 <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                     <TableCell>{sale.itemId}</TableCell>
-                                    <TableCell>{sale.Product.itemName}</TableCell>
+                                    <TableCell>{sale.productName}</TableCell>
                                     <TableCell>{sale.type}</TableCell>
                                     <TableCell>{sale.quantity}</TableCell>
                                     <TableCell>Rs. {sale.unitPrice}</TableCell>
