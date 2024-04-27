@@ -74,7 +74,22 @@ export default function DashSalesReport() {
     return(
         <div className="p-3 w-full">
             <AnimatePresence>
-                
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Breadcrumb aria-label="Default breadcrumb example">
+                    <Breadcrumb.Item href="#" icon={HiHome}>
+                    Home
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>Shops</Breadcrumb.Item>
+                </Breadcrumb>
+                <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+                    All Sales
+                </h1>
+            </motion.div>
             </AnimatePresence>
         </div>
     );
