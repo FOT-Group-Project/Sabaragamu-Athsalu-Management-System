@@ -316,27 +316,28 @@ export default function DashProfile() {
                 <div>
                   <div className="mb-2 block">
                     <Label value="Password" />
-                  </div >
+                  </div>
                   <div className="flex items-center">
-                  <TextInput
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    defaultValue={currentUser.password}
-                    required
-                    shadow
-                    onChange={handleChange}
-                  />
-                  
-                  <Button
-                    type="button"
-                    color="light"
-                    onClick={togglePasswordVisibility}
-                    className="ml-1"
-                  >
-                    {showPassword ? <HiEyeOff /> : <HiEye />}
-                  </Button>
-                </div>
+                    <TextInput
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      defaultValue={currentUser.password}
+                      required
+                      shadow
+                      onChange={handleChange}
+                     
+                    />
+
+                    <Button
+                      type="button"
+                      color="light"
+                      onClick={togglePasswordVisibility}
+                      className="ml-1"
+                    >
+                      {showPassword ? <HiEyeOff /> : <HiEye />}
+                    </Button>
+                  </div>
                 </div>
               </div>
 

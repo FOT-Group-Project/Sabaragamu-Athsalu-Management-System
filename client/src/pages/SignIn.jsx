@@ -55,6 +55,7 @@ export default function SignIn() {
       } else if (res.ok) {
         // Only dispatch success if response is ok
         dispatch(signInSuccess(data));
+
         navigate("/dashboard?tab=dash");
       }
     } catch (error) {
