@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
 import { useSelector } from "react-redux";
-
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function DashSalesReport() {
     const { currentUser } = useSelector((state) => state.user);
@@ -29,7 +29,8 @@ export default function DashSalesReport() {
     };
 
     // Filter sales based on search query and selected date
-    const filterSales = sales.filter((sale) => {
+    // Filter sales based on search query and selected date
+    const filterSales = sales.filter((sale, index, self) => {
         const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
         const matchesSearch = (
             sale.Customer.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,8 +38,17 @@ export default function DashSalesReport() {
             sale.Shop.shopName.toLowerCase().includes(searchQuery.toLowerCase())
         );
         const matchesDate = !selectedDate || saleDate === selectedDate.toLocaleDateString('en-CA');
-        return matchesSearch && matchesDate;
+
+        // Check if the current sale has the same customer ID, shop ID, and datetime as any previous sale
+        const isUnique = self.findIndex((s) => 
+            s.Customer.id === sale.Customer.id && 
+            s.Shop.id === sale.Shop.id && 
+            new Date(s.buyDateTime).toLocaleString() === new Date(sale.buyDateTime).toLocaleString()
+        ) === index;
+
+        return matchesSearch && matchesDate && isUnique;
     });
+
 
     const fetchSales = async () => {
         try {
@@ -83,24 +93,24 @@ export default function DashSalesReport() {
                     <Table hoverable className="shadow-md w-full">
                         <TableHead>
                             <TableHeadCell>Customer Name</TableHeadCell>
-                            <TableHeadCell>Item Name</TableHeadCell>
+                            {/* <TableHeadCell>Item Name</TableHeadCell> */}
                             <TableHeadCell>Shop Name</TableHeadCell>
                             <TableHeadCell>Buy Date Time</TableHeadCell>
-                            <TableHeadCell>Unit Price</TableHeadCell>
+                            {/* <TableHeadCell>Unit Price</TableHeadCell>
                             <TableHeadCell>Type</TableHeadCell>
-                            <TableHeadCell>Quantity</TableHeadCell>
+                            <TableHeadCell>Quantity</TableHeadCell> */}
                             <TableHeadCell>Amount Paid</TableHeadCell>
                         </TableHead>
                         <TableBody>
                             {filterSales.map((sale) => (
                                 <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800" onClick={() => handleRowClick(sale)}>
                                     <TableCell>{sale.Customer.firstname}</TableCell>
-                                    <TableCell>{sale.Product.itemName}</TableCell>
+                                    {/* <TableCell>{sale.Product.itemName}</TableCell> */}
                                     <TableCell>{sale.Shop.shopName}</TableCell>
                                     <TableCell>{new Date(sale.buyDateTime).toLocaleString()}</TableCell>
-                                    <TableCell>Rs. {sale.unitPrice}</TableCell>
+                                    {/* <TableCell>Rs. {sale.unitPrice}</TableCell>
                                     <TableCell>{sale.type}</TableCell>
-                                    <TableCell>{sale.quantity}</TableCell>
+                                    <TableCell>{sale.quantity}</TableCell> */}
                                     <TableCell>Rs. {sale.unitPrice * sale.quantity}</TableCell>
                                 </TableRow>
                             ))}
@@ -110,29 +120,6 @@ export default function DashSalesReport() {
                     <p>No sales match your search criteria!</p>
                 )}
             </div>
-            {selectedBill && (
-                <div>
-                    <h2>Bill Details</h2>
-                    <p>Customer ID: {selectedBill.customerId}</p>
-                    <p>Shop ID: {selectedBill.shopId}</p>
-                    <p>Date Time: {selectedBill.buyDateTime}</p>
-                    <h3>Items</h3>
-                    <Table hoverable className="shadow-md w-full">
-                        <TableHead>
-                            <TableHeadCell>Item Name</TableHeadCell>
-                            <TableHeadCell>Quantity</TableHeadCell>
-                        </TableHead>
-                        <TableBody>
-                            {selectedBill.items.map((item, index) => (
-                                <TableRow key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                    <TableCell>{item.itemName}</TableCell>
-                                    <TableCell>{item.quantity}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            )}
         </div>
     );
 }
