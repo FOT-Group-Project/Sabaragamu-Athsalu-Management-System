@@ -45,6 +45,7 @@ export default function DashProducts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [productIdToDelete, setproductIdToDelete] = useState("");
+  const [stores, setStores] = useState([]);
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -69,8 +70,21 @@ export default function DashProducts() {
     }
   };
 
+  const fetchStore = async () => {
+    try {
+      const res = await fetch(`/api/store/getstores`);
+      const data = await res.json();
+      if (res.ok) {
+        setStores(data.stores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchStore();
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -213,7 +227,7 @@ export default function DashProducts() {
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
-                    <div className="flex gap-5 mb-4">
+                    <div className="flex gap-5">
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Name" />
@@ -229,6 +243,20 @@ export default function DashProducts() {
                       </div>
                       <div>
                         <div className="mb-2 block">
+                          <Label value="SKU" />
+                        </div>
+                        <TextInput
+                          id="sku"
+                          type="text"
+                          placeholder="PHS-001"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
                           <Label value="Product Type" />
                         </div>
                         <TextInput
@@ -240,6 +268,7 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Manufacturer" />
@@ -253,9 +282,39 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
+                    </div>
+
+                    <div className="flex gap-5 mb-4">
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Product Price" />
+                          <Label value="Store" />
+                        </div>
+                        <Select id="storeId" onChange={handleChange}>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Quantity" />
+                        </div>
+                        <TextInput
+                          id="itemQuantity"
+                          type="number"
+                          placeholder="100"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Price" />
                         </div>
                         <TextInput
                           id="itemPrice"
@@ -314,7 +373,7 @@ export default function DashProducts() {
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
-                    <div className="flex gap-5 mb-4">
+                    <div className="flex gap-5">
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Name" />
@@ -326,9 +385,24 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemName}
+                          defaultValue={formData.itemName}
                         />
                       </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="SKU" />
+                        </div>
+                        <TextInput
+                          id="sku"
+                          type="text"
+                          placeholder="PHS-001"
+                          required
+                          shadow
+                          onChange={handleChange}
+                          defaultValue={formData.sku}
+                        />
+                      </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Type" />
@@ -340,9 +414,10 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemType}
+                          defaultValue={formData.itemType}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Manufacturer" />
@@ -354,12 +429,46 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.manufacturer}
+                          defaultValue={formData.manufacturer}
                         />
                       </div>
+                    </div>
+
+                    <div className="flex gap-5 mb-4">
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Product Price" />
+                          <Label value="Store" />
+                        </div>
+                        <Select id="storeId" onChange={handleChange}
+                          defaultValue={formData.storeId}
+                        >
+
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Quantity" />
+                        </div>
+                        <TextInput
+                          id="itemQuantity"
+                          type="number"
+                          placeholder="100"
+                          required
+                          shadow
+                          onChange={handleChange}
+                          defaultValue={formData.itemQuantity}
+                        />
+                      </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Price" />
                         </div>
                         <TextInput
                           id="itemPrice"
@@ -368,10 +477,11 @@ export default function DashProducts() {
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemPrice}
+                          defaultValue={formData.itemPrice}
                         />
                       </div>
                     </div>
+
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
@@ -405,10 +515,12 @@ export default function DashProducts() {
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
-                  <TableHeadCell>Product ID</TableHeadCell>
                   <TableHeadCell>Product Name</TableHeadCell>
+                  <TableHeadCell>SKU</TableHeadCell>
                   <TableHeadCell>Type</TableHeadCell>
                   <TableHeadCell>Manufacturer</TableHeadCell>
+                  <TableHeadCell>Store Name</TableHeadCell>
+                  <TableHeadCell>Quantity</TableHeadCell>
                   <TableHeadCell>Price</TableHeadCell>
                   <TableHeadCell></TableHeadCell>
                   <TableHeadCell>
@@ -418,10 +530,14 @@ export default function DashProducts() {
                 {products.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell>PR:{product.id}</TableCell>
-                      <TableCell>{product.itemName}</TableCell>
+                      <TableCell>
+                        <b>{product.itemName}</b>
+                      </TableCell>
+                      <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
+                      <TableCell>{product.store.storeName}</TableCell>
+                      <TableCell>{product.itemQuantity}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
