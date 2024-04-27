@@ -36,13 +36,12 @@ export default function DashSellerProducts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/product/getallproducts`);
+      const res = await fetch(`/api/shop-item/getshopitems`);
       const data = await res.json();
       if (res.ok) {
-        setProducts(data.products);
+        setProducts(data.shopItems);
         if (data.product.length < 9) {
           setShowMore(false);
         }
@@ -94,14 +93,14 @@ export default function DashSellerProducts() {
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>
-                        <b>{product.itemName}</b>
+                        <b>{product.item.itemName}</b>
                       </TableCell>
-                      <TableCell>{product.sku}</TableCell>
-                      <TableCell>{product.itemType}</TableCell>
-                      <TableCell>{product.manufacturer}</TableCell>
-                      <TableCell>{product.store.storeName}</TableCell>
-                      <TableCell>{product.itemQuantity}</TableCell>
-                      <TableCell>Rs. {product.itemPrice}</TableCell>
+                      <TableCell>{product.item.sku}</TableCell>
+                      <TableCell>{product.item.itemType}</TableCell>
+                      <TableCell>{product.item.manufacturer}</TableCell>
+                      <TableCell>{product.item.store.storeName}</TableCell>
+                      <TableCell>{product.item.itemQuantity}</TableCell>
+                      <TableCell>Rs. {product.item.itemPrice}</TableCell>
                     </TableRow>
                   </Table.Body>
                 ))}
@@ -110,7 +109,6 @@ export default function DashSellerProducts() {
           ) : (
             <p>You have no store yet!</p>
           )}
-  
         </motion.div>
       </AnimatePresence>
     </div>
