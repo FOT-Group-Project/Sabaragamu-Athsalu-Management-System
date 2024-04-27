@@ -539,6 +539,7 @@ export default function DashStores() {
                   <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
+                  <TableHeadCell>Store Keeper Name</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -549,6 +550,7 @@ export default function DashStores() {
                       <TableCell>ST:{store.id}</TableCell>
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
+                      <TableCell>{store.phone}</TableCell>
                       <TableCell>{store.phone}</TableCell>
                       <TableCell>
                         <Button.Group>
