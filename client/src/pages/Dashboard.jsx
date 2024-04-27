@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
@@ -8,10 +9,13 @@ import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
 import DashPOS from "../components/DashPOS";
+import SellerDashboardHome from "../components/SellerDashboardHome";
 
 export default function Dashboard() {
   const loaction = useLocation();
   const [tab, setTab] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     const urlParams = new URLSearchParams(loaction.search);
     const tabFromUrl = urlParams.get("tab");
@@ -36,7 +40,10 @@ export default function Dashboard() {
       {/* products */}
       {tab === "products" && <DashProducts />}
       {/* dash */}
-      {tab === "dash" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Seller" && (
+        <SellerDashboardHome />
+      )}
       {/* pos */}
       {tab === "pos" && <DashPOS />}
     </div>
