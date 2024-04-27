@@ -10,6 +10,8 @@ import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
 import DashPOS from "../components/DashPOS";
 import SellerDashboardHome from "../components/SellerDashboardHome";
+import DashSellerProducts from "../components/seller/DashSellerProducts";
+import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -37,8 +39,14 @@ export default function Dashboard() {
       {tab === "shops" && <DashShops />}
       {/* stores */}
       {tab === "stores" && <DashStores />}
+
+      {tab === "invetory" && <DashSellerInvetory />}
+
       {/* products */}
-      {tab === "products" && <DashProducts />}
+      {tab === "products" && currentUser.role === "Admin" && <DashProducts />}
+      {tab === "products" && currentUser.role === "Seller" && (
+        <DashSellerProducts />
+      )}
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (

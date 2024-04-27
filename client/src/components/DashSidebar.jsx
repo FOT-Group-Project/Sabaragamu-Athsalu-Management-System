@@ -12,6 +12,7 @@ import {
   HiUser,
   HiUsers,
   HiColorSwatch,
+  HiClipboardList
 } from "react-icons/hi";
 import { HiBuildingStorefront } from "react-icons/hi2";
 import { FaShoppingBag } from "react-icons/fa";
@@ -75,17 +76,30 @@ export default function DashSidebar() {
             </Link>
 
             {currentUser.role === "Seller" && (
-              <Link to="/dashboard?tab=pos">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  active={tab === "pos"}
-                  icon={HiColorSwatch}
-                  labelColor="dark"
-                  as="div"
-                >
-                  POS
-                </Sidebar.Item>
-              </Link>
+              <>
+                <Link to="/dashboard?tab=pos">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    active={tab === "pos"}
+                    icon={HiColorSwatch}
+                    labelColor="dark"
+                    as="div"
+                  >
+                    POS
+                  </Sidebar.Item>
+                </Link>
+                <Link to="/dashboard?tab=invetory">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    active={tab === "pos"}
+                    icon={HiClipboardList}
+                    labelColor="dark"
+                    as="div"
+                  >
+                    Invetory
+                  </Sidebar.Item>
+                </Link>
+              </>
             )}
 
             <Link to="/dashboard?tab=profile">
@@ -124,25 +138,29 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/dashboard?tab=shops">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={IoMdHome}
-                active={tab === "shops"}
-              >
-                Shops
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role === "Admin" && (
+              <Link to="/dashboard?tab=shops">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={IoMdHome}
+                  active={tab === "shops"}
+                >
+                  Shops
+                </Sidebar.Item>
+              </Link>
+            )}
 
-            <Link to="/dashboard?tab=stores">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={HiBuildingStorefront}
-                active={tab === "stores"}
-              >
-                Stores
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role === "Admin" && (
+              <Link to="/dashboard?tab=stores">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={HiBuildingStorefront}
+                  active={tab === "stores"}
+                >
+                  Stores
+                </Sidebar.Item>
+              </Link>
+            )}
 
             {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
             Documents
