@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput, Button } from "flowbite-react";
 import { useSelector } from "react-redux";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 export default function DashSalesReport() {
     const { currentUser } = useSelector((state) => state.user);
@@ -80,6 +82,7 @@ export default function DashSalesReport() {
         setFilteredSales([]);
         setTotalSaleAmount(0);
     };
+    
 
     const fetchSales = async () => {
         try {
@@ -107,10 +110,35 @@ export default function DashSalesReport() {
         }
     }, [sales, searchQuery, startDate, endDate]);
 
+    // Export sales report to xlsx
+    const exportToExcel = () => {
+        const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        const fileExtension = '.xlsx';
+        const exportData = filteredSales.map(sale => ({
+            'Product ID': sale.itemId,
+            'Product Name': sale.productName,
+            'Type': sale.type,
+            'Quantity': sale.quantity,
+            'Unit Price': sale.unitPrice,
+            'Amount Paid': sale.unitPrice * sale.quantity
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: fileType });
+        const fileName = 'SalesReport' + fileExtension;
+        saveAs(data, fileName); // Use saveAs function from file-saver
+    };
+
+
     return (
         <div className="p-3 w-full">
             <Link to="/dashboard?tab=dash">Home</Link>
-            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report</h1>
+            <div className="flex items-center justify-between">
+                <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report</h1>
+                <Button onClick={exportToExcel} className="h-10 ml-2">Export to Excel</Button>
+            </div>
             <div className="flex flex-wrap items-center justify-between">
                 <div className="flex items-center">
                     <TextInput
