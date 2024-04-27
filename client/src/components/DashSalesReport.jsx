@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
 import { useSelector } from "react-redux";
-import "react-datepicker/dist/react-datepicker.css";
+
 
 export default function DashSalesReport() {
     const { currentUser } = useSelector((state) => state.user);
