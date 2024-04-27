@@ -31,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle, HiHome } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function DashProfile() {
   const { currentUser, error, loading } = useSelector((state) => state.user);
@@ -43,6 +44,7 @@ export default function DashProfile() {
   const [updateUserError, setUpdateUserError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const filePickerRef = useRef();
   const dispatch = useDispatch();
 
@@ -52,6 +54,11 @@ export default function DashProfile() {
       setImageFile(file);
       setImageFileUrl(URL.createObjectURL(file));
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    // Define the toggle function
+    setShowPassword(!showPassword);
   };
 
   useEffect(() => {
@@ -277,7 +284,7 @@ export default function DashProfile() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-6">
                 <div>
                   <div className="mb-2 block">
                     <Label value="Email" />
@@ -309,16 +316,27 @@ export default function DashProfile() {
                 <div>
                   <div className="mb-2 block">
                     <Label value="Password" />
-                  </div>
+                  </div >
+                  <div className="flex items-center">
                   <TextInput
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     defaultValue={currentUser.password}
                     required
                     shadow
                     onChange={handleChange}
                   />
+                  
+                  <Button
+                    type="button"
+                    color="light"
+                    onClick={togglePasswordVisibility}
+                    className="ml-1"
+                  >
+                    {showPassword ? <HiEyeOff /> : <HiEye />}
+                  </Button>
+                </div>
                 </div>
               </div>
 

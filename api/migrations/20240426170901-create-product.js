@@ -27,8 +27,8 @@ module.exports = {
       itemQuantity: {
         type: Sequelize.INTEGER
       },
-      store: {
-        type: Sequelize.STRING
+      storeId: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
