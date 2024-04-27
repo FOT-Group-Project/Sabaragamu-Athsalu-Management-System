@@ -536,7 +536,7 @@ export default function DashProducts() {
                       <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
-                      <TableCell>{product.store.storeName}</TableCell>
+                      <TableCell>{product.storeId}</TableCell>
                       <TableCell>{product.itemQuantity}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
