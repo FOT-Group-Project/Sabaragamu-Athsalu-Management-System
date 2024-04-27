@@ -9,6 +9,7 @@ export default function DashSalesReport() {
     const [sales, setSales] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedBill, setSelectedBill] = useState(null);
   
     // Handle search input change
     const handleSearchChange = (e) => {
@@ -22,7 +23,10 @@ export default function DashSalesReport() {
         setSelectedDate(date);
     };
 
-
+    // Handle row click to show bill details
+    const handleRowClick = (bill) => {
+        setSelectedBill(bill);
+    };
 
     // Filter sales based on search query and selected date
     const filterSales = sales.filter((sale) => {
@@ -35,7 +39,6 @@ export default function DashSalesReport() {
         const matchesDate = !selectedDate || saleDate === selectedDate.toLocaleDateString('en-CA');
         return matchesSearch && matchesDate;
     });
-
 
     const fetchSales = async () => {
         try {
@@ -70,7 +73,6 @@ export default function DashSalesReport() {
                     <TextInput
                         type="date"
                         placeholder="Select Date"
-                        // value={selectedDate ? selectedDate.toISOString().split('T')[0] : ""}
                         onChange={handleDateChange}
                         className="w-72 h-10 ml-3"
                     />
@@ -91,7 +93,7 @@ export default function DashSalesReport() {
                         </TableHead>
                         <TableBody>
                             {filterSales.map((sale) => (
-                                <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800" onClick={() => handleRowClick(sale)}>
                                     <TableCell>{sale.Customer.firstname}</TableCell>
                                     <TableCell>{sale.Product.itemName}</TableCell>
                                     <TableCell>{sale.Shop.shopName}</TableCell>
@@ -108,6 +110,29 @@ export default function DashSalesReport() {
                     <p>No sales match your search criteria!</p>
                 )}
             </div>
+            {selectedBill && (
+                <div>
+                    <h2>Bill Details</h2>
+                    <p>Customer ID: {selectedBill.customerId}</p>
+                    <p>Shop ID: {selectedBill.shopId}</p>
+                    <p>Date Time: {selectedBill.buyDateTime}</p>
+                    <h3>Items</h3>
+                    <Table hoverable className="shadow-md w-full">
+                        <TableHead>
+                            <TableHeadCell>Item Name</TableHeadCell>
+                            <TableHeadCell>Quantity</TableHeadCell>
+                        </TableHead>
+                        <TableBody>
+                            {selectedBill.items.map((item, index) => (
+                                <TableRow key={index} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    <TableCell>{item.itemName}</TableCell>
+                                    <TableCell>{item.quantity}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
         </div>
     );
 }
