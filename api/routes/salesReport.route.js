@@ -5,6 +5,8 @@ const verifyToken = require("../utils/verifyUser");
 const router = express.Router();
 
 router.get('/getsales', verifyToken, salesReportController.showSalesReport);
-router.post('/addsales', verifyToken, salesReportController.save);
+router.post('/addsale', verifyToken, salesReportController.save);
+router.post('/addsales', verifyToken, salesReportController.addSales);
+
 
 module.exports = router;
