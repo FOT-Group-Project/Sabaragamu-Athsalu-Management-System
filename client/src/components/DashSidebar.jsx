@@ -74,17 +74,19 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/dashboard?tab=pos">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                active={tab === "pos"}
-                icon={HiColorSwatch}
-                labelColor="dark"
-                as="div"
-              >
-                POS
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role === "Seller" && (
+              <Link to="/dashboard?tab=pos">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  active={tab === "pos"}
+                  icon={HiColorSwatch}
+                  labelColor="dark"
+                  as="div"
+                >
+                  POS
+                </Sidebar.Item>
+              </Link>
+            )}
 
             <Link to="/dashboard?tab=profile">
               <Sidebar.Item
@@ -99,16 +101,18 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            <Link to="/dashboard?tab=users">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={HiUsers}
-                active={tab === "users"}
-                as="div"
-              >
-                Users
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role === "Admin" && (
+              <Link to="/dashboard?tab=users">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={HiUsers}
+                  active={tab === "users"}
+                  as="div"
+                >
+                  Users
+                </Sidebar.Item>
+              </Link>
+            )}
 
             <Link to="/dashboard?tab=products">
               <Sidebar.Item
