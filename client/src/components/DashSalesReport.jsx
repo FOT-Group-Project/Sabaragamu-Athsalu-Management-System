@@ -89,6 +89,40 @@ export default function DashSalesReport() {
                 <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
                     All Sales
                 </h1>
+
+                {currentUser.role == "Admin" ? (
+                    <>
+                    <Table hoverable className="shadow-md w-full">
+                        <TableHead>
+                            <TableHeadCell>Customer ID</TableHeadCell>
+                            <TableHeadCell>Item ID</TableHeadCell>
+                            <TableHeadCell>Shop ID</TableHeadCell>
+                            <TableHeadCell>buy Date Time</TableHeadCell>
+                            <TableHeadCell>Unit Price</TableHeadCell>
+                            <TableHeadCell>Type</TableHeadCell>
+                            <TableHeadCell>Quantity</TableHeadCell>
+                            <TableHeadCell>Due Amount</TableHeadCell>
+                        </TableHead>
+                        {sales.map((sale) => (
+                        <Table.Body key={sale.id} className="divide-y">
+                            <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                <TableCell>{sale.customerId}</TableCell>
+                                <TableCell>{sale.itemId}</TableCell>
+                                <TableCell>{sale.shopId}</TableCell>
+                                <TableCell>{sale.buyDateTime}</TableCell>
+                                <TableCell>{sale.unitPrice}</TableCell>
+                                <TableCell>{sale.type}</TableCell>
+                                <TableCell>{sale.quantity}</TableCell>
+                                <TableCell>{sale.dueAmount}</TableCell>
+                            </TableRow>
+                        </Table.Body>
+                    ))}
+                    </Table>
+                    </>
+                ) : (
+                    <p>You have no Shop yet!</p>
+                )}
+                
             </motion.div>
             </AnimatePresence>
         </div>
