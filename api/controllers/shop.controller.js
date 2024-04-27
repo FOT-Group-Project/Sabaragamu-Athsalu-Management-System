@@ -29,6 +29,34 @@ function createShop(req,res){
     });
 }
 
+// Add multiple shops
+function addShops(req, res) {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ message: "Invalid request body" });
+    }
+  
+    const shops = req.body.map(shop => ({
+      shopName: shop.shopName,
+      phone: shop.phone,
+      address: shop.address,
+      sellerId: shop.sellerId
+    }));
+  
+    models.Shop.bulkCreate(shops)
+      .then((result) => {
+        res.status(201).json({
+          message: "Shops added successfully",
+          shops: result,
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: "Error adding shops",
+          error: error,
+        });
+      });
+  }
+  
 function getShops(req,res){
     models.Shop.findAll()
     .then(data => {
@@ -97,5 +125,6 @@ module.exports = {
     createShop: createShop,
     getShops: getShops,
     deleteShop: deleteShop,
-    updateShop: updateShop
+    updateShop: updateShop,
+    addShops: addShops
 };

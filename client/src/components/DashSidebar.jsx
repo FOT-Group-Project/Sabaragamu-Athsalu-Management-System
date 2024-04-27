@@ -189,9 +189,13 @@ export default function DashSidebar() {
               </Link>
             )}
 
-            {/* <Sidebar.Item className="mt-2 mb-2" icon={HiShoppingBag}>
-            Documents
-          </Sidebar.Item> */}
+            <Link to="/dashboard?tab=salesReport">
+              <Sidebar.Item 
+              className="mt-2 mb-2" 
+              icon={HiTable}>
+                Sales Report
+              </Sidebar.Item>
+            </Link>
 
             <Link onClick={handleSignout}>
               <Sidebar.Item

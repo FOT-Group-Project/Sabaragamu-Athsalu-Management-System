@@ -63,6 +63,38 @@ function save(req, res){
   })
 }
 
+//for add data for  testing
+function addSales(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const sales = req.body.map(sale => ({
+    customerId: sale.customerId,
+    itemId: sale.itemId,
+    shopId: sale.shopId,
+    buyDateTime: sale.buyDateTime,
+    unitPrice: sale.unitPrice,
+    type: sale.type,
+    quantity: sale.quantity,
+    dueAmount: sale.dueAmount
+  }));
+
+  models.CustomerBuyItem.bulkCreate(sales)
+    .then((result) => {
+      res.status(201).json({
+        message: "Sales added successfully",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding sales",
+        error: error,
+      });
+    });
+}
+
 function showSalesReport(req, res) {
   models.CustomerBuyItem.findAll({
     include: [
@@ -87,7 +119,7 @@ function showSalesReport(req, res) {
       res.status(200).json({
         success: true,
         message: "Sales report",
-        data: result,
+        sales: result,
       });
     })
     .catch((error) => {
@@ -101,5 +133,6 @@ function showSalesReport(req, res) {
 
 module.exports = {
     showSalesReport: showSalesReport,
-    save: save
+    save: save,
+    addSales: addSales
 }

@@ -15,6 +15,9 @@ import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
 
+import DashSalesReport from "../components/DashSalesReport";
+
+
 export default function Dashboard() {
   const loaction = useLocation();
   const [tab, setTab] = useState("");
@@ -64,6 +67,8 @@ export default function Dashboard() {
       )}
       {/* pos */}
       {tab === "pos" && <DashPOS />}
+      {/* salesReport */}
+      {tab === "salesReport" && <DashSalesReport />}
     </div>
   );
 }
