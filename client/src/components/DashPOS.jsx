@@ -224,13 +224,12 @@ export default function DashPOS() {
             <Breadcrumb.Item>POS</Breadcrumb.Item>
           </Breadcrumb>
 
-          {/* <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
-      Point of Sale
-    </h1> */}
-
           <div className="mt-4 min-h-screen flex flex-col md:flex-row">
             <div className="md:w-2/3 mr-5">
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-between">
+                <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+                  Point of Sale
+                </h1>
                 <div className="flex items-center">
                   <TextInput
                     value={searchQuery}
@@ -271,7 +270,7 @@ export default function DashPOS() {
                           <TableCell>{product.item.sku}</TableCell>
                           <TableCell>{product.item.manufacturer}</TableCell>
                           <TableCell>Rs. {product.item.itemPrice}</TableCell>
-                          <TableCell>{product.quantity }</TableCell>
+                          <TableCell>{product.quantity}</TableCell>
                           <TableCell></TableCell>
                           <TableCell>
                             <Button
@@ -397,7 +396,8 @@ export default function DashPOS() {
                                     </TableCell>
                                     <TableCell>
                                       Rs.
-                                      {product.item.itemPrice * product.quantity}
+                                      {product.item.itemPrice *
+                                        product.quantity}
                                     </TableCell>
                                     <TableCell>
                                       <Button
