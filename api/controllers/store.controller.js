@@ -174,5 +174,6 @@ module.exports = {
   createStore: createStore,
   getStores: getStores,
   deleteStore: deleteStore,
-  updateStore: updateStore
+  updateStore: updateStore,
+  createStores: createStores,
 };

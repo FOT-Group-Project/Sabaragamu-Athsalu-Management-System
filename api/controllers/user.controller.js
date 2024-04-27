@@ -90,6 +90,37 @@ function save(req, res) {
     });
 }
 
+//add multiple users
+function addUsers(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const users = req.body.map(user => ({
+    firstname: user.firstname,
+    lastname: user.lastname,
+    phone: user.phone,
+    email: user.email,
+    password: user.password,
+    role: user.role,
+    profilepicurl: user.profilepicurl
+  }));
+
+  models.User.bulkCreate(users)
+    .then((result) => {
+      res.status(201).json({
+        message: "Users added successfully",
+        users: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding users",
+        error: error,
+      });
+    });
+}
+
 function createUser(req, res, next) {
   if (!req.body.role === "Admin") {
     return res.status(403).json({
@@ -438,4 +469,5 @@ module.exports = {
   deleteUser: deleteUser,
   getSellers: getSellers,
   getStorekeepers: getStorekeepers,
+  addUsers: addUsers,
 };

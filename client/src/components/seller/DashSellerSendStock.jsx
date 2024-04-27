@@ -24,16 +24,8 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/add-pic.png";
 import {
   HiOutlineExclamationCircle,
   HiPlusCircle,
@@ -44,20 +36,33 @@ import {
   HiXCircle,
   HiCurrencyDollar,
   HiCheck,
+  HiPaperAirplane,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
 
-export default function DashPOS() {
+export default function DashSellerSendStock() {
   const [allProducts, setAllProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [shops, setShops] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState([]);
+  const [selectedShop, setSelectedShop] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+
+  // Calculate total quantity
+  const totalQuantity = selectedProducts.reduce(
+    (total, product) => total + product.quantity,
+    0
+  );
+
+  // Calculate total price
+  const totalPrice = selectedProducts.reduce((total, product) => {
+    return total + product.item.itemPrice * product.quantity;
+  }, 0);
 
   // Function to handle search query change
   const handleSearchChange = (e) => {
@@ -72,6 +77,7 @@ export default function DashPOS() {
   useEffect(() => {
     fetchProducts();
     fetchCustomers();
+    fetchShop();
   }, []);
 
   const fetchProducts = async () => {
@@ -102,9 +108,21 @@ export default function DashPOS() {
     }
   };
 
-  // Function to handle customer selection
-  const handleCustomerChange = (e) => {
-    setSelectedCustomer(e.target.value);
+  const fetchShop = async () => {
+    try {
+      const res = await fetch(`/api/shop/getshops`);
+      const data = await res.json();
+      if (res.ok) {
+        setShops(data.shops);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Function to handle shopselection
+  const handleShopChange = (e) => {
+    setSelectedShop(e.target.value);
   };
 
   const handleAddToSelected = (productId) => {
@@ -154,58 +172,17 @@ export default function DashPOS() {
     );
   };
 
-  // const calculateTotalPrice = () => {
-  //   let totalPrice = 0;
-  //   selectedProducts.forEach((product) => {
-  //     totalPrice += product.itemPrice * product.quantity;
-  //   });
-  //   return totalPrice;
-  // };
-
-  const calculateTotalPrice = () => {
-    let totalPrice = 0;
-    selectedProducts.forEach((product) => {
-      totalPrice += product.item.itemPrice * product.quantity;
-    });
-
-    // Calculate discount amount
-    const discountAmount = (totalPrice * discountPercentage) / 100;
-
-    // Apply discount to total price
-    const discountedPrice = totalPrice - discountAmount;
-
-    return discountedPrice;
-  };
-
-  // Function to calculate the subtotal
-  const calculateSubtotal = () => {
-    let subtotal = 0;
-    selectedProducts.forEach((product) => {
-      subtotal += product.item.itemPrice * product.quantity;
-    });
-    return subtotal;
-  };
-
-  // Function to calculate the discounted price
-  const calculateDiscountedPrice = () => {
-    const totalPrice = calculateTotalPrice(); // Calculate total price of selected products
-    const discountedPrice =
-      totalPrice - totalPrice * (discountPercentage / 100);
-    return discountedPrice;
-  };
-
   // Function to clear the selected products array
   const handleClearCart = () => {
     setSelectedProducts([]);
     setShowModal(false);
   };
 
-  const handeleClearCustomer = () => {
-    setSelectedCustomer([]);
+  const handeleClearShop = () => {
+    setSelectedShop([]);
     handleClearCart();
     setShowModal1(false);
   };
-
   return (
     <div className="p-3 w-full">
       <AnimatePresence>
@@ -221,14 +198,14 @@ export default function DashPOS() {
                 Home
               </Breadcrumb.Item>
             </Link>
-            <Breadcrumb.Item>POS</Breadcrumb.Item>
+            <Breadcrumb.Item>Send Stock</Breadcrumb.Item>
           </Breadcrumb>
 
           <div className="mt-4 min-h-screen flex flex-col md:flex-row">
             <div className="md:w-2/3 mr-5">
               <div className="flex items-center justify-between">
                 <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
-                  Point of Sale
+                  Send Stock
                 </h1>
                 <div className="flex items-center">
                   <TextInput
@@ -274,7 +251,7 @@ export default function DashPOS() {
                           <TableCell></TableCell>
                           <TableCell>
                             <Button
-                              disabled={selectedCustomer <= 0}
+                              disabled={selectedShop <= 0}
                               onClick={() => handleAddToSelected(product.id)}
                               color={
                                 selectedProducts.some(
@@ -310,10 +287,10 @@ export default function DashPOS() {
             </div>
 
             <div className="md:w-1/3">
-              {selectedCustomer > 0 ? (
+              {selectedShop > 0 ? (
                 <>
                   <motion.div
-                    initial={{ opacity: 0, y: -50 }}
+                    initial={{ opacity: 0, y: 0 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -50 }}
                     transition={{ duration: 0.3 }}
@@ -321,7 +298,7 @@ export default function DashPOS() {
                     <div className="flex gap-3 justify-between">
                       <div>
                         <p>
-                          <b>Customer Name : </b> {selectedCustomer}
+                          <b>Shop Name : </b> {selectedShop}
                         </p>
                         <p>
                           <b>Date & Time : </b>
@@ -384,7 +361,9 @@ export default function DashPOS() {
                                           }
                                           style={{ cursor: "pointer" }}
                                         />
-                                        <span>{product.quantity}</span>
+                                        <span>
+                                          <b>{product.quantity}</b>{" "}
+                                        </span>
 
                                         <MdAdd
                                           onClick={() =>
@@ -432,7 +411,7 @@ export default function DashPOS() {
                         >
                           <div className="mt-5 justify-between text-center ">
                             <b>
-                              <p>Totale Price</p>
+                              <p>Total Summary</p>
                             </b>
 
                             <hr className="md-2 mt-2" />
@@ -441,49 +420,25 @@ export default function DashPOS() {
                           <div className="mt-5  text-center ">
                             <div className="mr-2 ml-2 mb-3 flex justify-between">
                               <p>
-                                <b>Sub Total :</b>
+                                <b>Number of Products :</b>
                               </p>
-                              <p>Rs. {calculateSubtotal()}</p>
-                            </div>
-                            <div className="mr-2 ml-2 mb-3 flex justify-between">
-                              <p>
-                                <b>Discont % :</b>
-                              </p>
-                              <TextInput
-                                type="number"
-                                value={discountPercentage}
-                                onChange={(e) =>
-                                  setDiscountPercentage(
-                                    Math.max(0, e.target.value)
-                                  )
-                                }
-                                placeholder="Enter discount percentage"
-                                className=" w-20 h-8 mb-3"
-                                size="sm"
-                              />
+                              <p>{selectedProducts.length}</p>
                             </div>
 
-                            {discountPercentage > 0 && (
-                              <div className="mr-2 ml-2 mb-3 flex justify-between">
-                                <p>
-                                  <b>Discounte Price : </b>
-                                </p>
-                                <p>
-                                  Rs.{" "}
-                                  {(
-                                    calculateTotalPrice() - calculateSubtotal()
-                                  ).toFixed(2)}
-                                </p>
-                              </div>
-                            )}
+                            <div className="mr-2 ml-2 mb-3 flex justify-between">
+                              <p>
+                                <b>Total Price :</b>
+                              </p>
+                              <p>Rs {totalPrice}</p>
+                            </div>
 
                             <div className="mr-2 ml-2 flex justify-between">
                               <p>
-                                <b>Paybale Amount :</b>
+                                <b>Total Quantity :</b>
                               </p>
                               <p>
                                 <b className=" text-red-600 text-xl">
-                                  Rs. {calculateTotalPrice()}
+                                  {totalQuantity}
                                 </b>
                               </p>
                             </div>
@@ -492,8 +447,8 @@ export default function DashPOS() {
 
                             <div className="mt-4 flex gap-4">
                               <Button color="blue" className="w-full">
-                                <HiCurrencyDollar className="h-4 w-4 mr-2" />
-                                Pay - Rs. {calculateTotalPrice()}
+                                <HiPaperAirplane className="h-4 w-4 mr-2" />
+                                Sent Items
                               </Button>
                               <Button
                                 onClick={() => setShowModal(true)}
@@ -517,30 +472,34 @@ export default function DashPOS() {
               ) : (
                 <>
                   <div className="flex justify-center">
-                    <div>
-                      <p>
-                        Select already existing customer or add new customer
-                      </p>
+                    <motion.div
+                      initial={{ opacity: 0, y: 0 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -50 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div>
+                        <p>
+                          Select customer to add products to the cart and
+                          proceed
+                        </p>
 
-                      <div className="mt-4 flex gap-4">
-                        <Select
-                          value={selectedCustomer}
-                          onChange={handleCustomerChange}
-                        >
-                          <option value="">Select a customer</option>
-                          {customers.map((customer) => (
-                            <option key={customer.id} value={customer.id}>
-                              {customer.firstname + " " + customer.lastname}
-                            </option>
-                          ))}
-                        </Select>
-
-                        <Button color="blue" className="">
-                          <MdAdd className="h-4 w-4 mr-2" />
-                          Add new customer
-                        </Button>
+                        <div className="mt-4 flex gap-4 justify-center">
+                          <Select
+                            value={selectedShop}
+                            onChange={handleShopChange}
+                            className="w-full"
+                          >
+                            <option value="">Select a Shop</option>
+                            {shops.map((shop) => (
+                              <option key={shop.id} value={shop.id}>
+                                {shop.shopName}
+                              </option>
+                            ))}
+                          </Select>
+                        </div>
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </>
               )}
@@ -596,10 +555,10 @@ export default function DashPOS() {
                 <div className="text-center">
                   <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
                   <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to clear the customer?
+                    Are you sure you want to clear the shop?
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handeleClearCustomer}>
+                    <Button color="failure" onClick={handeleClearShop}>
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal1(false)}>
