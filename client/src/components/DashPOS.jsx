@@ -66,7 +66,7 @@ export default function DashPOS() {
 
   // Filter products based on search query
   const filteredProducts = allProducts.filter((product) =>
-    product.itemName.toLowerCase().includes(searchQuery.toLowerCase())
+    product.item.itemName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
@@ -76,10 +76,10 @@ export default function DashPOS() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/product/getallproducts`);
+      const res = await fetch(`/api/shop-item/getshopitems`);
       const data = await res.json();
       if (res.ok) {
-        setAllProducts(data.products);
+        setAllProducts(data.shopItems);
         if (data.product.length < 9) {
           setShowMore(false);
         }
@@ -165,7 +165,7 @@ export default function DashPOS() {
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     selectedProducts.forEach((product) => {
-      totalPrice += product.itemPrice * product.quantity;
+      totalPrice += product.item.itemPrice * product.quantity;
     });
 
     // Calculate discount amount
@@ -181,7 +181,7 @@ export default function DashPOS() {
   const calculateSubtotal = () => {
     let subtotal = 0;
     selectedProducts.forEach((product) => {
-      subtotal += product.itemPrice * product.quantity;
+      subtotal += product.item.itemPrice * product.quantity;
     });
     return subtotal;
   };
@@ -266,12 +266,12 @@ export default function DashPOS() {
                       <Table.Body className="divide-y" key={product.id}>
                         <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                           <TableCell>
-                            <b>{product.itemName}</b>
+                            <b>{product.item.itemName}</b>
                           </TableCell>
-                          <TableCell>PD{product.id}</TableCell>
-                          <TableCell>{product.manufacturer}</TableCell>
-                          <TableCell>Rs. {product.itemPrice}</TableCell>
-                          <TableCell>86 </TableCell>
+                          <TableCell>{product.item.sku}</TableCell>
+                          <TableCell>{product.item.manufacturer}</TableCell>
+                          <TableCell>Rs. {product.item.itemPrice}</TableCell>
+                          <TableCell>{product.quantity }</TableCell>
                           <TableCell></TableCell>
                           <TableCell>
                             <Button
@@ -369,7 +369,7 @@ export default function DashPOS() {
                                 >
                                   <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                     <TableCell>
-                                      <b>{product.itemName}</b>
+                                      <b>{product.item.itemName}</b>
                                     </TableCell>
                                     <TableCell>
                                       <div
@@ -397,7 +397,7 @@ export default function DashPOS() {
                                     </TableCell>
                                     <TableCell>
                                       Rs.
-                                      {product.itemPrice * product.quantity}
+                                      {product.item.itemPrice * product.quantity}
                                     </TableCell>
                                     <TableCell>
                                       <Button
