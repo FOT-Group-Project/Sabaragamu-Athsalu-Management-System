@@ -289,7 +289,17 @@ export default function DashProducts() {
                         <div className="mb-2 block">
                           <Label value="Store" />
                         </div>
-                        <Select id="storeId" onChange={handleChange}>
+                        <Select
+                          id="storeId"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              storeId: e.target.value,
+                            })
+                          }
+                          required
+                        >
+                           <option value="1">Select a Store</option>
                           {stores.map((store) => (
                             <option key={store.id} value={store.id}>
                               {store.storeName}
@@ -439,10 +449,18 @@ export default function DashProducts() {
                         <div className="mb-2 block">
                           <Label value="Store" />
                         </div>
-                        <Select id="storeId" onChange={handleChange}
+                        <Select
+                          id="storeId"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              storeId: e.target.value,
+                            })
+                          }
                           defaultValue={formData.storeId}
+                          required
                         >
-
+                           <option value="1">Select a Store</option>
                           {stores.map((store) => (
                             <option key={store.id} value={store.id}>
                               {store.storeName}

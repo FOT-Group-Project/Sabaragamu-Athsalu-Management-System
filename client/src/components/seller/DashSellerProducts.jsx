@@ -35,16 +35,7 @@ export default function DashSellerProducts() {
   const [products, setProducts] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [productIdToDelete, setproductIdToDelete] = useState("");
-  const [stores, setStores] = useState([]);
 
-  const [openModal, setOpenModal] = useState(false);
-  const [openModalEdit, setOpenModalEdit] = useState(false);
-
-  const [formData, setFormData] = useState({});
-
-  const [createUserError, setCreateUserError] = useState(null);
-  const [createLoding, setCreateLoding] = useState(null);
 
   const fetchProducts = async () => {
     try {
@@ -61,112 +52,9 @@ export default function DashSellerProducts() {
     }
   };
 
-  const fetchStore = async () => {
-    try {
-      const res = await fetch(`/api/store/getstores`);
-      const data = await res.json();
-      if (res.ok) {
-        setStores(data.stores);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   useEffect(() => {
     fetchProducts();
-    fetchStore();
   }, [products.id]);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-    console.log(formData);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCreateLoding(true);
-    try {
-      const res = await fetch("/api/product/addproduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCreateUserError(data.message);
-        setCreateLoding(false);
-        return;
-      }
-
-      if (res.ok) {
-        setCreateUserError(null);
-        setCreateLoding(false);
-        setOpenModal(false);
-        fetchProducts();
-      }
-    } catch (error) {
-      // setCreateUserError("Something went wrong");
-      setCreateLoding(false);
-    }
-  };
-
-  const handleSubmitUpdate = async (e) => {
-    e.preventDefault();
-    setCreateLoding(true);
-    console.log(formData.id);
-    try {
-      const res = await fetch(`/api/product/updateproduct/${formData.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCreateUserError(data.message);
-        setCreateLoding(false);
-        return;
-      }
-
-      if (res.ok) {
-        setCreateUserError(null);
-        setCreateLoding(false);
-        setOpenModalEdit(false);
-        fetchProducts();
-        navigate("/dashboard?tab=store");
-      }
-    } catch (error) {
-      // setCreateUserError("Something went wrong");
-      setCreateLoding(false);
-    }
-  };
-
-  const handleDeleteProduct = async () => {
-    try {
-      const res = await fetch(
-        `/api/product/deleteproduct/${productIdToDelete}`,
-        {
-          method: "DELETE",
-        }
-      );
-      const data = await res.json();
-      if (res.ok) {
-        setProducts((prev) =>
-          prev.filter((store) => store.id !== productIdToDelete)
-        );
-        setShowModal(false);
-        fetchProducts();
-      } else {
-        console.log(data.message);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   return (
     <div className="p-3 w-full">
@@ -222,37 +110,7 @@ export default function DashSellerProducts() {
           ) : (
             <p>You have no store yet!</p>
           )}
-          <Modal
-            show={showModal}
-            onClose={() => setShowModal(false)}
-            popup
-            size="md"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Modal.Header />
-              <Modal.Body>
-                <div className="text-center">
-                  <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this user?
-                  </h3>
-                  <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handleDeleteProduct}>
-                      Yes, I'm sure
-                    </Button>
-                    <Button color="gray" onClick={() => setShowModal(false)}>
-                      No, cancel
-                    </Button>
-                  </div>
-                </div>
-              </Modal.Body>
-            </motion.div>
-          </Modal>
+  
         </motion.div>
       </AnimatePresence>
     </div>
