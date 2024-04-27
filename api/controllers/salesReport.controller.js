@@ -87,7 +87,7 @@ function showSalesReport(req, res) {
       res.status(200).json({
         success: true,
         message: "Sales report",
-        data: result,
+        sales: result,
       });
     })
     .catch((error) => {
