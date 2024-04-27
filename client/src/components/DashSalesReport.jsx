@@ -10,6 +10,9 @@ export default function DashSalesReport() {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [filteredSales, setFilteredSales] = useState([]);
+    const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+
+    const isFilterActive = searchQuery !== "" || startDate !== null || endDate !== null;
 
     // Handle search input change
     const handleSearchChange = (e) => {
@@ -38,7 +41,24 @@ export default function DashSalesReport() {
             const isInDateRange = (!startDate || saleDate >= startDate.toLocaleDateString('en-CA')) && (!endDate || saleDate <= endDate.toLocaleDateString('en-CA'));
             return matchesSearch && isInDateRange;
         });
+
+        // Calculate the total sale amount
+        const totalAmount = filtered.reduce((acc, sale) => acc + sale.unitPrice * sale.quantity, 0);
+        setTotalSaleAmount(Number(totalAmount.toFixed(2)));
+        
         setFilteredSales(filtered);
+    };
+
+    // Clear filters
+    const clearFilters = () => {
+        //end and start date clear
+        document.getElementById("start-date").value = "";
+        document.getElementById("end-date").value = "";
+        setSearchQuery("");
+        setStartDate(null);
+        setEndDate(null);
+        setFilteredSales([]);
+        setTotalSaleAmount(0);
     };
 
     const fetchSales = async () => {
@@ -69,30 +89,36 @@ export default function DashSalesReport() {
         <div className="p-3 w-full">
             <Link to="/dashboard?tab=dash">Home</Link>
             <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report</h1>
-            <div className="flex items-center justify-end">
+            <div className="flex flex-wrap items-center justify-between">
                 <div className="flex items-center">
                     <TextInput
                         value={searchQuery}
                         onChange={handleSearchChange}
                         placeholder="Search By Product"
-                        className="w-72 h-10"
+                        className="w-full md:w-72 h-10 mb-2 md:mb-0 md:mr-2"
                     />
-                    <label htmlFor="startDate"  className="ml-3">Start Date:</label>
+
                     <TextInput
+                        id="start-date"
                         type="date"
                         placeholder="Start Date"
                         onChange={handleStartDateChange}
-                        className="w-72 h-10 ml-3"
+                        className="w-full md:w-48 h-10 mb-2 md:mb-0 md:mr-2"
                     />
 
-                    <label htmlFor="endDate" className="ml-3">End Date:</label>
                     <TextInput
+                        id="end-date"
                         type="date"
                         placeholder="End Date"
                         onChange={handleEndDateChange}
-                        className="w-72 h-10 ml-3"
+                        className="w-full md:w-48 h-10 mb-2 md:mb-0 md:mr-2"
                     />
-                    {/* <Button onClick={filterSales} className="ml-3">Filter</Button> */}
+
+                    {/* <Button onClick={filterSales} className="h-10 mr-2">Filter</Button> */}
+                    <Button onClick={clearFilters} className="h-10" disabled={!isFilterActive}>Clear Filters</Button>
+                </div>
+                <div className="ml-6 text-lg">
+                    <p className="text-600 font-bold">Total Sale Amount: <span className="text-green-600 font-bold">Rs. {totalSaleAmount}</span></p>
                 </div>
             </div>
             <div className="mt-4">
@@ -102,7 +128,6 @@ export default function DashSalesReport() {
                             <TableHeadCell>Product ID</TableHeadCell>
                             <TableHeadCell>Product Name</TableHeadCell>
                             <TableHeadCell>Type</TableHeadCell>
-                            <TableHeadCell>Buy Date Time</TableHeadCell>
                             <TableHeadCell>Quantity</TableHeadCell>
                             <TableHeadCell>Unit Price</TableHeadCell>
                             <TableHeadCell>Amount Paid</TableHeadCell>
@@ -113,7 +138,6 @@ export default function DashSalesReport() {
                                     <TableCell>{sale.itemId}</TableCell>
                                     <TableCell>{sale.Product.itemName}</TableCell>
                                     <TableCell>{sale.type}</TableCell>
-                                    <TableCell>{new Date(sale.buyDateTime).toLocaleString()}</TableCell>
                                     <TableCell>{sale.quantity}</TableCell>
                                     <TableCell>Rs. {sale.unitPrice}</TableCell>
                                     <TableCell>Rs. {sale.unitPrice * sale.quantity}</TableCell>
