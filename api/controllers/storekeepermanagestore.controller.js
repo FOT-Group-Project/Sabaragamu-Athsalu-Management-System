@@ -10,20 +10,22 @@ function assignStoreKeeper(req, res) {
   }
 
   const storeKeeper = {
-    storeId: req.body.storeId,
-    storeKeeperId: req.body.storeKeeperId,
-    date: new Date(),
+    storeId: parseInt(req.body.storeId),
+    storeKeeperId: parseInt(req.body.storeKeeperId),
+    date: new Date(req.body.date),
   };
 
   //Validate the data
   const schema = {
     storeId: { type: "number", positive: true, integer: true },
     storeKeeperId: { type: "number", positive: true, integer: true },
-    date: { type: "date" },
+    date: { type: "date"},    
   };
 
   const v = new Validator();
   const validationResponse = v.validate(storeKeeper, schema);
+
+ 
 
   if (validationResponse !== true) {
     return res.status(400).json({
@@ -32,6 +34,8 @@ function assignStoreKeeper(req, res) {
       errors: validationResponse,
     });
   }
+
+  
 
   models.StoreKeeperManageStore.create(storeKeeper)
     .then((data) => {
