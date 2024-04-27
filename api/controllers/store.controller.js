@@ -1,3 +1,4 @@
+const Validator = require("fastest-validator");
 const models = require("../models");
 
 function createStore(req, res) {
@@ -173,6 +174,5 @@ module.exports = {
   createStore: createStore,
   getStores: getStores,
   deleteStore: deleteStore,
-  updateStore: updateStore,
-  createStores: createStores,
+  updateStore: updateStore
 };
