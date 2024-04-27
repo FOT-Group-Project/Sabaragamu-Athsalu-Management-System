@@ -8,6 +8,7 @@ import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
 import DashPOS from "../components/DashPOS";
+import DashSalesReport from "../components/DashSalesReport";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -39,6 +40,8 @@ export default function Dashboard() {
       {tab === "dash" && <DashboardComp />}
       {/* pos */}
       {tab === "pos" && <DashPOS />}
+      {/* salesReport */}
+      {tab === "salesReport" && <DashSalesReport />}
     </div>
   );
 }

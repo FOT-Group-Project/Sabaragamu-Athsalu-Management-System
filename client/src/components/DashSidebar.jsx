@@ -140,11 +140,13 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            <Sidebar.Item 
-            className="mt-2 mb-2" 
-            icon={HiTable}>
-              Sales Report
-            </Sidebar.Item>
+            <Link to="/dashboard?tab=salesReport">
+              <Sidebar.Item 
+              className="mt-2 mb-2" 
+              icon={HiTable}>
+                Sales Report
+              </Sidebar.Item>
+            </Link>
 
             <Link onClick={handleSignout}>
               <Sidebar.Item
