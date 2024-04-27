@@ -1,53 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput } from "flowbite-react";
+import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextInput, Button } from "flowbite-react";
 import { useSelector } from "react-redux";
 
 export default function DashSalesReport() {
     const { currentUser } = useSelector((state) => state.user);
     const [sales, setSales] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [selectedBill, setSelectedBill] = useState(null);
-  
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [filteredSales, setFilteredSales] = useState([]);
+
     // Handle search input change
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    // Handle date input change
-    const handleDateChange = (e) => {
+    // Handle start date change
+    const handleStartDateChange = (e) => {
         const dateString = e.target.value;
         const date = dateString ? new Date(dateString) : null;
-        setSelectedDate(date);
+        setStartDate(date);
     };
 
-    // Handle row click to show bill details
-    const handleRowClick = (bill) => {
-        setSelectedBill(bill);
+    // Handle end date change
+    const handleEndDateChange = (e) => {
+        const dateString = e.target.value;
+        const date = dateString ? new Date(dateString) : null;
+        setEndDate(date);
     };
 
     // Filter sales based on search query and selected date
-    // Filter sales based on search query and selected date
-    const filterSales = sales.filter((sale, index, self) => {
-        const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
-        const matchesSearch = (
-            sale.Customer.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            sale.Shop.shopName.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        const matchesDate = !selectedDate || saleDate === selectedDate.toLocaleDateString('en-CA');
-
-        // Check if the current sale has the same customer ID, shop ID, and datetime as any previous sale
-        const isUnique = self.findIndex((s) => 
-            s.Customer.id === sale.Customer.id && 
-            s.Shop.id === sale.Shop.id && 
-            new Date(s.buyDateTime).toLocaleString() === new Date(sale.buyDateTime).toLocaleString()
-        ) === index;
-
-        return matchesSearch && matchesDate && isUnique;
-    });
-
+    const filterSales = () => {
+        const filtered = sales.filter((sale) => {
+            const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
+            const matchesSearch = sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase());
+            const isInDateRange = (!startDate || saleDate >= startDate.toLocaleDateString('en-CA')) && (!endDate || saleDate <= endDate.toLocaleDateString('en-CA'));
+            return matchesSearch && isInDateRange;
+        });
+        setFilteredSales(filtered);
+    };
 
     const fetchSales = async () => {
         try {
@@ -67,49 +59,63 @@ export default function DashSalesReport() {
         }
     }, []);
 
+    useEffect(() => {
+        if (sales.length > 0) {
+            filterSales();
+        }
+    }, [sales, searchQuery, startDate, endDate]);
+
     return (
         <div className="p-3 w-full">
             <Link to="/dashboard?tab=dash">Home</Link>
-            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">All Sales</h1>
+            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Sales Report</h1>
             <div className="flex items-center justify-end">
                 <div className="flex items-center">
                     <TextInput
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        placeholder="Search"
+                        placeholder="Search By Product"
                         className="w-72 h-10"
                     />
+                    <label htmlFor="startDate"  className="ml-3">Start Date:</label>
                     <TextInput
                         type="date"
-                        placeholder="Select Date"
-                        onChange={handleDateChange}
+                        placeholder="Start Date"
+                        onChange={handleStartDateChange}
                         className="w-72 h-10 ml-3"
                     />
+
+                    <label htmlFor="endDate" className="ml-3">End Date:</label>
+                    <TextInput
+                        type="date"
+                        placeholder="End Date"
+                        onChange={handleEndDateChange}
+                        className="w-72 h-10 ml-3"
+                    />
+                    {/* <Button onClick={filterSales} className="ml-3">Filter</Button> */}
                 </div>
             </div>
             <div className="mt-4">
-                {filterSales.length > 0 ? (
+                {filteredSales.length > 0 ? (
                     <Table hoverable className="shadow-md w-full">
                         <TableHead>
-                            <TableHeadCell>Customer Name</TableHeadCell>
-                            {/* <TableHeadCell>Item Name</TableHeadCell> */}
-                            <TableHeadCell>Shop Name</TableHeadCell>
-                            <TableHeadCell>Buy Date Time</TableHeadCell>
-                            {/* <TableHeadCell>Unit Price</TableHeadCell>
+                            <TableHeadCell>Product ID</TableHeadCell>
+                            <TableHeadCell>Product Name</TableHeadCell>
                             <TableHeadCell>Type</TableHeadCell>
-                            <TableHeadCell>Quantity</TableHeadCell> */}
+                            <TableHeadCell>Buy Date Time</TableHeadCell>
+                            <TableHeadCell>Quantity</TableHeadCell>
+                            <TableHeadCell>Unit Price</TableHeadCell>
                             <TableHeadCell>Amount Paid</TableHeadCell>
                         </TableHead>
                         <TableBody>
-                            {filterSales.map((sale) => (
-                                <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800" onClick={() => handleRowClick(sale)}>
-                                    <TableCell>{sale.Customer.firstname}</TableCell>
-                                    {/* <TableCell>{sale.Product.itemName}</TableCell> */}
-                                    <TableCell>{sale.Shop.shopName}</TableCell>
-                                    <TableCell>{new Date(sale.buyDateTime).toLocaleString()}</TableCell>
-                                    {/* <TableCell>Rs. {sale.unitPrice}</TableCell>
+                            {filteredSales.map((sale) => (
+                                <TableRow key={sale.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    <TableCell>{sale.itemId}</TableCell>
+                                    <TableCell>{sale.Product.itemName}</TableCell>
                                     <TableCell>{sale.type}</TableCell>
-                                    <TableCell>{sale.quantity}</TableCell> */}
+                                    <TableCell>{new Date(sale.buyDateTime).toLocaleString()}</TableCell>
+                                    <TableCell>{sale.quantity}</TableCell>
+                                    <TableCell>Rs. {sale.unitPrice}</TableCell>
                                     <TableCell>Rs. {sale.unitPrice * sale.quantity}</TableCell>
                                 </TableRow>
                             ))}
