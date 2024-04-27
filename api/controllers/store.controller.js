@@ -1,3 +1,4 @@
+const Validator = require("fastest-validator");
 const models = require("../models");
 
 function createStore(req, res) {
