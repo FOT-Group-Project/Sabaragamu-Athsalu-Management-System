@@ -38,7 +38,7 @@ import {
   HiUserAdd,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { HiEye, HiEyeOff } from "react-icons/hi";
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
@@ -63,6 +63,11 @@ export default function DashUsers() {
   const [createLoding, setCreateLoding] = useState(null);
 
   const filePickerRef = useRef();
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State to track password visibility
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible); // Toggle visibility
+  };
 
   const handelImageChange = (e) => {
     const file = e.target.files[0];
@@ -430,19 +435,35 @@ export default function DashUsers() {
                         />
                       </div>
                       <div>
-                        <div className="mb-2 block">
-                          <Label htmlFor="email2" value="Password" />
-                        </div>
-                        <TextInput
-                          id="password"
-                          type="password"
-                          placeholder="**********"
-                          required
-                          shadow
-                          onChange={handleChange}
-                          disabled={imageFileUploading}
-                        />
-                      </div>
+                <Label htmlFor="password" value="Password" />
+                <div className="relative">
+                  <TextInput
+                    id="password"
+                    type={isPasswordVisible ? "text" : "password"} // Use visibility state to determine input type
+                    placeholder="**********"
+                    onChange={handleChange}
+                    required
+                    shadow
+                    disabled={imageFileUploading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {isPasswordVisible ? <HiEyeOff /> : <HiEye />} 
+                  </button>
+                </div>
+              </div>
+
+
+
+             
+
+
+
+
+
                     </div>
                     <div className="gap-2">
                       <div>
