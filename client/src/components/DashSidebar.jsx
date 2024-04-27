@@ -153,18 +153,6 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
-            {currentUser.role === "StoreKeeper" && (
-              <Link to="/dashboard?tab=damageproducts">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={RiFileDamageFill}
-                  active={tab === "damageproducts"}
-                >
-                  Damage Products
-                </Sidebar.Item>
-              </Link>
-            )}
-
             {currentUser.role === "Admin" && (
               <Link to="/dashboard?tab=shops">
                 <Sidebar.Item
@@ -190,12 +178,21 @@ export default function DashSidebar() {
             )}
 
             <Link to="/dashboard?tab=salesReport">
-              <Sidebar.Item 
-              className="mt-2 mb-2" 
-              icon={HiTable}>
+              <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
                 Sales Report
               </Sidebar.Item>
             </Link>
+            {currentUser.role === "StoreKeeper" && (
+              <Link to="/dashboard?tab=damageproducts">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={RiFileDamageFill}
+                  active={tab === "damageproducts"}
+                >
+                  Damage Products
+                </Sidebar.Item>
+              </Link>
+            )}
 
             <Link onClick={handleSignout}>
               <Sidebar.Item
