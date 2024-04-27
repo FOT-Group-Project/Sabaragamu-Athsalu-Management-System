@@ -48,6 +48,7 @@ export default function DashStores() {
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
+  const[openModalAssignStoreKeeper, setOpenModalAssignStoreKeeper] = useState(false);
 
   const [formData, setFormData] = useState({});
 
@@ -70,7 +71,7 @@ export default function DashStores() {
 
   const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/associations/getStoreKeeperInfoStore`);
+      const res = await fetch(`/api/store/getstores`);
       const data = await res.json();
       if (res.ok) {
         setStores(data.stores);
@@ -208,8 +209,17 @@ export default function DashStores() {
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Stores
             </Button>
-           
+            <Button
+              className="mb-3"
+              color="blue"
+              size="sm"
+              onClick={() => setOpenModalAssignStoreKeeper(true)}
+            >
+              <HiPlusCircle className="mr-2 h-4 w-4" />
+              Assign Store Keeper
+            </Button>
           </div>
+          
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
             <motion.div
@@ -268,25 +278,7 @@ export default function DashStores() {
                           onChange={handleChange}
                         />
                       </div>
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Select Store Keeper" />
-                        </div>                        
                       
-                      <Select
-                        id="storeKeeperId"
-                        onChange={handleChange}
-                        required
-                        shadow
-                      >
-                        <option value="">Select Store Keeper</option>
-                        {storeKeeper.map((storeKeeper) => (
-                          <option value={storeKeeper.id}>
-                            {storeKeeper.firstname}
-                          </option>
-                        ))}
-                      </Select>
-                      </div>
 
                     </div>
 
@@ -309,6 +301,106 @@ export default function DashStores() {
                         size="sm"
                         color="gray"
                         onClick={() => setOpenModal(false)}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal show={openModalAssignStoreKeeper} onClose={() => setOpenModalAssignStoreKeeper(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header>Assign Store Keeper</Modal.Header>
+              <Modal.Body>
+                <div className="space-y-6">
+                <form
+                    onSubmit={handleSubmitUpdate}
+                    className="flex flex-col flex-grow gap-4"
+                  >
+                    {createUserError && (
+                      <Alert color="failure">{createUserError}</Alert>
+                    )}
+                    <div className="flex gap-2 mb-4">
+                    <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Store" />
+                        </div>
+                        <Select
+                          id="store"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Store</option>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
+                      {/* Select field for storekeepers */}
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Select Store Keeper" />
+                        </div>
+                        <Select
+                          id="storeKeeper"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Store Keeper</option>
+                          {storeKeeper.map((storeKeeper) => (
+                            <option key={storeKeeper.id} value={storeKeeper.id}>
+                              {storeKeeper.firstname}
+                            </option>
+                          ))}
+                        </Select>
+                      </div> 
+
+                      {/* Date Picker*/}
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Start Date" />
+                        </div>
+                        <TextInput
+                          id="startDate"
+                          type="date"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                        </div>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        color="blue"
+                        type="submit"
+                        disabled={createLoding}
+                      >
+                        {createLoding ? (
+                          <>
+                            <Spinner size="sm" />
+                            <span className="pl-3">Loading...</span>
+                          </>
+                        ) : (
+                          "Assign Store Keeper"
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="gray"
+                        onClick={() => setOpenModalAssignStoreKeeper(false)}
                       >
                         Decline
                       </Button>
@@ -379,27 +471,7 @@ export default function DashStores() {
                           value={formData.phone}
                         />
                       </div>
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Select Store Keeper" />
-                        </div>                        
                       
-                      <Select
-                        id="storeKeeperId"
-                        onChange={handleChange}
-                        required
-                        shadow
-                        defaultValue={formData.storeKeeperId}
-                        
-                      >
-                        <option value="">Select Store Keeper</option>
-                        {storeKeeper.map((storeKeeper) => (
-                          <option value={storeKeeper.id}>
-                            {storeKeeper.firstname}
-                          </option>
-                        ))}
-                      </Select>
-                      </div>
 
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -439,7 +511,6 @@ export default function DashStores() {
                   <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
-                  <TableHeadCell>Store Keeper Name</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -451,7 +522,6 @@ export default function DashStores() {
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
-                      <TableCell>{store.storeKeeper.firstname}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button
