@@ -19,6 +19,7 @@ import { HiBuildingStorefront } from "react-icons/hi2";
 import { FaShoppingBag } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
 import { motion } from "framer-motion";
+import { RiFileDamageFill } from "react-icons/ri";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -151,6 +152,18 @@ export default function DashSidebar() {
                 Products
               </Sidebar.Item>
             </Link>
+
+            {currentUser.role === "StoreKeeper" && (
+              <Link to="/dashboard?tab=damageproducts">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={RiFileDamageFill}
+                  active={tab === "damageproducts"}
+                >
+                  Damage Products
+                </Sidebar.Item>
+              </Link>
+            )}
 
             {currentUser.role === "Admin" && (
               <Link to="/dashboard?tab=shops">

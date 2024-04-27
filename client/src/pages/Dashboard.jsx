@@ -13,6 +13,7 @@ import SellerDashboardHome from "../components/SellerDashboardHome";
 import DashSellerProducts from "../components/seller/DashSellerProducts";
 import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
+import DashDamageProduct from "../components/DashDamageProduct";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -42,6 +43,9 @@ export default function Dashboard() {
       {tab === "stores" && <DashStores />}
       {/* invetory */}
       {tab === "invetory" && <DashSellerInvetory />}
+
+      {/* damage product */}
+      {tab === "damageproducts" && <DashDamageProduct />}
 
       {/* sendstock */}
       {tab === "sendstock" && currentUser.role === "Seller" && (
