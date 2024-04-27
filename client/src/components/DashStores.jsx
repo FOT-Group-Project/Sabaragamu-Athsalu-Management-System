@@ -42,6 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
   const [stores, setStores] = useState([]);
+  const [storeStoreKeeper, setstoreStoreKeeper] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storeIdToDelete, setStoreIdToDelete] = useState("");
@@ -56,6 +57,20 @@ export default function DashStores() {
   const [createLoding, setCreateLoding] = useState(null);
 
   const [storeKeeper, setStoreKeeper] = useState([]);
+
+  //fetch StoreKeeperManageStore data
+  const fetchStoreKeeperManageStore = async () => {
+    try {
+      const res = await fetch(`/api/associations/getAllStoreswithStorekeepers`);
+      
+      const data = await res.json();
+      if (res.ok) {
+        setstoreStoreKeeper(data.data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
 //add data to the storekeeperassigntore async
   const handleAssignStoreKeeper = async (e) => {
@@ -102,7 +117,7 @@ export default function DashStores() {
 
   const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/store/getstores`);
+      const res = await fetch(`/api/store/getStores`);
       const data = await res.json();
       if (res.ok) {
         setStores(data.stores);
@@ -119,6 +134,7 @@ export default function DashStores() {
     if (currentUser.role == "Admin") {
       fetchStores();
       fetchStoreKeeper();
+      fetchStoreKeeperManageStore();
     }
   }, [stores.id]);
 
@@ -208,6 +224,8 @@ export default function DashStores() {
       console.log(error.message);
     }
   };
+
+
 
   return (
     <div className="p-3 w-full">
@@ -531,6 +549,8 @@ export default function DashStores() {
             </motion.div>
           </Modal>
 
+          
+
           {currentUser.role == "Admin" && stores.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
@@ -551,7 +571,7 @@ export default function DashStores() {
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
-                      <TableCell>{store.phone}</TableCell>
+                      <TableCell></TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button

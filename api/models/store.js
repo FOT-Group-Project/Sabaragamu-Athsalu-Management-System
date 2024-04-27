@@ -15,7 +15,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'storeId',
         as: 'products',
       });
-      
+
+      //Store belongsToMany User as storeKeeper
+      Store.belongsToMany(models.User, {
+        through: 'StoreKeeperManageStore',
+        as: 'storeKeeper',
+        foreignKey: 'storeId',
+      });
     }
   }
   Store.init({
