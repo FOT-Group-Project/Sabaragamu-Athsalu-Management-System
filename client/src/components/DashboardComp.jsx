@@ -17,6 +17,31 @@ export default function DashboardComp() {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
+  const [sales, setSales] = useState([]);
+  const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+
+  const fetchSales = async () => {
+    try {
+      const res = await fetch("/api/sales-report/getsales");
+      const data = await res.json();
+      if (res.ok) {
+        setSales(data.sales);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  fetchSales();
+
+  //get amoundpaid from each sale and sum them up assigne to totalSaleAmount
+  useEffect(() => {
+    const totalAmount = sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+    setTotalSaleAmount(Number(totalAmount.toFixed(2)));
+  }, [sales]);
+  
+  
+  
+  
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -69,7 +94,7 @@ export default function DashboardComp() {
           <div className="flex justify-between">
             <div className="">
               <h3 className="text-gray-500 text-md uppercase">Total Income </h3>
-              <p className="text-2xl font-semibold">Rs 350,056</p>
+              <p className="text-2xl font-semibold">Rs {totalSaleAmount}</p>
             </div>
             <HiOutlineCurrencyDollar className="bg-blue-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
