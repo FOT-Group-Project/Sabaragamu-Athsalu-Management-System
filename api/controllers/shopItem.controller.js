@@ -2,7 +2,6 @@ const e = require("express");
 const models = require("../models");
 const { parse } = require("dotenv");
 
-
 function sendShopItemoShop(req, res) {
   models.ShopItem.findOne({
     where: { id: req.params.id },
@@ -134,6 +133,7 @@ function getShopsItemId(req, res) {
 
 function getShopsItems(req, res) {
   models.ShopItem.findAll({
+    where: { shopId: req.params.sellerId},
     include: [
       {
         model: models.Shop,

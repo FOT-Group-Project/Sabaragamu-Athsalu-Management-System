@@ -43,6 +43,8 @@ import {
 import { MdAdd, MdRemove } from "react-icons/md";
 
 export default function DashSellerSendStock() {
+  const { currentUser } = useSelector((state) => state.user);
+
   const [allProducts, setAllProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState([]);
   const [shops, setShops] = useState([]);
@@ -73,14 +75,27 @@ export default function DashSellerSendStock() {
   );
 
   useEffect(() => {
+    fetchShopId();
+    fetchShop();
     fetchProducts();
     fetchCustomers();
-    fetchShop();
   }, []);
+
+  const fetchShopId = async () => {
+    try {
+      const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+      const data = await res.json();
+      if (res.ok) {
+        setSelectedShop(data.shops[0]);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/shop-item/getshopitems`);
+      const res = await fetch(`/api/shop-item/getshopitems/${selectedShop.id}`);
       const data = await res.json();
       if (res.ok) {
         setAllProducts(data.shopItems);

@@ -4,7 +4,7 @@ const verifyToken = require("../utils/verifyUser");
 
 const router = express.Router();
 
-router.get("/getshopitems", verifyToken, shopItemController.getShopsItems);
+router.get("/getshopitems/:sellerId", verifyToken, shopItemController.getShopsItems);
 router.get("/getshopitem/:id", verifyToken, shopItemController.getShopsItemId);
 router.put(
   "/senditem/:id/:shopId/:itemId",
