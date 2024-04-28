@@ -54,6 +54,7 @@ export default function DashSellerSendStock() {
   const [selectedShop, setSelectedShop] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [sendItemId, setSendItemId] = useState(null);
 
   const [openModal, setOpenModal] = useState(false);
   const [createUserError, setCreateUserError] = useState(null);
@@ -117,57 +118,49 @@ export default function DashSellerSendStock() {
     }
   };
 
-  // const handleChange = (e) => {
-  //   setFormData({ ...formData, [e.target.id]: e.target.value });
-  //   console.log(formData);
-  // };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    handleChange(e);
+    setCreateLoding(true);
+    console.log(sendItemId, formData.shopId, selectedProduct.id);
+    try {
+      const res = await fetch(
+        `/api/shop-item/senditem/${sendItemId}/${formData.shopId}/${selectedProduct.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setCreateLoding(false);
+        setOpenModal(false);
+        setCreateUserError(null);
+        fetchProducts();
+        Toast.success("Stock sent successfully!");
+      } else {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+      setCreateLoding(false);
+    }
+  };
 
-  const handleSubmit = async (e) => {};
-
-  // Function to handle changes in the TextInput field
   const handleChange = (e) => {
     const { id, value } = e.target;
     let updatedQuantity = value;
 
-    // Check if the entered quantity exceeds the available quantity of the selected product
     if (id === "quantity" && selectedProduct) {
       const maxAvailableQuantity = selectedProduct.quantity;
-      updatedQuantity = Math.min(
-        parseInt(value),
-        maxAvailableQuantity
-      ).toString();
+      updatedQuantity = Math.min(parseInt(value), maxAvailableQuantity);
     }
-
-    // Update the quantity in the formData state
     setFormData({ ...formData, [id]: updatedQuantity });
-  };
-
-  // Function to handle increasing the quantity
-  const handleIncreaseQuantity = () => {
-    // Get the current quantity from the formData state
-    const currentQuantity = formData.quantity ? parseInt(formData.quantity) : 0;
-    // Get the maximum available quantity of the selected product
-    const maxAvailableQuantity = selectedProduct.quantity;
-
-    // Calculate the new quantity by adding 1
-    const newQuantity = currentQuantity + 1;
-
-    // Check if the new quantity exceeds the maximum available quantity
-    // If it does, set the quantity to the maximum available quantity
-    const updatedQuantity = Math.min(newQuantity, maxAvailableQuantity);
-
-    // Update the quantity in the formData state
-    setFormData({ ...formData, quantity: updatedQuantity.toString() });
-  };
-
-  // Function to handle decreasing the quantity
-  const handleDecreaseQuantity = () => {
-    // Get the current quantity from the formData state
-    const currentQuantity = formData.quantity ? parseInt(formData.quantity) : 0;
-    // Decrease the quantity by 1, ensuring it doesn't go below 1
-    const newQuantity = Math.max(1, currentQuantity - 1);
-    // Update the quantity in the formData state
-    setFormData({ ...formData, quantity: newQuantity.toString() });
+    console.log(formData);
   };
 
   return (
@@ -242,14 +235,13 @@ export default function DashSellerSendStock() {
                                       <b>Quantity : </b>{" "}
                                     </p>
                                     <Badge
-                                      onClick={() => setOpenModal(true)}
                                       className="pl-3 pr-3"
                                       color="green"
                                       icon={HiCheckCircle}
                                     >
                                       {selectedProduct.quantity -
                                         formData.quantity}{" "}
-                                      in stock 
+                                      in stock
                                     </Badge>
                                   </div>
                                 </div>
@@ -266,30 +258,16 @@ export default function DashSellerSendStock() {
                               <Label value="Item Quantity" />
                             </div>
 
-                            <div className="flex gap-2">
-                              <Button
-                                color="gray"
-                                onClick={handleDecreaseQuantity}
-                              >
-                                <MdRemove className="h-4 w-4" />
-                              </Button>
-                              <TextInput
-                                id="quantity"
-                                type="number"
-                                placeholder="10"
-                                required
-                                shadow
-                                onChange={handleChange}
-                                value={formData.quantity}
-                                defaultValue={1}
-                              />
-                              <Button
-                                color="gray"
-                                onClick={handleIncreaseQuantity}
-                              >
-                                <MdAdd className="h-4 w-4" />
-                              </Button>
-                            </div>
+                            <TextInput
+                              id="quantity"
+                              type="number"
+                              placeholder="10"
+                              required
+                              shadow
+                              onChange={handleChange}
+                              value={formData.quantity}
+                              defaultValue={1}
+                            />
                           </div>
                           <div className="w-1/2">
                             <div className="mb-2 block">
@@ -374,7 +352,6 @@ export default function DashSellerSendStock() {
                           <TableCell>
                             <div className="flex flex-wrap gap-2">
                               <Badge
-                                onClick={() => setOpenModal(true)}
                                 className="pl-3 pr-3"
                                 color={product.quantity > 0 ? "green" : "red"}
                                 icon={
@@ -393,6 +370,7 @@ export default function DashSellerSendStock() {
                               onClick={() => {
                                 setOpenModal(true);
                                 setSelectedProduct(product);
+                                setSendItemId(product.id);
                               }}
                               disabled={product.quantity === 0}
                               color="blue"
