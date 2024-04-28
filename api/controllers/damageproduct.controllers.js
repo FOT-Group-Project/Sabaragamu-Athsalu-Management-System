@@ -59,3 +59,24 @@ function createDamageProduct(req, res) {
         });
 }
 
+//show data from database table
+function showDamageProduct(req, res) {
+    models.StoreKeepDamageItem.findAll()
+        .then((data) => {
+            res.status(200).json({ success: true, data: data });
+        })
+        .catch((err) => {
+            res.status(500).json({ success: false, message: "Some error occurred" });
+        });
+}
+
+
+
+
+module.exports = {
+    createDamageProduct: createDamageProduct,
+    showDamageProduct: showDamageProduct,
+
+};
+
+
