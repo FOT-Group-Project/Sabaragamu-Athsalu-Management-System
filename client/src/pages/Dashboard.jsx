@@ -9,7 +9,7 @@ import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
 import DashPOS from "../components/seller/DashPOS";
-import SellerDashboardHome from "../components/SellerDashboardHome";
+import SellerDashboardHome from "../components/seller/SellerDashboardHome";
 import DashSellerProducts from "../components/seller/DashSellerProducts";
 import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
