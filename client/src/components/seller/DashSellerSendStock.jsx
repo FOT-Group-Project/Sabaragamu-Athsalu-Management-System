@@ -64,6 +64,8 @@ export default function DashSellerSendStock() {
   const [seller, setSeller] = useState([]);
   const [formData, setFormData] = useState({});
 
+  const [shopId, setShopId] = useState([]); // [1
+
   // Function to handle search query change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -75,63 +77,37 @@ export default function DashSellerSendStock() {
   );
 
   useEffect(() => {
-    fetchShopId();
-    fetchShop();
-    fetchProducts();
-    fetchCustomers();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const shopIdRes = await fetch(`/api/shop/getshop/${currentUser.id}`);
+        const shopIdData = await shopIdRes.json();
+        if (shopIdRes.ok) {
+          setShopId(shopIdData.shops[0]);
 
-  const fetchShopId = async () => {
-    try {
-      const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
-      const data = await res.json();
-      if (res.ok) {
-        setSelectedShop(data.shops[0]);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+          const productsRes = await fetch(
+            `/api/shop-item/getshopitems/${shopIdData.shops[0].id}`
+          );
+          const productsData = await productsRes.json();
+          if (productsRes.ok) {
+            setAllProducts(productsData.shopItems);
+            if (productsData.shopItems.length < 9) {
+              setShowMore(false);
+            }
+          }
 
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch(`/api/shop-item/getshopitems/${selectedShop.id}`);
-      const data = await res.json();
-      if (res.ok) {
-        setAllProducts(data.shopItems);
-        if (data.product.length < 9) {
-          setShowMore(false);
+          const shopsRes = await fetch(`/api/shop/getshops`);
+          const shopsData = await shopsRes.json();
+          if (shopsRes.ok) {
+            setShops(shopsData.shops);
+          }
         }
+      } catch (error) {
+        console.log(error.message);
       }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+    };
 
-  const fetchCustomers = async () => {
-    try {
-      // Fetch customers from API
-      const res = await fetch(`/api/user/getusers`);
-      const data = await res.json();
-      if (res.ok) {
-        setCustomers(data.users);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const fetchShop = async () => {
-    try {
-      const res = await fetch(`/api/shop/getshops`);
-      const data = await res.json();
-      if (res.ok) {
-        setShops(data.shops);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+    fetchData();
+  }, [currentUser.id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -154,7 +130,19 @@ export default function DashSellerSendStock() {
         setCreateLoding(false);
         setOpenModal(false);
         setCreateUserError(null);
-        fetchProducts();
+  
+        // Update local state with updated stock data
+        const updatedProducts = allProducts.map(product => {
+          if (product.id === sendItemId) {
+            return {
+              ...product,
+              quantity: product.quantity - formData.quantity
+            };
+          }
+          return product;
+        });
+        setAllProducts(updatedProducts);
+  
         Toast.success("Stock sent successfully!");
       } else {
         setCreateUserError(data.message);
@@ -165,6 +153,7 @@ export default function DashSellerSendStock() {
       setCreateLoding(false);
     }
   };
+  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
