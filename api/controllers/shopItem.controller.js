@@ -1,11 +1,23 @@
 const e = require("express");
 const models = require("../models");
+const { parse } = require("dotenv");
 
 
-function sendShopItemoShop(req, res) {
+function sendShopItemoShop(req, res) {  
   models.ShopItem.findOne({
     where: { id: req.params.id },
   }).then((dataX) => {
+    
+    quantity = parseInt(dataX.quantity) - parseInt(req.body.quantity);
+
+    if (quantity < 0) {
+      res.status(404).json({
+        success: false,
+        message: "Not enough quantity",
+      });
+      return;
+    }
+
     models.ShopItem.update(
       { quantity: dataX.quantity - req.body.quantity },
       { where: { id: req.params.id } }
