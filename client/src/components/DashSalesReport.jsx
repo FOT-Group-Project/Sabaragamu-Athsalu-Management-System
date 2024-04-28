@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow, TextIn
 import { useSelector } from "react-redux";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Label, Select } from "flowbite-react";
 
 export default function DashSalesReport() {
     const { currentUser } = useSelector((state) => state.user);
@@ -13,8 +14,16 @@ export default function DashSalesReport() {
     const [endDate, setEndDate] = useState(null);
     const [filteredSales, setFilteredSales] = useState([]);
     const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+    const [selectedSaleType, setSelectedSaleType] = useState("");
+    const saleTypes = ["Cash", "Credit"];
 
     const isFilterActive = searchQuery !== "" || startDate !== null || endDate !== null;
+
+
+    // Handle sale type change
+    const handleSaleTypeChange = (e) => {
+        setSelectedSaleType(e.target.value);
+    };
 
     // Handle search input change
     const handleSearchChange = (e) => {
@@ -35,40 +44,43 @@ export default function DashSalesReport() {
         setEndDate(date);
     };
 
-    // Filter sales based on search query and selected date
-    const filterSales = () => {
-        const aggregatedSales = {};
-        const filtered = sales.filter((sale) => {
-            const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
-            const matchesSearch = sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase());
-            const isInDateRange = (!startDate || saleDate >= startDate.toLocaleDateString('en-CA')) && (!endDate || saleDate <= endDate.toLocaleDateString('en-CA'));
-            return matchesSearch && isInDateRange;
-        });
+// Filter sales based on search query, selected date, and sale type
+const filterSales = () => {
+    const aggregatedSales = {};
+    const filtered = sales.filter((sale) => {
+        const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
+        const matchesSearch = sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase());
+        const isInDateRange = (!startDate || saleDate >= startDate.toLocaleDateString('en-CA')) && (!endDate || saleDate <= endDate.toLocaleDateString('en-CA'));
+        const matchesSaleType = selectedSaleType === "" || sale.type === selectedSaleType;
+        return matchesSearch && isInDateRange && matchesSaleType;
+    });
 
-        // Aggregate sales by itemId
-        filtered.forEach((sale) => {
-            const { itemId, quantity, unitPrice } = sale;
-            if (aggregatedSales[itemId]) {
-                aggregatedSales[itemId].quantity += quantity;
-                aggregatedSales[itemId].amountPaid += quantity * unitPrice;
-            } else {
-                aggregatedSales[itemId] = {
-                    itemId,
-                    productName: sale.Product.itemName,
-                    type: sale.type,
-                    quantity,
-                    unitPrice,
-                    amountPaid: quantity * unitPrice,
-                };
-            }
-        });
+    // Aggregate sales by itemId
+    filtered.forEach((sale) => {
+        const { itemId, quantity, unitPrice } = sale;
+        if (aggregatedSales[itemId]) {
+            aggregatedSales[itemId].quantity += quantity;
+            aggregatedSales[itemId].amountPaid += quantity * unitPrice;
+        } else {
+            aggregatedSales[itemId] = {
+                itemId,
+                productName: sale.Product.itemName,
+                type: sale.type,
+                quantity,
+                unitPrice,
+                amountPaid: quantity * unitPrice,
+            };
+        }
+    });
 
-        // Calculate the total sale amount
-        const totalAmount = Object.values(aggregatedSales).reduce((acc, sale) => acc + sale.amountPaid, 0);
-        setTotalSaleAmount(Number(totalAmount.toFixed(2)));
+    // Calculate the total sale amount
+    const totalAmount = Object.values(aggregatedSales).reduce((acc, sale) => acc + sale.amountPaid, 0);
+    setTotalSaleAmount(Number(totalAmount.toFixed(2)));
 
-        setFilteredSales(Object.values(aggregatedSales));
-    };
+    setFilteredSales(Object.values(aggregatedSales));
+};
+
+
 
 
     // Clear filters
@@ -154,6 +166,21 @@ export default function DashSalesReport() {
                         placeholder="Search By Product"
                         className="w-full md:w-72 h-10 mb-2 md:mb-0 md:mr-2"
                     />
+                     <div className="w-full md:w-48 h-10 mb-0 md:mb-0 md:mr-2">
+                            {/* <Label value="Sale Type" /> */}
+                            <Select
+                            id="saleType"
+                            required
+                            shadow
+                            value={selectedSaleType}
+                            onChange={handleSaleTypeChange}
+                        >
+                            <option value="">Select Sale Type</option>
+                            {saleTypes.map((type) => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
+                        </Select>
+                        </div>
 
                     <TextInput
                         id="start-date"
@@ -170,9 +197,10 @@ export default function DashSalesReport() {
                         onChange={handleEndDateChange}
                         className="w-full md:w-48 h-10 mb-2 md:mb-0 md:mr-2"
                     />
-
-                    {/* <Button onClick={filterSales} className="h-10 mr-2">Filter</Button> */}
                     <Button onClick={clearFilters} className="h-10" disabled={!isFilterActive}>Clear Filters</Button>
+                    
+                       
+                    {/* <Button onClick={filterSales} className="h-10 mr-2">Filter</Button> */}
                 </div>
                 <div className="ml-6 text-lg">
                     <p className="text-600 font-bold">Total Sale Amount: <span className="text-green-600 font-bold">Rs. {totalSaleAmount}</span></p>

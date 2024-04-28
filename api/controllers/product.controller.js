@@ -9,9 +9,7 @@ function addProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
-    sku: req.body.sku,
-    storeId: req.body.storeId,
-    itemQuantity: req.body.itemQuantity,
+    sku: req.body.sku
   };
 
   //Validation of the request
@@ -58,9 +56,7 @@ function addProducts(req, res) {
     itemType: product.itemType,
     manufacturer: product.manufacturer,
     itemPrice: product.itemPrice,
-    sku: product.sku,
-    storeId: product.storeId,
-    itemQuantity: product.itemQuantity
+    sku: product.sku
   }));
 
   models.Product.bulkCreate(products)
@@ -101,14 +97,7 @@ function getProduct(req, res) {
 
 //Get all Products
 function getAllProducts(req, res) {
-  models.Product.findAll({
-    include: [
-      {
-        model: models.Store,
-        as: "store",
-      },
-    ],
-  })
+  models.Product.findAll()
     .then((result) => {
       if (result) {
         res.status(200).json({
@@ -138,9 +127,7 @@ function updateProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
-    sku: req.body.sku,
-    storeId: req.body.storeId,
-    itemQuantity: req.body.itemQuantity,
+    sku: req.body.sku
   };
 
   //Validation of the request
