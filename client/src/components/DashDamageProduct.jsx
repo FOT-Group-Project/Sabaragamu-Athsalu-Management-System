@@ -384,7 +384,7 @@ export default function fetchdamageitems() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && shops.length > 0 ? (
+          {currentUser.role === "StoreKeeper" ? ( 
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
