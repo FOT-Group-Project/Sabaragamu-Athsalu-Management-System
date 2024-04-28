@@ -61,19 +61,40 @@ async function getAllShops(req, res) {
 
 //get all stores with their storeKeepers
 async function getAllStoreswithStorekeepers(req, res) {
+  // // Find all stores and include the storeKeeper
+  // const storesWithStoreKeepers = await models.Store.findAll({
+  //   include: [
+  //     {
+  //       model: models.User,
+  //       as: "storeKeeper",
+  //     },
+  //   ],
+  
+  // });
+
   // Find all stores and include the storeKeeper
-  const stores = await models.Store.findByPk(2,{
+  const storesWithStoreKeepers = await models.Store.findAll({
     include: [
       {
         model: models.User,
         as: "storeKeeper",
+        attributes: ["firstname"],
       },
     ],
-  
+    attributes: ["id", "storeName", "phone", "address"],
   });
 
+  // Extract the required fields
+  const data = storesWithStoreKeepers.map(store => ({
+    id: store.id,
+    storeName: store.storeName,
+    phone: store.phone,
+    address: store.address,
+    storeKeeper: store.storeKeeper.map(storeKeeper => storeKeeper.firstname),
+  }));
+
   res.status(200).json({
-    data: stores,
+    data: data,
   });
 }
 
