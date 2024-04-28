@@ -30,10 +30,10 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/add-pic.png";
+
 import {
   HiOutlineExclamationCircle,
   HiPlusCircle,
