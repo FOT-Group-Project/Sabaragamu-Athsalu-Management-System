@@ -8,4 +8,14 @@ function createDamageProduct(req, res) {
             .status(400)
             .json({ success: false, message: "Some data is missing" });
     }
+    if (!req.body.date || !req.body.quantity || !req.body.storeId || !req.body.itemId) {
+        return res
+            .status(400)
+            .json({ success: false, message: "Some data is missing" });
+    }
+    if (req.body.quantity.length < 1) {
+        return res
+            .status(400)
+            .json({ success: false, message: "quantity should be more than 1" });
+    }
 }
