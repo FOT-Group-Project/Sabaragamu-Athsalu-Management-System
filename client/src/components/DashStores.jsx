@@ -42,7 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
   const [stores, setStores] = useState([]);
-  const [storeStoreKeeper, setstoreStoreKeeper] = useState([]);
+  const [skeeperMstores, setstoreStoreKeeper] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storeIdToDelete, setStoreIdToDelete] = useState("");
@@ -64,8 +64,18 @@ export default function DashStores() {
       const res = await fetch(`/api/associations/getAllStoreswithStorekeepers`);
       
       const data = await res.json();
+
+      const skeeperMstores = data.data.map(store => ({
+        id: store.id,
+        storeName: store.storeName,
+        phone: store.phone,
+        address: store.address,
+        storeKeeperFirstName: store.storeKeeper.slice(-1).map(sk => sk.firstname),
+        storeKeeperManageStoreDate: store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)
+      }));
+
       if (res.ok) {
-        setstoreStoreKeeper(data.data);
+        setstoreStoreKeeper(skeeperMstores);
       }
     } catch (error) {
       console.log(error.message);
@@ -551,7 +561,7 @@ export default function DashStores() {
 
           
 
-          {currentUser.role == "Admin" && stores.length > 0 ? (
+          {currentUser.role == "Admin" && skeeperMstores.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -560,18 +570,21 @@ export default function DashStores() {
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
                   <TableHeadCell>Store Keeper Name</TableHeadCell>
+                  <TableHeadCell>Date of Assign</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {stores.map((store) => (
+                {skeeperMstores.map((store) => (
+                  
                   <Table.Body className="divide-y" key={store.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>ST:{store.id}</TableCell>
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>{store.storeKeeperFirstName}</TableCell>
+                      <TableCell>{new Date(store.storeKeeperManageStoreDate).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button
