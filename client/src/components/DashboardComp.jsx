@@ -22,6 +22,8 @@ export default function DashboardComp() {
   const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
   const [totalSalesCount, setTotalSalesCount] = useState(0);
   const [totalCustomers, setTotalCustomers] = useState(0);
+  const [totalIncomeLastMonth, setTotalIncomeLastMonth] = useState(0);
+  const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
 
   const fetchSales = async () => {
     try {
@@ -53,23 +55,42 @@ export default function DashboardComp() {
   const calculateTotalSalesCount = () => {
     return sales.length;
   };
+
+  //calculate total income last month
+  const calculateTotalIncomeLastMonth = () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthSales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastMonth);
+    return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
+
+  //calculate total income last day
+  const calculateTotalIncomeLastDay = () => {
+    const lastDay = new Date();
+    lastDay.setDate(lastDay.getDate() - 1);
+    const lastDaySales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay);
+    return lastDaySales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
   
 
-  //update total sales amount, total sales amount today, total sales count, and total customers
+  //update total sales amount, total sales count, total customers, total income last month
   useEffect(() => {
     const totalAmount = calculateTotalSalesAmount();
     const totalAmountToday = calculateTotalSalesAmountToday();
     const totalSalesCount = calculateTotalSalesCount();
     const totalCustomers = new Set(users.map((user) => user.id)).size;
-  
+    const totalIncomeLastMonth = calculateTotalIncomeLastMonth();
+    const totalIncomeLastDay = calculateTotalIncomeLastDay();
+
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
     setTotalSalesCount(totalSalesCount);
     setTotalCustomers(totalCustomers);
+    setTotalIncomeLastMonth(Number(totalIncomeLastMonth.toFixed(2)));
+    setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
   }, [sales]);
-  
-  
-  
+
+  //fetch users and products
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -128,7 +149,7 @@ export default function DashboardComp() {
           <div className="flex gap-4 text-sm">
             <span className="text-green-500 font-semibold flex items-center ">
               <HiArrowNarrowUp />
-              Rs 11,200 Last Month
+              Rs {totalIncomeLastMonth} Last Month
             </span>
           </div>
         </div>
@@ -144,7 +165,7 @@ export default function DashboardComp() {
           <div className="flex gap-4 text-sm">
             <span className="text-green-500 font-semibold flex items-center ">
               <HiArrowNarrowUp />
-              Rs 1,200 Last Day
+              Rs {totalIncomeLastDay} Last Day
             </span>
           </div>
         </div>
