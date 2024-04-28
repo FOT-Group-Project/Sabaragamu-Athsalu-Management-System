@@ -70,6 +70,7 @@ export default function DashProducts() {
     }
   };
 
+
   useEffect(() => {
     fetchProducts();
   }, [products.id]);
