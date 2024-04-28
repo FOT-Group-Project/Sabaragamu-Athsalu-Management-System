@@ -204,7 +204,6 @@ export default function DashShops() {
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Shops
             </Button>
-            
           </div>
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -281,7 +280,6 @@ export default function DashShops() {
                             </option>
                           ))}
                         </Select>
-                    
                       </div>
                     </div>
 
@@ -392,7 +390,6 @@ export default function DashShops() {
                             </option>
                           ))}
                         </Select>
-                    
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end">
