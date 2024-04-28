@@ -130,19 +130,19 @@ export default function DashSellerSendStock() {
         setCreateLoding(false);
         setOpenModal(false);
         setCreateUserError(null);
-  
+
         // Update local state with updated stock data
-        const updatedProducts = allProducts.map(product => {
+        const updatedProducts = allProducts.map((product) => {
           if (product.id === sendItemId) {
             return {
               ...product,
-              quantity: product.quantity - formData.quantity
+              quantity: product.quantity - formData.quantity,
             };
           }
           return product;
         });
         setAllProducts(updatedProducts);
-  
+
         Toast.success("Stock sent successfully!");
       } else {
         setCreateUserError(data.message);
@@ -153,7 +153,6 @@ export default function DashSellerSendStock() {
       setCreateLoding(false);
     }
   };
-  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -290,9 +289,17 @@ export default function DashSellerSendStock() {
                             >
                               <option value="">Select a Shop</option>
                               {shops.map((shop) => (
-                                <option key={shop.id} value={shop.id}>
-                                  {shop.shopName}
-                                </option>
+                                <>
+                                  {shop.id != shopId.id ? (
+                                    <>
+                                      <option key={shop.id} value={shop.id}>
+                                        {shop.shopName}
+                                      </option>
+                                    </>
+                                  ) : (
+                                    ""
+                                  )}
+                                </>
                               ))}
                             </Select>
                           </div>
