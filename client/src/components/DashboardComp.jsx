@@ -25,19 +25,6 @@ export default function DashboardComp() {
   const [totalIncomeLastMonth, setTotalIncomeLastMonth] = useState(0);
   const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
 
-  const fetchSales = async () => {
-    try {
-      const res = await fetch("/api/sales-report/getsales");
-      const data = await res.json();
-      if (res.ok) {
-        setSales(data.sales);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  fetchSales();
-
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
     return sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
@@ -88,13 +75,26 @@ export default function DashboardComp() {
     setTotalCustomers(totalCustomers);
     setTotalIncomeLastMonth(Number(totalIncomeLastMonth.toFixed(2)));
     setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
-  }, [sales]);
+  },[sales, users]);
 
-  //fetch users and products
+  //fetch sales, users and products
   useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const res = await fetch("/api/sales-report/getsales");
+        const data = await res.json();
+        if (res.ok) {
+          setSales(data.sales);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchSales();
+
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/user//getusers");
+        const res = await fetch("/api/user/getusers");
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -117,7 +117,7 @@ export default function DashboardComp() {
       }
     };
     fetchProducts();
-  }, [currentUser]);
+  }, []);
 
   return (
     <div className="p-3 w-full md:mx-auto">
