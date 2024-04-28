@@ -1,5 +1,1 @@
-import React from "react";
-
-export default function DashDamageProduct() {
-  return <div>DashDamageProduct</div>;
-}
+import { React, useState, useRef, useEffect } from "react";
