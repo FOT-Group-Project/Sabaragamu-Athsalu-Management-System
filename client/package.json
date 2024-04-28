@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.1",
+    "chart.js": "^4.4.2",
     "file-saver": "^2.0.5",
     "firebase": "^10.8.1",
     "flowbite-react": "^0.7.2",

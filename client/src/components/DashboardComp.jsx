@@ -12,6 +12,7 @@ import {
 import { Button, Table, Breadcrumb } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Chart from 'chart.js/auto';
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
@@ -26,6 +27,7 @@ export default function DashboardComp() {
   const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
   const [totalSalesLastDay, setTotalSalesLastDay] = useState(0);
   const [totalCustomersLastMonth, setTotalCustomersLastMonth] = useState(0);
+  const [chart, setChart] = useState(null);
 
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
@@ -96,6 +98,43 @@ export default function DashboardComp() {
     setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
     setTotalSalesLastDay(totalSalesLastDay);
     setTotalCustomersLastMonth(totalCustomersLastMonth);
+
+    // Initialize the chart if it's not already initialized
+    if (!chart) {
+      const creditSales = sales.filter(sale => sale.type === 'Credit').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+      const cashSales = sales.filter(sale => sale.type === 'Cash').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+
+      const ctx = document.getElementById('pieChart').getContext('2d');
+      const newChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Credit Sales', 'Cash Sales'],
+          datasets: [{
+            data: [creditSales, cashSales],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.5)', // Red
+              'rgba(54, 162, 235, 0.5)'   // Blue
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+      });
+      
+
+      setChart(newChart);
+    } else {
+      // Update the chart data if it's already initialized
+      const creditSales = sales.filter(sale => sale.type === 'Credit').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+      const cashSales = sales.filter(sale => sale.type === 'Cash').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+
+      chart.data.datasets[0].data = [creditSales, cashSales];
+      chart.update();
+    }
+
   },[sales, users]);
 
   //fetch sales, users and products
@@ -225,70 +264,26 @@ export default function DashboardComp() {
           </div>
         </div>
       </div>
-
       <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-          <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent Users</h1>
-            <Link to={"/dashboard?tab=products"}>
-              {" "}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-semibold">Sales Overview</h1>
+            {/* <Link to="/dashboard?tab=salesReport">
               <Button color="green">See all</Button>
-            </Link>
+            </Link> */}
           </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>user name</Table.HeadCell>
-              <Table.HeadCell>position</Table.HeadCell>
-            </Table.Head>
-            {users &&
-              users.map((user) => (
-                <Table.Body key={user.id} className="divide-y">
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>
-                      <img
-                        src={user.profilepicurl}
-                        alt="product"
-                        className="w-10 h-10 rounded-full bg-gray-500"
-                      />
-                    </Table.Cell>
-                    <Table.Cell>{user.username}</Table.Cell>
-                    <Table.Cell>{user.role}</Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
-          </Table>
+          <canvas id="pieChart" width="400" height="400"></canvas>
         </div>
-
         <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
           <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent products</h1>
-            <Link to={"/dashboard?tab=products"}>
-              {" "}
+            <h1 className="text-lg font-semibold">Income Overview</h1>
+            <Link to="/dashboard?tab=salesReport">
               <Button color="green">See all</Button>
             </Link>
           </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>Product Name</Table.HeadCell>
-              <Table.HeadCell>Type</Table.HeadCell>
-              <Table.HeadCell>Manufacturer</Table.HeadCell>
-              <Table.HeadCell>Price</Table.HeadCell>
-            </Table.Head>
-            {products &&
-              products.map((product) => (
-                <Table.Body key={product.id} className="divide-y">
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>{product.itemName}</Table.Cell>
-                    <Table.Cell>{product.itemType}</Table.Cell>
-                    <Table.Cell>{product.manufacturer}</Table.Cell>
-                    <Table.Cell>{product.itemPrice}</Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
-          </Table>
         </div>
       </div>
+              
       </motion.div>
       </AnimatePresence>
     </div>
