@@ -16,6 +16,7 @@ import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
 
 import DashSalesReport from "../components/DashSalesReport";
+import DashStoreKeeperSendStock from "../components/storekeeper/DashStoreKeeperSendStock";
 
 
 export default function Dashboard() {
@@ -49,6 +50,10 @@ export default function Dashboard() {
 
       {/* damage product */}
       {tab === "damageproducts" && <DashDamageProduct />}
+
+      {tab === "sendstock" && currentUser.role === "StoreKeeper" && (
+        <DashStoreKeeperSendStock />
+      )}
 
       {/* sendstock */}
       {tab === "sendstock" && currentUser.role === "Seller" && (
