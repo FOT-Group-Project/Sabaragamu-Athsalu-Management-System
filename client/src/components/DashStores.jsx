@@ -70,10 +70,10 @@ export default function DashStores() {
         storeName: store.storeName,
         phone: store.phone,
         address: store.address,
-        storeKeeperFirstName: store.storeKeeper.slice(-1).map(sk => sk.firstname),
-        storeKeeperManageStoreDate: store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)
+        storeKeeperFirstName: store.storeKeeper.map(sk => sk.firstname).length > 0 ? store.storeKeeper.slice(-1).map(sk => sk.firstname) : "Not Assign Yet",
+        storeKeeperManageStoreDate: store.storeKeeper.map(sk => sk.StoreKeeperManageStore.date) ? new Date(store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)).toLocaleDateString() : "Not Assign Yet"
       }));
-
+      
       if (res.ok) {
         setstoreStoreKeeper(skeeperMstores);
       }
@@ -584,7 +584,7 @@ export default function DashStores() {
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
                       <TableCell>{store.storeKeeperFirstName}</TableCell>
-                      <TableCell>{new Date(store.storeKeeperManageStoreDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{store.storeKeeperManageStoreDate}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button
