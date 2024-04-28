@@ -131,8 +131,47 @@ function showSalesReport(req, res) {
     });
 }
 
+//show sales by shopId
+function showSalesByShopId(req, res){
+  models.CustomerBuyItem.findAll({
+    where: {shopId: req.params.shopId},
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
+    .then((result) => {
+      res.status(200).json({
+        success: true,
+        message: "Sales report",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
 module.exports = {
     showSalesReport: showSalesReport,
     save: save,
-    addSales: addSales
+    addSales: addSales,
+    showSalesByShopId: showSalesByShopId
 }
