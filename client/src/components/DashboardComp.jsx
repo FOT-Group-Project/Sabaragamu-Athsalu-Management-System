@@ -24,6 +24,7 @@ export default function DashboardComp() {
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalIncomeLastMonth, setTotalIncomeLastMonth] = useState(0);
   const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
+  const [totalSalesLastDay, setTotalSalesLastDay] = useState(0);
 
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
@@ -59,6 +60,12 @@ export default function DashboardComp() {
     return lastDaySales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
   }
   
+  //calculate total sales last day
+  const calculateTotalSalesLastDay = () => {
+    const lastDay = new Date();
+    lastDay.setDate(lastDay.getDate() - 1);
+    return sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay).length;
+  }
 
   //update total sales amount, total sales count, total customers, total income last month
   useEffect(() => {
@@ -68,6 +75,7 @@ export default function DashboardComp() {
     const totalCustomers = new Set(users.map((user) => user.id)).size;
     const totalIncomeLastMonth = calculateTotalIncomeLastMonth();
     const totalIncomeLastDay = calculateTotalIncomeLastDay();
+    const totalSalesLastDay = calculateTotalSalesLastDay();
 
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
@@ -75,6 +83,7 @@ export default function DashboardComp() {
     setTotalCustomers(totalCustomers);
     setTotalIncomeLastMonth(Number(totalIncomeLastMonth.toFixed(2)));
     setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
+    setTotalSalesLastDay(totalSalesLastDay);
   },[sales, users]);
 
   //fetch sales, users and products
@@ -182,7 +191,7 @@ export default function DashboardComp() {
           </div>
           <div className="flex gap-4 text-sm">
             <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />8 Last Day
+              <HiArrowNarrowUp />{totalSalesLastDay} Last Day
             </span>
           </div>
         </div>
