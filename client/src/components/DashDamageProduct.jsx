@@ -71,16 +71,49 @@ export default function fetchdamageitems() {
   };
 
 
-}//affter sending the data to the database table refresh the page
-useEffect(() => {
-  if (currentUser.role === "StoreKeeper") {
-    fetchdamageitems();
-  }
-}, []);
+  //affter sending the data to the database table refresh the page
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
+      fetchdamageitems();
+    }
+  }, []);
 
-const handleChange = (e) => {
-  setFormData({ ...formData, [e.target.id]: e.target.value });
-  console.log(formData);
-};
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    console.log(formData);
+  };
 
+ 
+  //add the data to the database table
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/storekeepdamageitems", {
+        method: "POST",
+        headers: {
+         
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
 
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModal(false);
+        fetchShops();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
+  };
+
+  
+  
