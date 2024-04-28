@@ -21,6 +21,7 @@ export default function DashboardComp() {
   const [totalSaleAmount, setTotalSaleAmount] = useState(0);
   const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
   const [totalSalesCount, setTotalSalesCount] = useState(0);
+  const [totalCustomers, setTotalCustomers] = useState(0);
 
   const fetchSales = async () => {
     try {
@@ -43,10 +44,14 @@ export default function DashboardComp() {
       .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
       .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
     const totalSalesCount = sales.length;
+
+    // update total customers
+    const totalCustomers = new Set(users.map((user)=> user.id)).size;
   
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
     setTotalSalesCount(totalSalesCount);
+    setTotalCustomers(totalCustomers);
   }, [sales]);
   
   
@@ -152,7 +157,7 @@ export default function DashboardComp() {
               <h3 className="text-gray-500 text-md uppercase">
                 Total Customer
               </h3>
-              <p className="text-2xl font-semibold">896</p>
+              <p className="text-2xl font-semibold">{totalCustomers}</p>
             </div>
             <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
