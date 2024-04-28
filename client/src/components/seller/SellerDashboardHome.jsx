@@ -181,78 +181,82 @@ export default function SellerDashboardHome() {
 
   },[sales, users]);
 
-  //fetch sales and users to create monthly chart
+  //fetch sales to create monthly chart
   useEffect(() => {
-    const fetchSales = async () => {
+    const fetchSales = async (shopId) => {
       try {
         const salesRes = await fetch(`api/sales-report/getsales/${shopId}`);
         const salesData = await salesRes.json();
         if (salesRes.ok) {
-          const userRes = await fetch("/api/user/getusers");
-          const userData = await userRes.json();
-          if (userRes.ok) {
-            const usersByMonth = userData.users.reduce((acc, user) => {
-              const month = new Date(user.createdAt).toLocaleString('default', { month: 'short' });
-              if (!acc[month]) {
-                acc[month] = new Set();
-              }
-              acc[month].add(user.id);
-              return acc;
-            }, {});
-  
-            const monthlyData = salesData.sales.reduce((acc, sale) => {
-              const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
-              if (!acc[month]) {
-                acc[month] = { salesCount: 0, customerCount: 0 };
-              }
-              acc[month].salesCount += 1; // Assuming each sale is one sale
-              acc[month].customerCount = usersByMonth[month].size;
-              return acc;
-            }, {});
-            
-            const months = Object.keys(monthlyData);
-            const salesCounts = months.map(month => monthlyData[month].salesCount);
-            const customerCounts = months.map(month => monthlyData[month].customerCount);
-  
-            const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
-            const monthlyChart = new Chart(monthlyChartCtx, {
-              type: "bar",
-              data: {
-                labels: months,
-                datasets: [
-                  {
-                    label: "Sales Count",
-                    data: salesCounts,
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    borderWidth: 1,
-                  },
-                  {
-                    label: "Customer Count",
-                    data: customerCounts,
-                    backgroundColor: "rgba(255, 206, 86, 0.5)",
-                    borderColor: "rgba(255, 206, 86, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
+          const monthlyData = salesData.sales.reduce((acc, sale) => {
+            const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
+            if (!acc[month]) {
+              acc[month] = { creditSalesCount: 0, cashSalesCount: 0 };
+            }
+            if (sale.type === 'Credit') {
+              acc[month].creditSalesCount += (sale.quantity * sale.unitPrice);
+            } else if (sale.type === 'Cash') {
+              acc[month].cashSalesCount += (sale.quantity * sale.unitPrice);
+            }
+            return acc;
+          }, {});
+          
+          const months = Object.keys(monthlyData);
+          const creditSalesCounts = months.map(month => monthlyData[month].creditSalesCount);
+          const cashSalesCounts = months.map(month => monthlyData[month].cashSalesCount);
+
+          const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
+          const monthlyChart = new Chart(monthlyChartCtx, {
+            type: "bar",
+            data: {
+              labels: months,
+              datasets: [
+                {
+                  label: "Credit Sales Amount",
+                  data: creditSalesCounts,
+                  backgroundColor: "rgba(54, 162, 235, 0.5)",
+                  borderColor: "rgba(54, 162, 235, 1)",
+                  borderWidth: 1,
+                },
+                {
+                  label: "Cash Sales Amount",
+                  data: cashSalesCounts,
+                  backgroundColor: "rgba(255, 206, 86, 0.5)",
+                  borderColor: "rgba(255, 206, 86, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
                 },
               },
-            });
-          }
+            },
+          });
         }
       } catch (error) {
         console.log(error.message);
       }
     };
-  
-    fetchSales();
+
+    const fetchShopId = async () => {
+      try {
+          const res = await fetch(`api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchSales(data.shops[0].id)
+          }
+      } catch (error) {
+          console.log(error.message);
+      }
+    }
+    fetchShopId();
   }, []);
+
+
+
 
   //fetch sales, users and products
   useEffect(() => {
@@ -421,7 +425,7 @@ export default function SellerDashboardHome() {
             </div>
             <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
               <div className="flex justify-between  p-3 text-sm font-semibold">
-                <h1 className="text-lg font-semibold">Monthly Sales and Customer Data</h1>
+                <h1 className="text-lg font-semibold">Monthly Sales Report</h1>
                 <Link to="/dashboard?tab=salesReport">
                   <Button color="green">See all</Button>
                 </Link>
