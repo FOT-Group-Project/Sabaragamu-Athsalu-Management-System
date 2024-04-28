@@ -71,4 +71,16 @@ export default function fetchdamageitems() {
   };
 
 
-}
+}//affter sending the data to the database table refresh the page
+useEffect(() => {
+  if (currentUser.role === "StoreKeeper") {
+    fetchdamageitems();
+  }
+}, []);
+
+const handleChange = (e) => {
+  setFormData({ ...formData, [e.target.id]: e.target.value });
+  console.log(formData);
+};
+
+
