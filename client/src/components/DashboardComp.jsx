@@ -20,6 +20,7 @@ export default function DashboardComp() {
   const [sales, setSales] = useState([]);
   const [totalSaleAmount, setTotalSaleAmount] = useState(0);
   const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
+  const [totalSalesCount, setTotalSalesCount] = useState(0);
 
   const fetchSales = async () => {
     try {
@@ -34,17 +35,20 @@ export default function DashboardComp() {
   };
   fetchSales();
 
-  // Calculate the total sale amount for all sales and today's sales
+  // Calculate total sales amount, total sales amount today, and total sales count
   useEffect(() => {
     const today = new Date().toLocaleDateString('en-CA');
     const totalAmount = sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
     const totalAmountToday = sales
       .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
       .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+    const totalSalesCount = sales.length;
   
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
+    setTotalSalesCount(totalSalesCount);
   }, [sales]);
+  
   
   useEffect(() => {
     const fetchUsers = async () => {
@@ -129,9 +133,9 @@ export default function DashboardComp() {
           <div className="flex justify-between">
             <div className="">
               <h3 className="text-gray-500 text-md uppercase">
-                Toatal Sale today
+                Toatal Sales
               </h3>
-              <p className="text-2xl font-semibold">163</p>
+              <p className="text-2xl font-semibold">{totalSalesCount}</p>
             </div>
             <HiTrendingUp className="bg-green-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
