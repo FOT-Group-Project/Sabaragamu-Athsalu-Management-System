@@ -9,5 +9,6 @@ router.post("/createshops", verifyToken, shopController.addShops);
 router.get("/getshops", verifyToken, shopController.getShops);
 router.delete("/deleteshop/:shopId", verifyToken, shopController.deleteShop);
 router.put("/updateshop/:shopId", verifyToken, shopController.updateShop);
+router.get("/getshop/:sellerId", verifyToken, shopController.getShopsBySellerId);
 
 module.exports = router;

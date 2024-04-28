@@ -38,12 +38,16 @@ export default function DashSellerProducts() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/shop-item/getshopitems`);
-      const data = await res.json();
-      if (res.ok) {
-        setProducts(data.shopItems);
-        if (data.product.length < 9) {
-          setShowMore(false);
+      const shopIdRes = await fetch(`/api/shop/getshop/${currentUser.id}`);
+      const shopIdData = await shopIdRes.json();
+      if (shopIdRes.ok) {
+        const productsRes = await fetch(`/api/shop-item/getshopitems/${shopIdData.shops[0].id}`);
+        const productsData = await productsRes.json();
+        if (productsRes.ok) {
+          setProducts(productsData.shopItems);
+          if (productsData.shopItems.length < 9) {
+            setShowMore(false);
+          }
         }
       }
     } catch (error) {
@@ -53,7 +57,7 @@ export default function DashSellerProducts() {
 
   useEffect(() => {
     fetchProducts();
-  }, [products.id]);
+  }, [currentUser.id]);
 
   return (
     <div className="p-3 w-full">

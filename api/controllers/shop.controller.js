@@ -67,6 +67,21 @@ function getShops(req,res){
         res.status(500).json({success:false, message:err});
     });
 }
+ 
+function getShopsBySellerId(req, res) {
+    const sellerId = req.params.sellerId;
+    models.Shop.findAll({
+        where: { sellerId: sellerId }
+    })
+    .then(data => {
+        res.status(200).json({ success: true, message: "Shops retrieved successfully", shops: data });
+    })
+    .catch(err => {
+        console.error("Error fetching shops:", err);
+        res.status(500).json({ success: false, message: err });
+    });
+}
+
 
 function deleteShop(req,res){
     const shopId = req.params.shopId;
@@ -126,5 +141,6 @@ module.exports = {
     getShops: getShops,
     deleteShop: deleteShop,
     updateShop: updateShop,
-    addShops: addShops
+    addShops: addShops,
+    getShopsBySellerId: getShopsBySellerId
 };
