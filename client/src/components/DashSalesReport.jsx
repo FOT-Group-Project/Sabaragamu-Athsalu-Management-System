@@ -51,7 +51,7 @@ const filterSales = () => {
         const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
         const matchesSearch = sale.Product.itemName.toLowerCase().includes(searchQuery.toLowerCase());
         const isInDateRange = (!startDate || saleDate >= startDate.toLocaleDateString('en-CA')) && (!endDate || saleDate <= endDate.toLocaleDateString('en-CA'));
-        const matchesSaleType = selectedSaleType === "" || sale.type === selectedSaleType;
+        const matchesSaleType =  sale.type === selectedSaleType || selectedSaleType === "" ;
         return matchesSearch && isInDateRange && matchesSaleType;
     });
 
@@ -114,6 +114,11 @@ const filterSales = () => {
             fetchSales();
         }
     }, []);
+
+    // Call filterSales whenever selectedSaleType changes
+    useEffect(() => {
+        filterSales();
+    }, [selectedSaleType]);
     
 
     useEffect(() => {
