@@ -70,17 +70,17 @@ export default function DashProducts() {
     }
   };
 
-  const fetchStore = async () => {
-    try {
-      const res = await fetch(`/api/store/getstores`);
-      const data = await res.json();
-      if (res.ok) {
-        setStores(data.stores);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const fetchStore = async () => {
+  //   try {
+  //     const res = await fetch(`/api/store/getstores`);
+  //     const data = await res.json();
+  //     if (res.ok) {
+  //       setStores(data.stores);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   useEffect(() => {
     fetchProducts();
