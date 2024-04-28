@@ -38,8 +38,12 @@ export default function DashboardComp() {
 
   // Calculate total sales amount, total sales amount today, and total sales count
   useEffect(() => {
-    const today = new Date().toLocaleDateString('en-CA');
+    const today = new Date().toLocaleDateString('en-CA'); // Get today's date in the format 'yyyy-mm-dd'
+
+    // Calculate total sales amount
     const totalAmount = sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+
+    // Calculate total sales amount today
     const totalAmountToday = sales
       .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
       .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
