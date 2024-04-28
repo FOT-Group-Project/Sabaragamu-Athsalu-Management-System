@@ -19,6 +19,7 @@ export default function DashboardComp() {
   const { currentUser } = useSelector((state) => state.user);
   const [sales, setSales] = useState([]);
   const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+  const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
 
   const fetchSales = async () => {
     try {
@@ -33,16 +34,18 @@ export default function DashboardComp() {
   };
   fetchSales();
 
-  //get amoundpaid from each sale and sum them up assigne to totalSaleAmount
+  // Calculate the total sale amount for all sales and today's sales
   useEffect(() => {
+    const today = new Date().toLocaleDateString('en-CA');
     const totalAmount = sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+    const totalAmountToday = sales
+      .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
+      .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
+    setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
   }, [sales]);
   
-  
-  
-  
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -109,8 +112,8 @@ export default function DashboardComp() {
         <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
           <div className="flex justify-between">
             <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Total Profit</h3>
-              <p className="text-2xl font-semibold">Rs 14,056</p>
+              <h3 className="text-gray-500 text-md uppercase">Income today</h3>
+              <p className="text-2xl font-semibold">Rs {totalSaleAmountToday}</p>
             </div>
             <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
