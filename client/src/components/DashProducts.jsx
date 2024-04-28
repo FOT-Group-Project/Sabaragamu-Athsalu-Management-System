@@ -70,21 +70,8 @@ export default function DashProducts() {
     }
   };
 
-  const fetchStore = async () => {
-    try {
-      const res = await fetch(`/api/store/getstores`);
-      const data = await res.json();
-      if (res.ok) {
-        setStores(data.stores);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   useEffect(() => {
     fetchProducts();
-    //fetchStore();
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -282,46 +269,6 @@ export default function DashProducts() {
                           onChange={handleChange}
                         />
                       </div>
-                    </div>
-
-                    <div className="flex gap-5 mb-4">
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Store" />
-                        </div>
-                        <Select
-                          id="storeId"
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              storeId: e.target.value,
-                            })
-                          }
-                          required
-                        >
-                           <option value="1">Select a Store</option>
-                          {stores.map((store) => (
-                            <option key={store.id} value={store.id}>
-                              {store.storeName}
-                            </option>
-                          ))}
-                        </Select>
-                      </div>
-
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Quantity" />
-                        </div>
-                        <TextInput
-                          id="itemQuantity"
-                          type="number"
-                          placeholder="100"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        />
-                      </div>
-
                       <div>
                         <div className="mb-2 block">
                           <Label value="Price" />
@@ -336,7 +283,6 @@ export default function DashProducts() {
                         />
                       </div>
                     </div>
-
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
@@ -442,48 +388,6 @@ export default function DashProducts() {
                           defaultValue={formData.manufacturer}
                         />
                       </div>
-                    </div>
-
-                    <div className="flex gap-5 mb-4">
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Store" />
-                        </div>
-                        <Select
-                          id="storeId"
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              storeId: e.target.value,
-                            })
-                          }
-                          defaultValue={formData.storeId}
-                          required
-                        >
-                           <option value="1">Select a Store</option>
-                          {stores.map((store) => (
-                            <option key={store.id} value={store.id}>
-                              {store.storeName}
-                            </option>
-                          ))}
-                        </Select>
-                      </div>
-
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Quantity" />
-                        </div>
-                        <TextInput
-                          id="itemQuantity"
-                          type="number"
-                          placeholder="100"
-                          required
-                          shadow
-                          onChange={handleChange}
-                          defaultValue={formData.itemQuantity}
-                        />
-                      </div>
-
                       <div>
                         <div className="mb-2 block">
                           <Label value="Price" />
@@ -499,7 +403,6 @@ export default function DashProducts() {
                         />
                       </div>
                     </div>
-
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
@@ -537,8 +440,6 @@ export default function DashProducts() {
                   <TableHeadCell>SKU</TableHeadCell>
                   <TableHeadCell>Type</TableHeadCell>
                   <TableHeadCell>Manufacturer</TableHeadCell>
-                  {/* <TableHeadCell>Store Name</TableHeadCell> */}
-                  {/* <TableHeadCell>Quantity</TableHeadCell> */}
                   <TableHeadCell>Price</TableHeadCell>
                   <TableHeadCell></TableHeadCell>
                   <TableHeadCell>
@@ -554,8 +455,6 @@ export default function DashProducts() {
                       <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
-                      {/* <TableCell>{product.store.storeName}</TableCell> */}
-                      <TableCell>{product.itemQuantity}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
