@@ -36,27 +36,38 @@ export default function DashboardComp() {
   };
   fetchSales();
 
-  // Calculate total sales amount, total sales amount today, and total sales count
-  useEffect(() => {
-    const today = new Date().toLocaleDateString('en-CA'); // Get today's date in the format 'yyyy-mm-dd'
-
-    // Calculate total sales amount
-    const totalAmount = sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
-
-    // Calculate total sales amount today
-    const totalAmountToday = sales
+  //calculate total sales amount
+  const calculateTotalSalesAmount = () => {
+    return sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  };
+  
+  //calculate total sales amount today
+  const calculateTotalSalesAmountToday = () => {
+    const today = new Date().toLocaleDateString('en-CA');
+    return sales
       .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
       .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
-    const totalSalesCount = sales.length;
+  };
+  
+  //calculate total sales count
+  const calculateTotalSalesCount = () => {
+    return sales.length;
+  };
+  
 
-    // update total customers
-    const totalCustomers = new Set(users.map((user)=> user.id)).size;
+  //update total sales amount, total sales amount today, total sales count, and total customers
+  useEffect(() => {
+    const totalAmount = calculateTotalSalesAmount();
+    const totalAmountToday = calculateTotalSalesAmountToday();
+    const totalSalesCount = calculateTotalSalesCount();
+    const totalCustomers = new Set(users.map((user) => user.id)).size;
   
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
     setTotalSalesCount(totalSalesCount);
     setTotalCustomers(totalCustomers);
   }, [sales]);
+  
   
   
   useEffect(() => {
