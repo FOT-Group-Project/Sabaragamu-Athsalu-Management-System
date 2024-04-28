@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         as: 'seller',
         onDelete: 'RESTRICT',
       });
+
+      //User belongsToMany Store as storeKeeper
+      User.belongsToMany(models.Store, {
+        through: 'StoreKeeperManageStore',
+        as: 'storeKeeper',
+        foreignKey: 'storeKeeperId',
+      });
     }
   }
   User.init({

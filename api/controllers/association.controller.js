@@ -59,8 +59,27 @@ async function getAllShops(req, res) {
   });
 }
 
+//get all stores with their storeKeepers
+async function getAllStoreswithStorekeepers(req, res) {
+  // // Find all stores and include the storeKeeper
+  const storesWithStoreKeepers = await models.Store.findAll({
+    include: [
+      {
+        model: models.User,
+        as: "storeKeeper",
+      },
+    ],
+  
+  });
+
+  res.status(200).json({
+    data: storesWithStoreKeepers,
+  });
+}
+
 module.exports = {
   getSellerInfoShop: getSellerInfoShop,
   getAllShops: getAllShops,
   getStoreKeeperInfoStore: getStoreKeeperInfoStore,
+  getAllStoreswithStorekeepers: getAllStoreswithStorekeepers,
 };

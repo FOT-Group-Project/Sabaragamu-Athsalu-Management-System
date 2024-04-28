@@ -42,6 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
   const [stores, setStores] = useState([]);
+  const [skeeperMstores, setstoreStoreKeeper] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storeIdToDelete, setStoreIdToDelete] = useState("");
@@ -56,6 +57,30 @@ export default function DashStores() {
   const [createLoding, setCreateLoding] = useState(null);
 
   const [storeKeeper, setStoreKeeper] = useState([]);
+
+  //fetch StoreKeeperManageStore data
+  const fetchStoreKeeperManageStore = async () => {
+    try {
+      const res = await fetch(`/api/associations/getAllStoreswithStorekeepers`);
+      
+      const data = await res.json();
+
+      const skeeperMstores = data.data.map(store => ({
+        id: store.id,
+        storeName: store.storeName,
+        phone: store.phone,
+        address: store.address,
+        storeKeeperFirstName: store.storeKeeper.map(sk => sk.firstname).length > 0 ? store.storeKeeper.slice(-1).map(sk => sk.firstname) : "Not Assign Yet",
+        storeKeeperManageStoreDate: store.storeKeeper.map(sk => sk.StoreKeeperManageStore.date) ? new Date(store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)).toLocaleDateString() : "Not Assign Yet"
+      }));
+      
+      if (res.ok) {
+        setstoreStoreKeeper(skeeperMstores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
 //add data to the storekeeperassigntore async
   const handleAssignStoreKeeper = async (e) => {
@@ -102,7 +127,7 @@ export default function DashStores() {
 
   const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/store/getstores`);
+      const res = await fetch(`/api/store/getStores`);
       const data = await res.json();
       if (res.ok) {
         setStores(data.stores);
@@ -119,6 +144,7 @@ export default function DashStores() {
     if (currentUser.role == "Admin") {
       fetchStores();
       fetchStoreKeeper();
+      fetchStoreKeeperManageStore();
     }
   }, [stores.id]);
 
@@ -208,6 +234,8 @@ export default function DashStores() {
       console.log(error.message);
     }
   };
+
+
 
   return (
     <div className="p-3 w-full">
@@ -531,7 +559,9 @@ export default function DashStores() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && stores.length > 0 ? (
+          
+
+          {currentUser.role == "Admin" && skeeperMstores.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -539,17 +569,22 @@ export default function DashStores() {
                   <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
+                  <TableHeadCell>Store Keeper Name</TableHeadCell>
+                  <TableHeadCell>Date of Assign</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {stores.map((store) => (
+                {skeeperMstores.map((store) => (
+                  
                   <Table.Body className="divide-y" key={store.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>ST:{store.id}</TableCell>
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
+                      <TableCell>{store.storeKeeperFirstName}</TableCell>
+                      <TableCell>{store.storeKeeperManageStoreDate}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button
