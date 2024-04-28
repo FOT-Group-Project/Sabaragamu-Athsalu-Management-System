@@ -124,7 +124,6 @@ export default function DashboardComp() {
         },
       });
       
-
       setChart(newChart);
     } else {
       // Update the chart data if it's already initialized
@@ -136,6 +135,82 @@ export default function DashboardComp() {
     }
 
   },[sales, users]);
+
+
+  //fetch sales and users to create monthly chart
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const salesRes = await fetch("/api/sales-report/getsales");
+        const salesData = await salesRes.json();
+        if (salesRes.ok) {
+          const userRes = await fetch("/api/user/getusers");
+          const userData = await userRes.json();
+          if (userRes.ok) {
+            const usersByMonth = userData.users.reduce((acc, user) => {
+              const month = new Date(user.createdAt).toLocaleString('default', { month: 'short' });
+              if (!acc[month]) {
+                acc[month] = new Set();
+              }
+              acc[month].add(user.id);
+              return acc;
+            }, {});
+  
+            const monthlyData = salesData.sales.reduce((acc, sale) => {
+              const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
+              if (!acc[month]) {
+                acc[month] = { salesCount: 0, customerCount: 0 };
+              }
+              acc[month].salesCount += 1;
+              acc[month].customerCount = usersByMonth[month].size;
+              return acc;
+            }, {});
+            
+            const months = Object.keys(monthlyData);
+            const salesCounts = months.map(month => monthlyData[month].salesCount);
+            const customerCounts = months.map(month => monthlyData[month].customerCount);
+  
+            const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
+            const monthlyChart = new Chart(monthlyChartCtx, {
+              type: "bar",
+              data: {
+                labels: months,
+                datasets: [
+                  {
+                    label: "Sales Count",
+                    data: salesCounts,
+                    backgroundColor: "rgba(54, 162, 235, 0.5)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                  },
+                  {
+                    label: "Customer Count",
+                    data: customerCounts,
+                    backgroundColor: "rgba(255, 206, 86, 0.5)",
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+  
+    fetchSales();
+  }, []);
+  
+  
 
   //fetch sales, users and products
   useEffect(() => {
@@ -181,110 +256,110 @@ export default function DashboardComp() {
 
   return (
     <div className="p-3 w-full md:mx-auto">
-            <AnimatePresence>
+      <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
         >
-      <Breadcrumb aria-label="Default breadcrumb example">
-        <Breadcrumb.Item href="#" icon={HiHome}>
-          Home
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Products</Breadcrumb.Item>
-      </Breadcrumb>
+          <Breadcrumb aria-label="Default breadcrumb example">
+            <Breadcrumb.Item href="#" icon={HiHome}>
+              Home
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>Products</Breadcrumb.Item>
+          </Breadcrumb>
 
-      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Dashboard</h1>
+          <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Dashboard</h1>
 
-      <div className="flex-wrap flex gap-4 justify-around">
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Total Income </h3>
-              <p className="text-2xl font-semibold">Rs {totalSaleAmount}</p>
+          <div className="flex-wrap flex gap-4 justify-around">
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Total Income </h3>
+                  <p className="text-2xl font-semibold">Rs {totalSaleAmount}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-blue-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalIncomeLastMonth} Last Month
+                </span>
+              </div>
             </div>
-            <HiOutlineCurrencyDollar className="bg-blue-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />
-              Rs {totalIncomeLastMonth} Last Month
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Income today</h3>
-              <p className="text-2xl font-semibold">Rs {totalSaleAmountToday}</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Income today</h3>
+                  <p className="text-2xl font-semibold">Rs {totalSaleAmountToday}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalIncomeLastDay} Last Day
+                </span>
+              </div>
             </div>
-            <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />
-              Rs {totalIncomeLastDay} Last Day
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">
-                Toatal Sales
-              </h3>
-              <p className="text-2xl font-semibold">{totalSalesCount}</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">
+                    Toatal Sales
+                  </h3>
+                  <p className="text-2xl font-semibold">{totalSalesCount}</p>
+                </div>
+                <HiTrendingUp className="bg-green-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />{totalSalesLastDay} Last Day
+                </span>
+              </div>
             </div>
-            <HiTrendingUp className="bg-green-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />{totalSalesLastDay} Last Day
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">
-                Total Customer
-              </h3>
-              <p className="text-2xl font-semibold">{totalCustomers}</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">
+                    Total Customer
+                  </h3>
+                  <p className="text-2xl font-semibold">{totalCustomers}</p>
+                </div>
+                <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />{totalCustomersLastMonth} Last Month
+                </span>
+              </div>
             </div>
-            <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />{totalCustomersLastMonth} Last Month
-            </span>
+          <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-lg font-semibold">Sales Overview</h1>
+                {/* <Link to="/dashboard?tab=salesReport">
+                  <Button color="green">See all</Button>
+                </Link> */}
+              </div>
+              <canvas id="pieChart" width="400" height="400"></canvas>
+            </div>
+            <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
+              <div className="flex justify-between  p-3 text-sm font-semibold">
+                <h1 className="text-lg font-semibold">Monthly Sales and Customer Data</h1>
+                <Link to="/dashboard?tab=salesReport">
+                  <Button color="green">See all</Button>
+                </Link>
+              </div>
+               <canvas id="monthlyChart" width="400" height="400"></canvas>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-semibold">Sales Overview</h1>
-            {/* <Link to="/dashboard?tab=salesReport">
-              <Button color="green">See all</Button>
-            </Link> */}
-          </div>
-          <canvas id="pieChart" width="400" height="400"></canvas>
-        </div>
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-          <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-lg font-semibold">Income Overview</h1>
-            <Link to="/dashboard?tab=salesReport">
-              <Button color="green">See all</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-              
-      </motion.div>
+        </motion.div>
       </AnimatePresence>
     </div>
   );
