@@ -3,6 +3,13 @@ const models = require("../models");
 const { parse } = require("dotenv");
 
 function sendShopItemoShop(req, res) {
+  if (req.body.quantity < 1 ){
+    res.status(404).json({
+      success: false,
+      message: "Quantity must be greater than 0",
+    });
+    return;
+  }
   models.ShopItem.findOne({
     where: { id: req.params.id },
   }).then((dataX) => {

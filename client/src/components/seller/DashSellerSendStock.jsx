@@ -57,6 +57,7 @@ export default function DashSellerSendStock() {
   const [customers, setCustomers] = useState([]);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [sendItemId, setSendItemId] = useState(null);
+  const [showModalConfirm, setShowModalConfirm] = useState(false);
 
   const [openModal, setOpenModal] = useState(false);
   const [createUserError, setCreateUserError] = useState(null);
@@ -142,7 +143,6 @@ export default function DashSellerSendStock() {
           return product;
         });
         setAllProducts(updatedProducts);
-
         Toast.success("Stock sent successfully!");
       } else {
         setCreateUserError(data.message);
@@ -218,34 +218,93 @@ export default function DashSellerSendStock() {
                           <Alert color="failure">{createUserError}</Alert>
                         )}
                         <div className="flex gap-5 mb-4">
-                          <div className="w-1/2 ">
+                          <div className="w-full ">
                             {openModal ? (
                               <>
-                                <div className="">
-                                  <h1 className="text-lg text-gray-700">
-                                    <b>Item Details</b>
-                                  </h1>
-                                  <p className="mt-3">
-                                    <b className="">Name : </b>
-                                    {selectedProduct.item.itemName}
-                                  </p>
-                                  <p>
-                                    <b>Price : </b> Rs.{" "}
-                                    {selectedProduct.item.itemPrice}
-                                  </p>
-                                  <div className="flex gap-3 ">
-                                    <p>
-                                      <b>Quantity : </b>{" "}
-                                    </p>
-                                    <Badge
-                                      className="pl-3 pr-3"
-                                      color="green"
-                                      icon={HiCheckCircle}
-                                    >
-                                      {selectedProduct.quantity -
-                                        formData.quantity}{" "}
-                                      in stock
-                                    </Badge>
+                                <div className="flex gap-2 w-full">
+                                  <div className="w-full">
+                                    <div className="mb-2 block">
+                                      <h1 className="text-lg text-gray-500">
+                                        <b>Item Details</b>
+                                      </h1>
+                                    </div>
+
+                                    <div className="mb-2 block">
+                                      <h1 className="text-md text-gray-700">
+                                        <b>Name : </b>{" "}
+                                        {selectedProduct.item.itemName}
+                                      </h1>
+                                    </div>
+
+                                    <div className="mb-2 block">
+                                      <h1 className="text-md text-gray-700">
+                                        <b>Price : </b> Rs.{" "}
+                                        {selectedProduct.item.itemPrice}
+                                      </h1>
+                                    </div>
+
+                                    <div className=" block">
+                                      <h1 className="text-md text-gray-700">
+                                        <div className="flex gap-3 ">
+                                          <p>
+                                            <b>Quantity : </b>{" "}
+                                          </p>
+                                          <Badge
+                                            className="pl-3 pr-3"
+                                            color="green"
+                                            icon={HiCheckCircle}
+                                          >
+                                            {selectedProduct.quantity} in stock
+                                          </Badge>
+                                        </div>
+                                      </h1>
+                                    </div>
+                                  </div>
+
+                                  <div className="w-full">
+                                    <div className="mb-2 block">
+                                      <h1 className="text-lg text-gray-500">
+                                        <b>Send Details</b>
+                                      </h1>
+                                    </div>
+
+                                    <div className="mb-2 block">
+                                      <h1 className="text-md text-gray-700">
+                                        <b>Shop Name : </b>{" "}
+                                        {shops.map((shop) => {
+                                          if (shop.id == formData.shopId) {
+                                            return shop.shopName;
+                                          }
+                                        })}
+                                      </h1>
+                                    </div>
+
+                                    <div className="block">
+                                      <h1 className="text-md text-gray-700">
+                                        <div className="flex gap-3 ">
+                                          <p>
+                                            <b>Quantity : </b>{" "}
+                                          </p>
+                                          {formData.quantity > 0 ? (
+                                            <Badge
+                                              size="sm"
+                                              className="pl-3 pr-3"
+                                              color={
+                                                formData.quantity ==
+                                                selectedProduct.quantity
+                                                  ? "red"
+                                                  : "yellow"
+                                              }
+                                              icon={HiCheckCircle}
+                                            >
+                                              {formData.quantity} Items
+                                            </Badge>
+                                          ) : (
+                                            ""
+                                          )}
+                                        </div>
+                                      </h1>
+                                    </div>
                                   </div>
                                 </div>
                               </>
@@ -255,23 +314,7 @@ export default function DashSellerSendStock() {
                           </div>
                         </div>
 
-                        <div className="flex gap-2 mb-4">
-                          <div className="w-1/2">
-                            <div className="mb-2 block">
-                              <Label value="Item Quantity" />
-                            </div>
-
-                            <TextInput
-                              id="quantity"
-                              type="number"
-                              placeholder="10"
-                              required
-                              shadow
-                              onChange={handleChange}
-                              value={formData.quantity}
-                              defaultValue={1}
-                            />
-                          </div>
+                        <div className="flex gap-2 mb-1">
                           <div className="w-1/2">
                             <div className="mb-2 block">
                               <Label value="Select Shop" />
@@ -302,6 +345,23 @@ export default function DashSellerSendStock() {
                                 </>
                               ))}
                             </Select>
+                          </div>
+
+                          <div className="w-1/2">
+                            <div className="mb-2 block">
+                              <Label value="Item Quantity" />
+                            </div>
+
+                            <TextInput
+                              id="quantity"
+                              type="number"
+                              placeholder="Enter quantity"
+                              required
+                              shadow
+                              onChange={handleChange}
+                              value={formData.quantity}
+                              min={1}
+                            />
                           </div>
                         </div>
 
