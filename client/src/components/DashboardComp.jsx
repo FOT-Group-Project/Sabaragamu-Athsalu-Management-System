@@ -396,8 +396,8 @@ export default function DashboardComp() {
               <canvas id="pieChart" width="400" height="400"></canvas>
             </div>
             <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-              <div className="flex justify-between  p-3 text-sm font-semibold">
-                <h1 className="text-lg font-semibold">Monthly Sales and Customer Data</h1>
+            <div className="flex justify-between items-center p-3 text-sm font-semibold">
+                <h1 className="text-lg font-semibold mr-4">Monthly Sales Count and Customer Count</h1>
                 <Link to="/dashboard?tab=salesReport">
                   <Button color="green">See all</Button>
                 </Link>
