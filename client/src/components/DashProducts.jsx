@@ -537,8 +537,8 @@ export default function DashProducts() {
                   <TableHeadCell>SKU</TableHeadCell>
                   <TableHeadCell>Type</TableHeadCell>
                   <TableHeadCell>Manufacturer</TableHeadCell>
-                  <TableHeadCell>Store Name</TableHeadCell>
-                  <TableHeadCell>Quantity</TableHeadCell>
+                  {/* <TableHeadCell>Store Name</TableHeadCell> */}
+                  {/* <TableHeadCell>Quantity</TableHeadCell> */}
                   <TableHeadCell>Price</TableHeadCell>
                   <TableHeadCell></TableHeadCell>
                   <TableHeadCell>
@@ -554,8 +554,8 @@ export default function DashProducts() {
                       <TableCell>{product.sku}</TableCell>
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
-                      <TableCell>{product.store.storeName}</TableCell>
-                      <TableCell>{product.itemQuantity}</TableCell>
+                      {/* <TableCell>{product.store.storeName}</TableCell> */}
+                      {/* <TableCell>{product.itemQuantity}</TableCell> */}
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
