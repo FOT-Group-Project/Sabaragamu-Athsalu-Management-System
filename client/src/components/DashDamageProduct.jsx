@@ -39,3 +39,36 @@ import {
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 
+export default function fetchdamageitems() {
+ 
+  const { currentUser } = useSelector((state) => state.user);
+  const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [storekeepdamageitemsIdToDelete, setstorekeepdamageitemsIdToDelete] = useState("");
+
+  const [openModal, setOpenModal] = useState(false);
+  const [openModalEdit, setOpenModalEdit] = useState(false);
+
+  const [formData, setFormData] = useState({});
+  const [storekeepdamageitems, setStoreKeepDamageItems] = useState([]);
+  const [createUserError, setCreateUserError] = useState(null);
+  const [createLoding, setCreateLoding] = useState(false);
+
+  
+
+  
+//call the api to send the data to the database shopreturndamageitems table
+  const fetchdamageitems = async () => {
+    try {
+      const res = await fetch("/api/storekeepdamageitems");
+      const data = await res.json();
+      if (res.ok) {
+        setStoreKeepDamageItems(data);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+}
