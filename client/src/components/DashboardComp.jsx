@@ -16,7 +16,6 @@ import Chart from 'chart.js/auto';
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
-  const [products, setProducts] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const [sales, setSales] = useState([]);
   const [totalSaleAmount, setTotalSaleAmount] = useState(0);
