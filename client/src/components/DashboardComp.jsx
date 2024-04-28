@@ -27,20 +27,26 @@ export default function DashboardComp() {
   const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
   const [totalSalesLastDay, setTotalSalesLastDay] = useState(0);
   const [totalCustomersLastMonth, setTotalCustomersLastMonth] = useState(0);
+  const [totalCreditSales, setTotalCreditSales] = useState(0);
+  const [totalCreditSalesLastMonth, setTotalCreditSalesLastMonth] = useState(0);
   const [chart, setChart] = useState(null);
 
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
-    return sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+    return sales.filter(sale => sale.type === 'Cash').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0)
   };
   
   //calculate total sales amount today
   const calculateTotalSalesAmountToday = () => {
     const today = new Date().toLocaleDateString('en-CA');
     return sales
-      .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
+      .filter((sale) => {
+        const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
+        return saleDate === today && sale.type === 'Cash';
+      })
       .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
   };
+  
   
   //calculate total sales count
   const calculateTotalSalesCount = () => {
@@ -49,19 +55,43 @@ export default function DashboardComp() {
 
   //calculate total income last month
   const calculateTotalIncomeLastMonth = () => {
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    const lastMonthSales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastMonth);
-    return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
-  }
+  const lastMonth = new Date();
+  lastMonth.setMonth(lastMonth.getMonth() - 1);
+  const lastMonthSales = sales.filter((sale) => {
+    const saleDate = new Date(sale.buyDateTime);
+    return saleDate >= lastMonth && sale.type === 'Cash';
+  });
+  return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+};
+
 
   //calculate total income last day
   const calculateTotalIncomeLastDay = () => {
     const lastDay = new Date();
     lastDay.setDate(lastDay.getDate() - 1);
-    const lastDaySales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay);
+    const lastDaySales = sales.filter((sale) => {
+      const saleDate = new Date(sale.buyDateTime);
+      return saleDate >= lastDay && sale.type === 'Cash';
+    });
     return lastDaySales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  };
+
+  //calculate total credit sales
+  const calculateTotalCreditSales = () => {
+    return sales.filter(sale => sale.type === 'Credit').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
   }
+
+  //calculate total credit sales last month
+  const calculateTotalCreditSalesLastMonth = () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthSales = sales.filter((sale) => {
+      const saleDate = new Date(sale.buyDateTime);
+      return saleDate >= lastMonth && sale.type === 'Credit';
+    });
+    return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
+  
   
   //calculate total sales last day
   const calculateTotalSalesLastDay = () => {
@@ -88,8 +118,9 @@ export default function DashboardComp() {
     const totalIncomeLastDay = calculateTotalIncomeLastDay();
     const totalSalesLastDay = calculateTotalSalesLastDay();
     const totalCustomersLastMonth = calculateTotalCustomersLastMonth();
+    const totalCreditSales = calculateTotalCreditSales();
+    const totalCreditSalesLastMonth = calculateTotalCreditSalesLastMonth();
     
-
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
     setTotalSalesCount(totalSalesCount);
@@ -98,6 +129,8 @@ export default function DashboardComp() {
     setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
     setTotalSalesLastDay(totalSalesLastDay);
     setTotalCustomersLastMonth(totalCustomersLastMonth);
+    setTotalCreditSales(Number(totalCreditSales.toFixed(2)));
+    setTotalCreditSalesLastMonth(Number(totalCreditSalesLastMonth.toFixed(2)));
 
     // Initialize the chart if it's not already initialized
     if (!chart) {
@@ -299,6 +332,22 @@ export default function DashboardComp() {
                 <span className="text-green-500 font-semibold flex items-center ">
                   <HiArrowNarrowUp />
                   Rs {totalIncomeLastDay} Last Day
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Credit Sales</h3>
+                  <p className="text-2xl font-semibold">Rs {totalCreditSales}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-pink-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalCreditSalesLastMonth} Last Month
                 </span>
               </div>
             </div>
