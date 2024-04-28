@@ -61,18 +61,6 @@ export default function DashSellerSendStock() {
   const [seller, setSeller] = useState([]);
   const [formData, setFormData] = useState({});
 
-  const fetchShopItemById = async (id) => {
-    try {
-      const res = await fetch(`/api/shop-item/getshopitem/${id}`);
-      const data = await res.json();
-      if (res.ok) {
-        setSelectedProduct(data.shopItem);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   // Function to handle search query change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -129,12 +117,58 @@ export default function DashSellerSendStock() {
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-    console.log(formData);
-  };
+  // const handleChange = (e) => {
+  //   setFormData({ ...formData, [e.target.id]: e.target.value });
+  //   console.log(formData);
+  // };
 
   const handleSubmit = async (e) => {};
+
+  // Function to handle changes in the TextInput field
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    let updatedQuantity = value;
+
+    // Check if the entered quantity exceeds the available quantity of the selected product
+    if (id === "quantity" && selectedProduct) {
+      const maxAvailableQuantity = selectedProduct.quantity;
+      updatedQuantity = Math.min(
+        parseInt(value),
+        maxAvailableQuantity
+      ).toString();
+    }
+
+    // Update the quantity in the formData state
+    setFormData({ ...formData, [id]: updatedQuantity });
+  };
+
+  // Function to handle increasing the quantity
+  const handleIncreaseQuantity = () => {
+    // Get the current quantity from the formData state
+    const currentQuantity = formData.quantity ? parseInt(formData.quantity) : 0;
+    // Get the maximum available quantity of the selected product
+    const maxAvailableQuantity = selectedProduct.quantity;
+
+    // Calculate the new quantity by adding 1
+    const newQuantity = currentQuantity + 1;
+
+    // Check if the new quantity exceeds the maximum available quantity
+    // If it does, set the quantity to the maximum available quantity
+    const updatedQuantity = Math.min(newQuantity, maxAvailableQuantity);
+
+    // Update the quantity in the formData state
+    setFormData({ ...formData, quantity: updatedQuantity.toString() });
+  };
+
+  // Function to handle decreasing the quantity
+  const handleDecreaseQuantity = () => {
+    // Get the current quantity from the formData state
+    const currentQuantity = formData.quantity ? parseInt(formData.quantity) : 0;
+    // Decrease the quantity by 1, ensuring it doesn't go below 1
+    const newQuantity = Math.max(1, currentQuantity - 1);
+    // Update the quantity in the formData state
+    setFormData({ ...formData, quantity: newQuantity.toString() });
+  };
 
   return (
     <div className="p-3 w-full">
@@ -187,33 +221,42 @@ export default function DashSellerSendStock() {
                         {createUserError && (
                           <Alert color="failure">{createUserError}</Alert>
                         )}
-                        <div className="flex gap-2 mb-4">
+                        <div className="flex gap-5 mb-4">
                           <div className="w-1/2 ">
-                            <>
-                              <h1 className="text-lg text-gray-700">
-                                <b>Item Details</b>
-                              </h1>
-                              <p className="mt-3">
-                                <b className="">Name : </b>
-                                {formData.itemName}
-                              </p>
-                              <p>
-                                <b>Price : </b> Rs. {formData.itemPrice}
-                              </p>
-                              <div className="flex gap-3">
-                                <p>
-                                  <b>Quantity : </b>{" "}
-                                </p>
-                                <Badge
-                                  onClick={() => setOpenModal(true)}
-                                  className="pl-3 pr-3"
-                                  color="green"
-                                  icon={HiCheckCircle}
-                                >
-                                  {formData.quantity} in stock
-                                </Badge>
-                              </div>
-                            </>
+                            {openModal ? (
+                              <>
+                                <div className="">
+                                  <h1 className="text-lg text-gray-700">
+                                    <b>Item Details</b>
+                                  </h1>
+                                  <p className="mt-3">
+                                    <b className="">Name : </b>
+                                    {selectedProduct.item.itemName}
+                                  </p>
+                                  <p>
+                                    <b>Price : </b> Rs.{" "}
+                                    {selectedProduct.item.itemPrice}
+                                  </p>
+                                  <div className="flex gap-3 ">
+                                    <p>
+                                      <b>Quantity : </b>{" "}
+                                    </p>
+                                    <Badge
+                                      onClick={() => setOpenModal(true)}
+                                      className="pl-3 pr-3"
+                                      color="green"
+                                      icon={HiCheckCircle}
+                                    >
+                                      {selectedProduct.quantity -
+                                        formData.quantity}{" "}
+                                      in stock 
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         </div>
 
@@ -222,17 +265,31 @@ export default function DashSellerSendStock() {
                             <div className="mb-2 block">
                               <Label value="Item Quantity" />
                             </div>
-                            <TextInput
-                              id="quantity"
-                              type="number"
-                              placeholder="10"
-                              required
-                              shadow
-                              onChange={handleChange}
-                              disabled={
-                                formData.quantity === allProducts.quantity
-                              }
-                            />
+
+                            <div className="flex gap-2">
+                              <Button
+                                color="gray"
+                                onClick={handleDecreaseQuantity}
+                              >
+                                <MdRemove className="h-4 w-4" />
+                              </Button>
+                              <TextInput
+                                id="quantity"
+                                type="number"
+                                placeholder="10"
+                                required
+                                shadow
+                                onChange={handleChange}
+                                value={formData.quantity}
+                                defaultValue={1}
+                              />
+                              <Button
+                                color="gray"
+                                onClick={handleIncreaseQuantity}
+                              >
+                                <MdAdd className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                           <div className="w-1/2">
                             <div className="mb-2 block">
@@ -335,14 +392,7 @@ export default function DashSellerSendStock() {
                             <Button
                               onClick={() => {
                                 setOpenModal(true);
-                                fetchShopItemById(product.id);
-                                setFormData({
-                                  id: product.id,
-                                  quantity: product.quantity,
-                                  itemName: product.item.itemName,
-                                  itemPrice: product.item.itemPrice,
-                                  shopId: product.shopId,
-                                });
+                                setSelectedProduct(product);
                               }}
                               disabled={product.quantity === 0}
                               color="blue"
