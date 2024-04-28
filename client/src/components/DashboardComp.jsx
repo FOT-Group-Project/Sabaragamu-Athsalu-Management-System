@@ -12,16 +12,222 @@ import {
 import { Button, Table, Breadcrumb } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import Chart from 'chart.js/auto';
 
 export default function DashboardComp() {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
+  const [sales, setSales] = useState([]);
+  const [totalSaleAmount, setTotalSaleAmount] = useState(0);
+  const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
+  const [totalSalesCount, setTotalSalesCount] = useState(0);
+  const [totalCustomers, setTotalCustomers] = useState(0);
+  const [totalIncomeLastMonth, setTotalIncomeLastMonth] = useState(0);
+  const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
+  const [totalSalesLastDay, setTotalSalesLastDay] = useState(0);
+  const [totalCustomersLastMonth, setTotalCustomersLastMonth] = useState(0);
+  const [chart, setChart] = useState(null);
 
+  //calculate total sales amount
+  const calculateTotalSalesAmount = () => {
+    return sales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  };
+  
+  //calculate total sales amount today
+  const calculateTotalSalesAmountToday = () => {
+    const today = new Date().toLocaleDateString('en-CA');
+    return sales
+      .filter((sale) => new Date(sale.buyDateTime).toLocaleDateString('en-CA') === today)
+      .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  };
+  
+  //calculate total sales count
+  const calculateTotalSalesCount = () => {
+    return sales.length;
+  };
+
+  //calculate total income last month
+  const calculateTotalIncomeLastMonth = () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthSales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastMonth);
+    return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
+
+  //calculate total income last day
+  const calculateTotalIncomeLastDay = () => {
+    const lastDay = new Date();
+    lastDay.setDate(lastDay.getDate() - 1);
+    const lastDaySales = sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay);
+    return lastDaySales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
+  
+  //calculate total sales last day
+  const calculateTotalSalesLastDay = () => {
+    const lastDay = new Date();
+    lastDay.setDate(lastDay.getDate() - 1);
+    return sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay).length;
+  }
+
+  // Calculate total customers last month
+  const calculateTotalCustomersLastMonth = () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthUsers = users.filter((user) => new Date(user.createdAt) >= lastMonth);
+    return new Set(lastMonthUsers.map((user) => user.id)).size;
+  };
+
+  //update total sales amount, total sales count, total customers, total income last month
   useEffect(() => {
+    const totalAmount = calculateTotalSalesAmount();
+    const totalAmountToday = calculateTotalSalesAmountToday();
+    const totalSalesCount = calculateTotalSalesCount();
+    const totalCustomers = new Set(users.map((user) => user.id)).size;
+    const totalIncomeLastMonth = calculateTotalIncomeLastMonth();
+    const totalIncomeLastDay = calculateTotalIncomeLastDay();
+    const totalSalesLastDay = calculateTotalSalesLastDay();
+    const totalCustomersLastMonth = calculateTotalCustomersLastMonth();
+    
+
+    setTotalSaleAmount(Number(totalAmount.toFixed(2)));
+    setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
+    setTotalSalesCount(totalSalesCount);
+    setTotalCustomers(totalCustomers);
+    setTotalIncomeLastMonth(Number(totalIncomeLastMonth.toFixed(2)));
+    setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
+    setTotalSalesLastDay(totalSalesLastDay);
+    setTotalCustomersLastMonth(totalCustomersLastMonth);
+
+    // Initialize the chart if it's not already initialized
+    if (!chart) {
+      const creditSales = sales.filter(sale => sale.type === 'Credit').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+      const cashSales = sales.filter(sale => sale.type === 'Cash').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+
+      const ctx = document.getElementById('pieChart').getContext('2d');
+      const newChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Credit Sales', 'Cash Sales'],
+          datasets: [{
+            data: [creditSales, cashSales],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.5)', // Red
+              'rgba(54, 162, 235, 0.5)'   // Blue
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+      });
+      
+      setChart(newChart);
+    } else {
+      // Update the chart data if it's already initialized
+      const creditSales = sales.filter(sale => sale.type === 'Credit').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+      const cashSales = sales.filter(sale => sale.type === 'Cash').reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+
+      chart.data.datasets[0].data = [creditSales, cashSales];
+      chart.update();
+    }
+
+  },[sales, users]);
+
+
+  //fetch sales and users to create monthly chart
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const salesRes = await fetch("/api/sales-report/getsales");
+        const salesData = await salesRes.json();
+        if (salesRes.ok) {
+          const userRes = await fetch("/api/user/getusers");
+          const userData = await userRes.json();
+          if (userRes.ok) {
+            const usersByMonth = userData.users.reduce((acc, user) => {
+              const month = new Date(user.createdAt).toLocaleString('default', { month: 'short' });
+              if (!acc[month]) {
+                acc[month] = new Set();
+              }
+              acc[month].add(user.id);
+              return acc;
+            }, {});
+  
+            const monthlyData = salesData.sales.reduce((acc, sale) => {
+              const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
+              if (!acc[month]) {
+                acc[month] = { salesCount: 0, customerCount: 0 };
+              }
+              acc[month].salesCount += 1; // Assuming each sale is one sale
+              acc[month].customerCount = usersByMonth[month].size;
+              return acc;
+            }, {});
+            
+            const months = Object.keys(monthlyData);
+            const salesCounts = months.map(month => monthlyData[month].salesCount);
+            const customerCounts = months.map(month => monthlyData[month].customerCount);
+  
+            const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
+            const monthlyChart = new Chart(monthlyChartCtx, {
+              type: "bar",
+              data: {
+                labels: months,
+                datasets: [
+                  {
+                    label: "Sales Count",
+                    data: salesCounts,
+                    backgroundColor: "rgba(54, 162, 235, 0.5)",
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    borderWidth: 1,
+                  },
+                  {
+                    label: "Customer Count",
+                    data: customerCounts,
+                    backgroundColor: "rgba(255, 206, 86, 0.5)",
+                    borderColor: "rgba(255, 206, 86, 1)",
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+  
+    fetchSales();
+  }, []);
+  
+  //fetch sales, users and products
+  useEffect(() => {
+    const fetchSales = async () => {
+      try {
+        const res = await fetch("/api/sales-report/getsales");
+        const data = await res.json();
+        if (res.ok) {
+          setSales(data.sales);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchSales();
+
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/user//getusers");
+        const res = await fetch("/api/user/getusers");
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -44,158 +250,114 @@ export default function DashboardComp() {
       }
     };
     fetchProducts();
-  }, [currentUser]);
+  }, []);
 
   return (
     <div className="p-3 w-full md:mx-auto">
-            <AnimatePresence>
+      <AnimatePresence>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.5 }}
         >
-      <Breadcrumb aria-label="Default breadcrumb example">
-        <Breadcrumb.Item href="#" icon={HiHome}>
-          Home
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Products</Breadcrumb.Item>
-      </Breadcrumb>
+          <Breadcrumb aria-label="Default breadcrumb example">
+            <Breadcrumb.Item href="#" icon={HiHome}>
+              Home
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>Products</Breadcrumb.Item>
+          </Breadcrumb>
 
-      <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Dashboard</h1>
+          <h1 className="mt-3 mb-3 text-left font-semibold text-xl">Dashboard</h1>
 
-      <div className="flex-wrap flex gap-4 justify-around">
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Total Income </h3>
-              <p className="text-2xl font-semibold">Rs 350,056</p>
+          <div className="flex-wrap flex gap-4 justify-around">
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Total Income </h3>
+                  <p className="text-2xl font-semibold">Rs {totalSaleAmount}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-blue-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalIncomeLastMonth} Last Month
+                </span>
+              </div>
             </div>
-            <HiOutlineCurrencyDollar className="bg-blue-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />
-              Rs 11,200 Last Month
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">Total Profit</h3>
-              <p className="text-2xl font-semibold">Rs 14,056</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Income today</h3>
+                  <p className="text-2xl font-semibold">Rs {totalSaleAmountToday}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalIncomeLastDay} Last Day
+                </span>
+              </div>
             </div>
-            <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />
-              Rs 1,200 Last Day
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">
-                Toatal Sale today
-              </h3>
-              <p className="text-2xl font-semibold">163</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">
+                    Toatal Sales
+                  </h3>
+                  <p className="text-2xl font-semibold">{totalSalesCount}</p>
+                </div>
+                <HiTrendingUp className="bg-green-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />{totalSalesLastDay} Last Day
+                </span>
+              </div>
             </div>
-            <HiTrendingUp className="bg-green-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-          </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />8 Last Day
-            </span>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-          <div className="flex justify-between">
-            <div className="">
-              <h3 className="text-gray-500 text-md uppercase">
-                Total Customer
-              </h3>
-              <p className="text-2xl font-semibold">896</p>
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">
+                    Total Customer
+                  </h3>
+                  <p className="text-2xl font-semibold">{totalCustomers}</p>
+                </div>
+                <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />{totalCustomersLastMonth} Last Month
+                </span>
+              </div>
             </div>
-            <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>
-          <div className="flex gap-4 text-sm">
-            <span className="text-green-500 font-semibold flex items-center ">
-              <HiArrowNarrowUp />4 Last Month
-            </span>
+          <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-lg font-semibold">Sales Overview</h1>
+                {/* <Link to="/dashboard?tab=salesReport">
+                  <Button color="green">See all</Button>
+                </Link> */}
+              </div>
+              <canvas id="pieChart" width="400" height="400"></canvas>
+            </div>
+            <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
+              <div className="flex justify-between  p-3 text-sm font-semibold">
+                <h1 className="text-lg font-semibold">Monthly Sales and Customer Data</h1>
+                <Link to="/dashboard?tab=salesReport">
+                  <Button color="green">See all</Button>
+                </Link>
+              </div>
+               <canvas id="monthlyChart" width="400" height="400"></canvas>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-          <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent Users</h1>
-            <Link to={"/dashboard?tab=products"}>
-              {" "}
-              <Button color="green">See all</Button>
-            </Link>
-          </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>User image</Table.HeadCell>
-              <Table.HeadCell>user name</Table.HeadCell>
-              <Table.HeadCell>position</Table.HeadCell>
-            </Table.Head>
-            {users &&
-              users.map((user) => (
-                <Table.Body key={user.id} className="divide-y">
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>
-                      <img
-                        src={user.profilepicurl}
-                        alt="product"
-                        className="w-10 h-10 rounded-full bg-gray-500"
-                      />
-                    </Table.Cell>
-                    <Table.Cell>{user.username}</Table.Cell>
-                    <Table.Cell>{user.role}</Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
-          </Table>
-        </div>
-
-        <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-          <div className="flex justify-between  p-3 text-sm font-semibold">
-            <h1 className="text-center p-2">Recent products</h1>
-            <Link to={"/dashboard?tab=products"}>
-              {" "}
-              <Button color="green">See all</Button>
-            </Link>
-          </div>
-          <Table hoverable>
-            <Table.Head>
-              <Table.HeadCell>Product Name</Table.HeadCell>
-              <Table.HeadCell>Type</Table.HeadCell>
-              <Table.HeadCell>Manufacturer</Table.HeadCell>
-              <Table.HeadCell>Price</Table.HeadCell>
-            </Table.Head>
-            {products &&
-              products.map((product) => (
-                <Table.Body key={product.id} className="divide-y">
-                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                    <Table.Cell>{product.itemName}</Table.Cell>
-                    <Table.Cell>{product.itemType}</Table.Cell>
-                    <Table.Cell>{product.manufacturer}</Table.Cell>
-                    <Table.Cell>{product.itemPrice}</Table.Cell>
-                  </Table.Row>
-                </Table.Body>
-              ))}
-          </Table>
-        </div>
-      </div>
-      </motion.div>
+        </motion.div>
       </AnimatePresence>
     </div>
   );

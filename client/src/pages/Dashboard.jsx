@@ -8,7 +8,7 @@ import DashShops from "../components/DashShops";
 import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
-import DashPOS from "../components/DashPOS";
+import DashPOS from "../components/seller/DashPOS";
 import SellerDashboardHome from "../components/SellerDashboardHome";
 import DashSellerProducts from "../components/seller/DashSellerProducts";
 import DashSellerInvetory from "../components/seller/DashSellerInvetory";

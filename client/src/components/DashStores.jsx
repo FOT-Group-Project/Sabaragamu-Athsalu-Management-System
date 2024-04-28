@@ -42,6 +42,7 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function DashStores() {
   const { currentUser } = useSelector((state) => state.user);
   const [stores, setStores] = useState([]);
+  const [skeeperMstores, setstoreStoreKeeper] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storeIdToDelete, setStoreIdToDelete] = useState("");
@@ -57,6 +58,61 @@ export default function DashStores() {
 
   const [storeKeeper, setStoreKeeper] = useState([]);
 
+  //fetch StoreKeeperManageStore data
+  const fetchStoreKeeperManageStore = async () => {
+    try {
+      const res = await fetch(`/api/associations/getAllStoreswithStorekeepers`);
+      
+      const data = await res.json();
+
+      const skeeperMstores = data.data.map(store => ({
+        id: store.id,
+        storeName: store.storeName,
+        phone: store.phone,
+        address: store.address,
+        storeKeeperFirstName: store.storeKeeper.map(sk => sk.firstname).length > 0 ? store.storeKeeper.slice(-1).map(sk => sk.firstname) : "Not Assign Yet",
+        storeKeeperManageStoreDate: store.storeKeeper.map(sk => sk.StoreKeeperManageStore.date) ? new Date(store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)).toLocaleDateString() : "Not Assign Yet"
+      }));
+      
+      if (res.ok) {
+        setstoreStoreKeeper(skeeperMstores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+//add data to the storekeeperassigntore async
+  const handleAssignStoreKeeper = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch(`/api/storekeepermanagestore/assignstorekeeper`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModalAssignStoreKeeper(false);
+        fetchStores();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
+  };
+
   const fetchStoreKeeper = async () => {
     try {
       const res = await fetch(`/api/user/getstorekeepers`);
@@ -71,7 +127,7 @@ export default function DashStores() {
 
   const fetchStores = async () => {
     try {
-      const res = await fetch(`/api/store/getstores`);
+      const res = await fetch(`/api/store/getStores`);
       const data = await res.json();
       if (res.ok) {
         setStores(data.stores);
@@ -88,6 +144,7 @@ export default function DashStores() {
     if (currentUser.role == "Admin") {
       fetchStores();
       fetchStoreKeeper();
+      fetchStoreKeeperManageStore();
     }
   }, [stores.id]);
 
@@ -178,6 +235,8 @@ export default function DashStores() {
     }
   };
 
+
+
   return (
     <div className="p-3 w-full">
       <AnimatePresence>
@@ -219,7 +278,104 @@ export default function DashStores() {
               Assign Store Keeper
             </Button>
           </div>
-          
+
+          <Modal show={openModalAssignStoreKeeper} onClose={() => setOpenModalAssignStoreKeeper(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header>Assign Store Keeper</Modal.Header>
+              <Modal.Body>
+                <div className="space-y-6">
+                  <form
+                    onSubmit={handleAssignStoreKeeper}
+                    className="flex flex-col flex-grow gap-4"
+                  >
+                    {createUserError && (
+                      <Alert color="failure">{createUserError}</Alert>
+                    )}
+                    <div className="flex gap-2 mb-4">
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Store ID" />
+                        </div>
+                        <Select
+                          id="storeId"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Store</option>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
+
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Store Keeper ID" />
+                        </div>
+                        <Select
+                          id="storeKeeperId"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Store Keeper</option>
+                          {storeKeeper.map((storekeeper) => (
+                            <option key={storekeeper.id} value={storekeeper.id}>
+                              {storekeeper.firstname}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Date" />
+                        </div>
+                        <TextInput
+                          id="date"
+                          type="date"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        color="blue"
+                        type="submit"
+                        disabled={createLoding}
+                      >
+                        {createLoding ? (
+                          <>
+                            <Spinner size="sm" />
+                            <span className="pl-3">Loading...</span>
+                          </>
+                        ) : (
+                          "Assign Store Keeper"
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="gray"
+                        onClick={() => setOpenModalAssignStoreKeeper(false)}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
             <motion.div
@@ -301,106 +457,6 @@ export default function DashStores() {
                         size="sm"
                         color="gray"
                         onClick={() => setOpenModal(false)}
-                      >
-                        Decline
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              </Modal.Body>
-            </motion.div>
-          </Modal>
-
-          <Modal show={openModalAssignStoreKeeper} onClose={() => setOpenModalAssignStoreKeeper(false)}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Modal.Header>Assign Store Keeper</Modal.Header>
-              <Modal.Body>
-                <div className="space-y-6">
-                <form
-                    onSubmit={handleSubmitUpdate}
-                    className="flex flex-col flex-grow gap-4"
-                  >
-                    {createUserError && (
-                      <Alert color="failure">{createUserError}</Alert>
-                    )}
-                    <div className="flex gap-2 mb-4">
-                    <div>
-                        <div className="mb-2 block">
-                          <Label value="Select Store" />
-                        </div>
-                        <Select
-                          id="store"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        >
-                          <option value="">Select Store</option>
-                          {stores.map((store) => (
-                            <option key={store.id} value={store.id}>
-                              {store.storeName}
-                            </option>
-                          ))}
-                        </Select>
-                      </div>
-
-                      {/* Select field for storekeepers */}
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Select Store Keeper" />
-                        </div>
-                        <Select
-                          id="storeKeeper"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        >
-                          <option value="">Select Store Keeper</option>
-                          {storeKeeper.map((storeKeeper) => (
-                            <option key={storeKeeper.id} value={storeKeeper.id}>
-                              {storeKeeper.firstname}
-                            </option>
-                          ))}
-                        </Select>
-                      </div> 
-
-                      {/* Date Picker*/}
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="Start Date" />
-                        </div>
-                        <TextInput
-                          id="startDate"
-                          type="date"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        />
-                        </div>
-                    </div>
-                    <div className="flex gap-2 justify-end">
-                      <Button
-                        color="blue"
-                        type="submit"
-                        disabled={createLoding}
-                      >
-                        {createLoding ? (
-                          <>
-                            <Spinner size="sm" />
-                            <span className="pl-3">Loading...</span>
-                          </>
-                        ) : (
-                          "Assign Store Keeper"
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        color="gray"
-                        onClick={() => setOpenModalAssignStoreKeeper(false)}
                       >
                         Decline
                       </Button>
@@ -503,7 +559,9 @@ export default function DashStores() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && stores.length > 0 ? (
+          
+
+          {currentUser.role == "Admin" && skeeperMstores.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -511,17 +569,22 @@ export default function DashStores() {
                   <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>Address</TableHeadCell>
                   <TableHeadCell>Phone Number</TableHeadCell>
+                  <TableHeadCell>Store Keeper Name</TableHeadCell>
+                  <TableHeadCell>Date of Assign</TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {stores.map((store) => (
+                {skeeperMstores.map((store) => (
+                  
                   <Table.Body className="divide-y" key={store.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>ST:{store.id}</TableCell>
                       <TableCell>{store.storeName}</TableCell>
                       <TableCell>{store.address}</TableCell>
                       <TableCell>{store.phone}</TableCell>
+                      <TableCell>{store.storeKeeperFirstName}</TableCell>
+                      <TableCell>{store.storeKeeperManageStoreDate}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button

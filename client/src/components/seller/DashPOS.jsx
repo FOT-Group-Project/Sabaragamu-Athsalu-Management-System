@@ -30,10 +30,10 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/add-pic.png";
+
 import {
   HiOutlineExclamationCircle,
   HiPlusCircle,
@@ -48,6 +48,8 @@ import {
 import { MdAdd, MdRemove } from "react-icons/md";
 
 export default function DashPOS() {
+  const { currentUser } = useSelector((state) => state.user);
+
   const [allProducts, setAllProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
@@ -72,16 +74,22 @@ export default function DashPOS() {
   useEffect(() => {
     fetchProducts();
     fetchCustomers();
-  }, []);
+  }, [currentUser.id]);
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`/api/shop-item/getshopitems`);
-      const data = await res.json();
-      if (res.ok) {
-        setAllProducts(data.shopItems);
-        if (data.product.length < 9) {
-          setShowMore(false);
+      const shopIdRes = await fetch(`/api/shop/getshop/${currentUser.id}`);
+      const shopIdData = await shopIdRes.json();
+      if (shopIdRes.ok) {
+        const productsRes = await fetch(
+          `/api/shop-item/getshopitems/${shopIdData.shops[0].id}`
+        );
+        const productsData = await productsRes.json();
+        if (productsRes.ok) {
+          setAllProducts(productsData.shopItems);
+          if (productsData.shopItems.length < 9) {
+            setShowMore(false);
+          }
         }
       }
     } catch (error) {
@@ -153,14 +161,6 @@ export default function DashPOS() {
       selectedProducts.filter((product) => product.id !== productId)
     );
   };
-
-  // const calculateTotalPrice = () => {
-  //   let totalPrice = 0;
-  //   selectedProducts.forEach((product) => {
-  //     totalPrice += product.itemPrice * product.quantity;
-  //   });
-  //   return totalPrice;
-  // };
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;

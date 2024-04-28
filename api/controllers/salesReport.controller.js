@@ -43,7 +43,7 @@ function save(req, res){
           res.status(201).json({
             success: true,
             message: "Customer buy item created successfully",
-            data: result
+            sales: result
           })
         }).catch((error)=>{
           res.status(500).json({
