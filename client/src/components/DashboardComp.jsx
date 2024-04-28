@@ -161,7 +161,7 @@ export default function DashboardComp() {
               if (!acc[month]) {
                 acc[month] = { salesCount: 0, customerCount: 0 };
               }
-              acc[month].salesCount += 1;
+              acc[month].salesCount += 1; // Assuming each sale is one sale
               acc[month].customerCount = usersByMonth[month].size;
               return acc;
             }, {});
@@ -210,8 +210,6 @@ export default function DashboardComp() {
     fetchSales();
   }, []);
   
-  
-
   //fetch sales, users and products
   useEffect(() => {
     const fetchSales = async () => {
