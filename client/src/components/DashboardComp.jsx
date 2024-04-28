@@ -373,7 +373,7 @@ export default function DashboardComp() {
               <div className="flex justify-between">
                 <div className="">
                   <h3 className="text-gray-500 text-md uppercase">
-                    Total Customer
+                    Total Customers
                   </h3>
                   <p className="text-2xl font-semibold">{totalCustomers}</p>
                 </div>
