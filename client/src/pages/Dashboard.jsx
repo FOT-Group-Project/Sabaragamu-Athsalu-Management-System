@@ -14,6 +14,7 @@ import DashSellerProducts from "../components/seller/DashSellerProducts";
 import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
+import DashSaleHistory from "../components/DashSaleHistory";
 
 import DashSalesReport from "../components/DashSalesReport";
 
@@ -69,6 +70,9 @@ export default function Dashboard() {
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
       {tab === "salesReport" && <DashSalesReport />}
+
+      {/*Sale Histor*/}
+      {tab === "saleHistory" && <DashSaleHistory />}
     </div>
   );
 }

@@ -101,7 +101,7 @@ function showSalesReport(req, res) {
       {
         model: models.User,
         as: "Customer",
-        attributes: ["firstname"],
+        attributes: ["firstname", "lastname"],
       },
       {
         model: models.Product,
@@ -134,12 +134,12 @@ function showSalesReport(req, res) {
 //show sales by shopId
 function showSalesByShopId(req, res){
   models.CustomerBuyItem.findAll({
-    where: {shopId: req.params.shopId},
+    where: { shopId: req.params.shopId },
     include: [
       {
         model: models.User,
         as: "Customer",
-        attributes: ["firstname"],
+        attributes: ["firstname", "lastname"],
       },
       {
         model: models.Product,
