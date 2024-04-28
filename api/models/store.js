@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
         as: 'storeKeeper',
         foreignKey: 'storeId',
       });
+      
+      //Store belongstomany Product 
+      Store.belongsToMany(models.Product, {
+        through: 'StoreItem',
+        as: 'product',
+        foreignKey: 'storeId',
+      });
     }
   }
   Store.init({
