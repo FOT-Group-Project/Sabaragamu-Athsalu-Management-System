@@ -84,7 +84,7 @@ export default function DashProducts() {
 
   useEffect(() => {
     fetchProducts();
-    fetchStore();
+    //fetchStore();
   }, [products.id]);
 
   const handleChange = (e) => {
@@ -555,7 +555,7 @@ export default function DashProducts() {
                       <TableCell>{product.itemType}</TableCell>
                       <TableCell>{product.manufacturer}</TableCell>
                       {/* <TableCell>{product.store.storeName}</TableCell> */}
-                      {/* <TableCell>{product.itemQuantity}</TableCell> */}
+                      <TableCell>{product.itemQuantity}</TableCell>
                       <TableCell>Rs. {product.itemPrice}</TableCell>
                       <TableCell></TableCell>
                       <TableCell>
