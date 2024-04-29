@@ -20,6 +20,8 @@ import { Label, Select } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { CiViewList } from "react-icons/ci";
+import { FiPrinter } from "react-icons/fi";
+import { PiExportBold } from "react-icons/pi";
 
 export default function DashSellerInvetory() {
   const { currentUser } = useSelector((state) => state.user);
@@ -70,8 +72,12 @@ export default function DashSellerInvetory() {
   // Function to generate bill ID
   const generateBillId = (bill) => {
     const { customerId, shopId, buyDateTime } = bill[0];
-    const formattedDate = new Date(buyDateTime).toLocaleDateString().replace(/\//g, "-");
-    const formattedTime = new Date(buyDateTime).toLocaleTimeString().replace(/:/g, "");
+    const formattedDate = new Date(buyDateTime)
+      .toLocaleDateString()
+      .replace(/\//g, "-");
+    const formattedTime = new Date(buyDateTime)
+      .toLocaleTimeString("en-US", { hour12: false,hour: '2-digit', minute: '2-digit'  })
+      .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
 
@@ -165,6 +171,14 @@ export default function DashSellerInvetory() {
                           <Button color="gray">
                             <CiViewList className="mr-3 h-4 w-4" />
                             View
+                          </Button>
+                          <Button color="gray">
+                            <PiExportBold className="mr-3 h-4 w-4" />
+                            Export
+                          </Button>
+                          <Button color="gray">
+                            <FiPrinter className="mr-3 h-4 w-4" />
+                            Print
                           </Button>
                         </Button.Group>
                       </TableCell>
