@@ -14,20 +14,20 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Chart from 'chart.js/auto';
 
-export default function DashboardComp() {
+export default function SellerDashboardHome() {
   const [users, setUsers] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const [sales, setSales] = useState([]);
   const [totalSaleAmount, setTotalSaleAmount] = useState(0);
   const [totalSaleAmountToday, setTotalSaleAmountToday] = useState(0);
   const [totalSalesCount, setTotalSalesCount] = useState(0);
-  const [totalCustomers, setTotalCustomers] = useState(0);
   const [totalIncomeLastMonth, setTotalIncomeLastMonth] = useState(0);
   const [totalIncomeLastDay, setTotalIncomeLastDay] = useState(0);
   const [totalSalesLastDay, setTotalSalesLastDay] = useState(0);
-  const [totalCustomersLastMonth, setTotalCustomersLastMonth] = useState(0);
   const [totalCreditSales, setTotalCreditSales] = useState(0);
   const [totalCreditSalesLastMonth, setTotalCreditSalesLastMonth] = useState(0);
+  const [totalCreditSalesToday, setTotalCreditSalesToday] = useState(0);
+  const [totalCreditSalesLastDay, setTotalCreditSalesLastDay] = useState(0);
   const [chart, setChart] = useState(null);
 
   //calculate total sales amount
@@ -91,6 +91,27 @@ export default function DashboardComp() {
     return lastMonthSales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
   }
   
+  //calculate total credit sales today
+  const calculateTotalCreditSalesToday = () => {
+    const today = new Date().toLocaleDateString('en-CA');
+    return sales
+      .filter((sale) => {
+        const saleDate = new Date(sale.buyDateTime).toLocaleDateString('en-CA');
+        return saleDate === today && sale.type === 'Credit';
+      })
+      .reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
+
+  //calculate total credit sales last day
+  const calculateTotalCreditSalesLastDay = () => {
+    const lastDay = new Date();
+    lastDay.setDate(lastDay.getDate() - 1);
+    const lastDaySales = sales.filter((sale) => {
+      const saleDate = new Date(sale.buyDateTime);
+      return saleDate >= lastDay && sale.type === 'Credit';
+    });
+    return lastDaySales.reduce((acc, sale) => acc + (sale.quantity * sale.unitPrice), 0);
+  }
   
   //calculate total sales last day
   const calculateTotalSalesLastDay = () => {
@@ -99,37 +120,29 @@ export default function DashboardComp() {
     return sales.filter((sale) => new Date(sale.buyDateTime) >= lastDay).length;
   }
 
-  // Calculate total customers last month
-  const calculateTotalCustomersLastMonth = () => {
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    const lastMonthUsers = users.filter((user) => new Date(user.createdAt) >= lastMonth);
-    return new Set(lastMonthUsers.map((user) => user.id)).size;
-  };
-
   //update total sales amount, total sales count, total customers, total income last month
   useEffect(() => {
     const totalAmount = calculateTotalSalesAmount();
     const totalAmountToday = calculateTotalSalesAmountToday();
     const totalSalesCount = calculateTotalSalesCount();
-    const totalCustomers = new Set(users.map((user) => user.id)).size;
     const totalIncomeLastMonth = calculateTotalIncomeLastMonth();
     const totalIncomeLastDay = calculateTotalIncomeLastDay();
     const totalSalesLastDay = calculateTotalSalesLastDay();
-    const totalCustomersLastMonth = calculateTotalCustomersLastMonth();
     const totalCreditSales = calculateTotalCreditSales();
     const totalCreditSalesLastMonth = calculateTotalCreditSalesLastMonth();
+    const totalCreditSalesToday = calculateTotalCreditSalesToday();
+    const totalCreditSalesLastDay = calculateTotalCreditSalesLastDay();
     
     setTotalSaleAmount(Number(totalAmount.toFixed(2)));
     setTotalSaleAmountToday(Number(totalAmountToday.toFixed(2)));
     setTotalSalesCount(totalSalesCount);
-    setTotalCustomers(totalCustomers);
     setTotalIncomeLastMonth(Number(totalIncomeLastMonth.toFixed(2)));
     setTotalIncomeLastDay(Number(totalIncomeLastDay.toFixed(2)));
     setTotalSalesLastDay(totalSalesLastDay);
-    setTotalCustomersLastMonth(totalCustomersLastMonth);
     setTotalCreditSales(Number(totalCreditSales.toFixed(2)));
     setTotalCreditSalesLastMonth(Number(totalCreditSalesLastMonth.toFixed(2)));
+    setTotalCreditSalesToday(Number(totalCreditSalesToday.toFixed(2)));
+    setTotalCreditSalesLastDay(Number(totalCreditSalesLastDay.toFixed(2)));
 
     // Initialize the chart if it's not already initialized
     if (!chart) {
@@ -168,85 +181,88 @@ export default function DashboardComp() {
 
   },[sales, users]);
 
-
-  //fetch sales and users to create monthly chart
+  //fetch sales to create monthly chart
   useEffect(() => {
-    const fetchSales = async () => {
+    const fetchSales = async (shopId) => {
       try {
-        const salesRes = await fetch("/api/sales-report/getsales");
+        const salesRes = await fetch(`api/sales-report/getsales/${shopId}`);
         const salesData = await salesRes.json();
         if (salesRes.ok) {
-          const userRes = await fetch("/api/user/getusers");
-          const userData = await userRes.json();
-          if (userRes.ok) {
-            const usersByMonth = userData.users.reduce((acc, user) => {
-              const month = new Date(user.createdAt).toLocaleString('default', { month: 'short' });
-              if (!acc[month]) {
-                acc[month] = new Set();
-              }
-              acc[month].add(user.id);
-              return acc;
-            }, {});
-  
-            const monthlyData = salesData.sales.reduce((acc, sale) => {
-              const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
-              if (!acc[month]) {
-                acc[month] = { salesCount: 0, customerCount: 0 };
-              }
-              acc[month].salesCount += 1; // Assuming each sale is one sale
-              acc[month].customerCount = usersByMonth[month].size;
-              return acc;
-            }, {});
-            
-            const months = Object.keys(monthlyData);
-            const salesCounts = months.map(month => monthlyData[month].salesCount);
-            const customerCounts = months.map(month => monthlyData[month].customerCount);
-  
-            const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
-            const monthlyChart = new Chart(monthlyChartCtx, {
-              type: "bar",
-              data: {
-                labels: months,
-                datasets: [
-                  {
-                    label: "Sales Count",
-                    data: salesCounts,
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    borderWidth: 1,
-                  },
-                  {
-                    label: "Customer Count",
-                    data: customerCounts,
-                    backgroundColor: "rgba(255, 206, 86, 0.5)",
-                    borderColor: "rgba(255, 206, 86, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
+          const monthlyData = salesData.sales.reduce((acc, sale) => {
+            const month = new Date(sale.buyDateTime).toLocaleString('default', { month: 'short' });
+            if (!acc[month]) {
+              acc[month] = { creditSalesCount: 0, cashSalesCount: 0 };
+            }
+            if (sale.type === 'Credit') {
+              acc[month].creditSalesCount += (sale.quantity * sale.unitPrice);
+            } else if (sale.type === 'Cash') {
+              acc[month].cashSalesCount += (sale.quantity * sale.unitPrice);
+            }
+            return acc;
+          }, {});
+          
+          const months = Object.keys(monthlyData);
+          const creditSalesCounts = months.map(month => monthlyData[month].creditSalesCount);
+          const cashSalesCounts = months.map(month => monthlyData[month].cashSalesCount);
+
+          const monthlyChartCtx = document.getElementById("monthlyChart").getContext("2d");
+          const monthlyChart = new Chart(monthlyChartCtx, {
+            type: "bar",
+            data: {
+              labels: months,
+              datasets: [
+                {
+                  label: "Credit Sales Amount",
+                  data: creditSalesCounts,
+                  backgroundColor: "rgba(54, 162, 235, 0.5)",
+                  borderColor: "rgba(54, 162, 235, 1)",
+                  borderWidth: 1,
+                },
+                {
+                  label: "Cash Sales Amount",
+                  data: cashSalesCounts,
+                  backgroundColor: "rgba(255, 206, 86, 0.5)",
+                  borderColor: "rgba(255, 206, 86, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
                 },
               },
-            });
-          }
+            },
+          });
         }
       } catch (error) {
         console.log(error.message);
       }
     };
-  
-    fetchSales();
+
+    const fetchShopId = async () => {
+      try {
+          const res = await fetch(`api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchSales(data.shops[0].id)
+          }
+      } catch (error) {
+          console.log(error.message);
+      }
+    }
+    fetchShopId();
   }, []);
-  
+
+
+
+
   //fetch sales, users and products
   useEffect(() => {
-    const fetchSales = async () => {
+    const fetchSales = async (shopId) => {
       try {
-        const res = await fetch("/api/sales-report/getsales");
+        const res = await fetch(`api/sales-report/getsales/${shopId}`);
         const data = await res.json();
         if (res.ok) {
           setSales(data.sales);
@@ -255,7 +271,19 @@ export default function DashboardComp() {
         console.log(error.message);
       }
     };
-    fetchSales();
+
+    const fetchShopId = async () => {
+      try {
+          const res = await fetch(`api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchSales(data.shops[0].id)
+          }
+      } catch (error) {
+          console.log(error.message);
+      }
+    }
+    fetchShopId();
 
     const fetchUsers = async () => {
       try {
@@ -338,7 +366,7 @@ export default function DashboardComp() {
             <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
               <div className="flex justify-between">
                 <div className="">
-                  <h3 className="text-gray-500 text-md uppercase">Credit Sales</h3>
+                  <h3 className="text-gray-500 text-md uppercase">Total Credit Sales</h3>
                   <p className="text-2xl font-semibold">Rs {totalCreditSales}</p>
                 </div>
                 <HiOutlineCurrencyDollar className="bg-pink-600  text-white rounded-full text-5xl p-3 shadow-lg" />
@@ -347,6 +375,22 @@ export default function DashboardComp() {
                 <span className="text-green-500 font-semibold flex items-center ">
                   <HiArrowNarrowUp />
                   Rs {totalCreditSalesLastMonth} Last Month
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
+              <div className="flex justify-between">
+                <div className="">
+                  <h3 className="text-gray-500 text-md uppercase">Credit Sales today</h3>
+                  <p className="text-2xl font-semibold">Rs {totalCreditSalesToday}</p>
+                </div>
+                <HiOutlineCurrencyDollar className="bg-red-600  text-white rounded-full text-5xl p-3 shadow-lg" />
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-green-500 font-semibold flex items-center ">
+                  <HiArrowNarrowUp />
+                  Rs {totalCreditSalesLastDay} Last Day
                 </span>
               </div>
             </div>
@@ -368,22 +412,6 @@ export default function DashboardComp() {
               </div>
             </div>
 
-            <div className="flex flex-col p-3 dark:bg-slate-800 gap-4 md:w-56 w-full rounded-md shadow-md">
-              <div className="flex justify-between">
-                <div className="">
-                  <h3 className="text-gray-500 text-md uppercase">
-                    Total Customers
-                  </h3>
-                  <p className="text-2xl font-semibold">{totalCustomers}</p>
-                </div>
-                <HiUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
-              </div>
-              <div className="flex gap-4 text-sm">
-                <span className="text-green-500 font-semibold flex items-center ">
-                  <HiArrowNarrowUp />{totalCustomersLastMonth} Last Month
-                </span>
-              </div>
-            </div>
           </div>
           <div className="mt-5 flex flex-wrap gap-8 py-3 mx-auto justify-center">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
@@ -396,8 +424,8 @@ export default function DashboardComp() {
               <canvas id="pieChart" width="400" height="400"></canvas>
             </div>
             <div className="flex flex-col w-full md:w-auto shadow-md p-2 rounded-md dark:bg-gray-800">
-            <div className="flex justify-between items-center p-3 text-sm font-semibold">
-                <h1 className="text-lg font-semibold mr-4">Monthly Sales Count and Customer Count</h1>
+              <div className="flex justify-between  p-3 text-sm font-semibold">
+                <h1 className="text-lg font-semibold">Monthly Sales Report</h1>
                 <Link to="/dashboard?tab=salesReport">
                   <Button color="green">See all</Button>
                 </Link>

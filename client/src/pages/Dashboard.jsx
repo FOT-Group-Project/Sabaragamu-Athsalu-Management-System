@@ -9,11 +9,12 @@ import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
 import DashPOS from "../components/seller/DashPOS";
-import SellerDashboardHome from "../components/SellerDashboardHome";
+import SellerDashboardHome from "../components/seller/SellerDashboardHome";
 import DashSellerProducts from "../components/seller/DashSellerProducts";
 import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
+import DashSaleHistory from "../components/DashSaleHistory";
 
 import DashSalesReport from "../components/DashSalesReport";
 
@@ -69,6 +70,9 @@ export default function Dashboard() {
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
       {tab === "salesReport" && <DashSalesReport />}
+
+      {/*Sale Histor*/}
+      {tab === "saleHistory" && <DashSaleHistory />}
     </div>
   );
 }
