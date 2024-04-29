@@ -22,12 +22,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CiViewList } from "react-icons/ci";
 import { FiPrinter } from "react-icons/fi";
 import { PiExportBold } from "react-icons/pi";
+import Logolight from "../assets/logolight.png";
+import Logodark from "../assets/logodark.png";
+import { IoMdClose } from "react-icons/io";
+import {
+  PDFViewer,
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+} from "@react-pdf/renderer";
 
 export default function DashSellerInvetory() {
   const { currentUser } = useSelector((state) => state.user);
   const [sales, setSales] = useState([]);
   const [selectedBill, setSelectedBill] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const theme = useSelector((state) => state.theme.theme);
 
   const fetchSales = async () => {
     try {
@@ -76,7 +88,11 @@ export default function DashSellerInvetory() {
       .toLocaleDateString()
       .replace(/\//g, "-");
     const formattedTime = new Date(buyDateTime)
-      .toLocaleTimeString("en-US", { hour12: false,hour: '2-digit', minute: '2-digit'  })
+      .toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      })
       .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
@@ -122,6 +138,164 @@ export default function DashSellerInvetory() {
               />
             </div>
           </div>
+
+          <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+              <div className="relative w-full max-w-lg mx-auto my-6">
+                <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                  <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
+                    <h3 className="text-2xl font-semibold">
+                      {theme === "light" ? (
+                        <img
+                          src={Logolight}
+                          className="h-10"
+                          alt="Flowbite Logo"
+                        />
+                      ) : (
+                        <img
+                          src={Logodark}
+                          className="h-10"
+                          alt="Flowbite Logo"
+                        />
+                      )}
+                    </h3>
+                    <div className="ml-4">
+                      <h1 className="text-xl font-bold">Invoice</h1>
+                      <div>
+                        Date :{" "}
+                        {selectedBill
+                          ? new Date(
+                              selectedBill[0].buyDateTime
+                            ).toLocaleDateString()
+                          : ""}
+                      </div>
+                      <div>
+                        INV# :{" "}
+                        {selectedBill ? generateBillId(selectedBill) : ""}
+                      </div>
+                    </div>
+                    {/* <button
+                      className="p-1 ml-auto bg-transparent border-0 text-gray-700 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      <span className="bg-transparent text-gray-700 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        X
+                      </span>
+                    </button> */}
+                  </div>
+
+                  <div className="relative p-6 flex-auto">
+                    <div className="mb-8">
+                      <h2 className="text-lg font-bold mb-4">Bill To:</h2>
+                      <div className="text-gray-700 mb-2">
+                        {selectedBill && selectedBill[0].Customer
+                          ? `${selectedBill[0].Customer.firstname} ${selectedBill[0].Customer.lastname}`
+                          : ""}
+                      </div>
+                      <div className="text-gray-700 mb-2">
+                        {selectedBill && selectedBill[0].Customer
+                          ? selectedBill[0].Customer.phone
+                          : ""}
+                      </div>
+                      {/* <div className="text-gray-700 mb-2">
+                        {selectedBill && selectedBill[0].Customer
+                          ? `${selectedBill[0].Customer.city}, ${selectedBill[0].Customer.country} ${selectedBill[0].Customer.postalCode}`
+                          : ""}
+                      </div> */}
+                      <div className="text-gray-700">
+                        {selectedBill && selectedBill[0].Customer
+                          ? selectedBill[0].Customer.email
+                          : ""}
+                      </div>
+                    </div>
+                    <hr className="mb-2" />
+                    <br></br>
+                    <table className="w-full mb-8">
+                      <thead>
+                        <tr>
+                          <th className="text-left font-bold text-gray-700">
+                            Description
+                          </th>
+                          <th className="text-right font-bold text-gray-700">
+                            Quantity
+                          </th>
+                          <th className="text-right font-bold text-gray-700">
+                            Unit Price
+                          </th>
+                          <th className="text-right font-bold text-gray-700">
+                            Total Price
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedBill &&
+                          selectedBill.map((sale) => (
+                            <tr key={sale.id}>
+                              <td className="text-left text-gray-700">
+                                {sale.Product.itemName}
+                              </td>
+                              <td className="text-right text-gray-700">
+                                {sale.quantity}
+                              </td>
+                              <td className="text-right text-gray-700">
+                                {sale.unitPrice.toFixed(2)}
+                              </td>
+                              <td className="text-right text-gray-700">
+                                ${(sale.quantity * sale.unitPrice).toFixed(2)}
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td className="text-left font-bold text-gray-700">
+                            Total
+                          </td>
+                          <td className="text-right font-bold text-gray-700"></td>
+                          <td className="text-right font-bold text-gray-700"></td>
+                          <td className="text-right font-bold text-gray-700">
+                            $
+                            {selectedBill
+                              ? calculateTotalAmount(selectedBill).toFixed(2)
+                              : ""}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                    <div className="text-gray-700 mb-2">
+                      Thank you for your business!
+                    </div>
+                    {/* <div className="text-gray-700 text-sm">
+                      Please remit payment within 30 days.
+                    </div> */}
+                    <div className="flex items-center justify-between p-6 border-t border-solid rounded-tl-lg rounded-tr-lg rounded-b border-gray-300">
+                      <Button.Group>
+                        <Button
+                          onClick={() => setIsModalOpen(false)}
+                          color="gray"
+                          className="rounded-lg"
+                        >
+                          <IoMdClose className="mr-3 h-4 w-4" />
+                          Close
+                        </Button>
+                      </Button.Group>
+                      <Button.Group>
+                        <Button color="gray">
+                          <PiExportBold className="mr-3 h-4 w-4" />
+                          Export
+                        </Button>
+                        <Button color="gray">
+                          <FiPrinter className="mr-3 h-4 w-4" />
+                          Print
+                        </Button>
+                      </Button.Group>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
+
           <div className="mt-4">
             {sales.length > 0 ? (
               <Table hoverable className="shadow-md w-full">
@@ -168,7 +342,13 @@ export default function DashSellerInvetory() {
                       <TableCell>{calculateTotalAmount(bill)}</TableCell>
                       <TableCell>
                         <Button.Group>
-                          <Button color="gray">
+                          <Button
+                            onClick={() => {
+                              setSelectedBill(bill);
+                              setIsModalOpen(true);
+                            }}
+                            color="gray"
+                          >
                             <CiViewList className="mr-3 h-4 w-4" />
                             View
                           </Button>

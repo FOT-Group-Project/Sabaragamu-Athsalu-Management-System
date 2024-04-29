@@ -101,7 +101,7 @@ function showSalesReport(req, res) {
       {
         model: models.User,
         as: "Customer",
-        attributes: ["firstname", "lastname"],
+        attributes: ["firstname", "lastname", "email", "phone"],
       },
       {
         model: models.Product,
@@ -139,7 +139,7 @@ function showSalesByShopId(req, res){
       {
         model: models.User,
         as: "Customer",
-        attributes: ["firstname", "lastname"],
+        attributes: ["firstname", "lastname", "email", "phone"],
       },
       {
         model: models.Product,
