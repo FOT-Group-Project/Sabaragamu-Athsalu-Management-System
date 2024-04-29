@@ -278,6 +278,7 @@ export default function DashShops() {
                           {seller.map((seller) => (
                             <option key={seller.id} value={seller.id}>
                               {seller.firstname}
+                              
                             </option>
                           ))}
                         </Select>
