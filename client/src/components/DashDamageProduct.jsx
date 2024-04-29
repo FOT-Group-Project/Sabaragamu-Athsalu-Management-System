@@ -78,9 +78,12 @@ export default function fetchdamageitems() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
+
   };
 
   return (
+  
+
     <div className="p-3 w-full">
       <AnimatePresence>
         <motion.div
@@ -177,11 +180,11 @@ export default function fetchdamageitems() {
                           shadow
                           onChange={handleChange}
                         >
-                          {/* {storeitems.map((storeitem) => (
+                          {storeitems.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
                               {storeitem.itemId}
                             </option>
-                          ))} */}
+                          ))}
                         </Select>
                       </div>
                     </div>
@@ -262,6 +265,7 @@ export default function fetchdamageitems() {
                         />
                       </div>
                       <div>
+                     
                         <div className="mb-2 block">
                           <Label value="Store id" />
                         </div>
@@ -274,27 +278,34 @@ export default function fetchdamageitems() {
                           onChange={handleChange}
                           value={formData.storeId}
                         >
-                          {/* {storeitems.map((storeitem) => (
+                          
+                          {storeitems.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
                               {storeitem.storeId}
                             </option>
-                          ))} */}
+                          ))}
                         </Select>
                       </div>
 
                       <div>
                         <div className="mb-2 block">
-                          <Label value="item id" />
+                          <Label value="item Name" />
                         </div>
-                        <TextInput
-                          id="item id"
+                        <Select
+                          id="itemId"
                           type="text"
                           placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemId}
-                        />
+                          value={formData.storename}
+                        >
+                          {storeitems.map((storeitem) => (
+                            <option key={storeitem.name} value={storeitem.name}>
+                              {storeitem.storename}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -331,7 +342,7 @@ export default function fetchdamageitems() {
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
                   <TableHeadCell> ID</TableHeadCell>
-                  <TableHeadCell>newUnitPrice</TableHeadCell>
+                  <TableHeadCell>Date</TableHeadCell>
                   <TableHeadCell>itemId </TableHeadCell>
                   <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>storeId </TableHeadCell>

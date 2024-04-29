@@ -124,10 +124,40 @@ function EditDamageProduct(req, res) {
 }
         
 
+//delete function for StoreKeepDamageItem table
+function deleteDamageProduct(req, res) {
+    const id = req.params.id;
+    models.StoreKeepDamageItem.destroy({
+            where: {
+                id: id,
+            },
+        })
+        .then((result) => {
+            if (result) {
+                res.status(200).json({
+                    success: true,
+                    message: "DamageProduct deleted successfully",
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: "DamageProduct not found",
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).json({
+                success: false,
+                message: "Some error occurred",
+                error: error,
+            });
+        });
+}
 
 
 
 module.exports = {
     getDamageProduct: getDamageProduct,
-    EditDamageProduct: EditDamageProduct
+    EditDamageProduct: EditDamageProduct,
+    deleteDamageProduct: deleteDamageProduct,
 };
