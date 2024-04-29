@@ -40,7 +40,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function fetchdamageitems() {
- 
   const { currentUser } = useSelector((state) => state.user);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -53,20 +52,18 @@ export default function fetchdamageitems() {
   const [storekeepdamageitems, setStoreKeepDamageItems] = useState([]);
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
+  const [storeitems, setStoreItems] = useState([]);
 
-  
 
-  
-//call the api to send the data to the database shopreturndamageitems table
-  const fetchdamageitems = async () => {
+  //fetch storeitem data from StoreItem table
+  const fetchStoreItems = async () => {
     try {
-      const res = await fetch("/api/storekeepdamageitems");
-      const data = await res.json();
-      if (res.ok) {
-        setStoreKeepDamageItems(data);
-      }
+      const response = await fetch("/api/damageproduct/getStoredamageItem");
+      const data = await response.json();
+      setStoreItems(data.data);
+      
     } catch (error) {
-      console.log(error.message);
+      console.error("Error:", error);
     }
   };
 
@@ -74,45 +71,13 @@ export default function fetchdamageitems() {
   //affter sending the data to the database table refresh the page
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
-      fetchdamageitems();
+      fetchStoreItems();
     }
   }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
-  };
-
- 
-  //add the data to the database table
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCreateLoding(true);
-    try {
-      const res = await fetch("/api/storekeepdamageitems", {
-        method: "POST",
-        headers: {
-         
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCreateUserError(data.message);
-        setCreateLoding(false);
-        return;
-      }
-
-      if (res.ok) {
-        setCreateUserError(null);
-        setCreateLoding(false);
-        setOpenModal(false);
-        fetchShops();
-      }
-    } catch (error) {
-      // setCreateUserError("Something went wrong");
-      setCreateLoding(false);
-    }
   };
 
   return (
@@ -132,7 +97,7 @@ export default function fetchdamageitems() {
           </Breadcrumb>
 
           <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
-          Dmage Items
+            Dmage Items
           </h1>
           <div className="flex gap-3 justify-end">
             <Button
@@ -144,7 +109,6 @@ export default function fetchdamageitems() {
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Damage Items
             </Button>
-            
           </div>
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
@@ -157,27 +121,11 @@ export default function fetchdamageitems() {
               <Modal.Header>Add Dmage Items</Modal.Header>
               <Modal.Body>
                 <div className="space-y-6">
-                  <form
-                    onSubmit={handleSubmit}
-                    className="flex flex-col flex-grow gap-4"
-                  >
+                  <form onSubmit={""} className="flex flex-col flex-grow gap-4">
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
                     <div className="flex gap-2 mb-4">
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="id" />
-                        </div>
-                        <TextInput
-                          id="id"
-                          type="text"
-                          placeholder="id"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        />
-                      </div>
                       <div>
                         <div className="mb-2 block">
                           <Label value="Date" />
@@ -221,16 +169,21 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="ItemId" />
                         </div>
-                        <TextInput
-                          id="ItemId"
+                        <Select
+                          id="itemId"
                           type="text"
                           placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
-                        />
+                        >
+                          {/* {storeitems.map((storeitem) => (
+                            <option key={storeitem.id} value={storeitem.id}>
+                              {storeitem.itemId}
+                            </option>
+                          ))} */}
+                        </Select>
                       </div>
-
                     </div>
 
                     <div className="flex gap-2 justify-end">
@@ -273,27 +226,13 @@ export default function fetchdamageitems() {
               <Modal.Body>
                 <div className="space-y-6">
                   <form
-                    onSubmit={handleSubmit}
+                    onSubmit={"handleSubmit"}
                     className="flex flex-col flex-grow gap-4"
                   >
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
                     <div className="flex gap-2 mb-4">
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="id" />
-                        </div>
-                        <TextInput
-                          id="id"
-                          type="text"
-                          placeholder="id"
-                          required
-                          shadow
-                          onChange={handleChange}
-                          value={formData.id}
-                        />
-                      </div>
                       <div>
                         <div className="mb-2 block">
                           <Label value="date" />
@@ -326,15 +265,21 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="Store id" />
                         </div>
-                        <TextInput
-                          id="store id"
+                        <Select
+                          id="itemId"
                           type="text"
                           placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
                           value={formData.storeId}
-                        />
+                        >
+                          {/* {storeitems.map((storeitem) => (
+                            <option key={storeitem.id} value={storeitem.id}>
+                              {storeitem.storeId}
+                            </option>
+                          ))} */}
+                        </Select>
                       </div>
 
                       <div>
@@ -351,8 +296,6 @@ export default function fetchdamageitems() {
                           value={formData.itemId}
                         />
                       </div>
-                     
-                     
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
@@ -367,7 +310,6 @@ export default function fetchdamageitems() {
                           </>
                         ) : (
                           "Edit Dmage Items"
-                          
                         )}
                       </Button>
                       <Button
@@ -384,13 +326,13 @@ export default function fetchdamageitems() {
             </motion.div>
           </Modal>
 
-          {currentUser.role === "StoreKeeper" ? ( 
+          {currentUser.role === "StoreKeeper" && storeitems.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
                   <TableHeadCell> ID</TableHeadCell>
                   <TableHeadCell>newUnitPrice</TableHeadCell>
-                  <TableHeadCell>itemId	</TableHeadCell>
+                  <TableHeadCell>itemId </TableHeadCell>
                   <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>storeId </TableHeadCell>
                   <TableHeadCell>itemId </TableHeadCell>
@@ -398,15 +340,16 @@ export default function fetchdamageitems() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {storekeepdamageitems.map((shop) => (
+                {console.log(storeitems.length)}
+                {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell>ST:{storekeepdamageitems.id}</TableCell>
-                      <TableCell>{storekeepdamageitems.date}</TableCell>
-                      <TableCell>{storekeepdamageitems.quantity}</TableCell>
-                      <TableCell>{storekeepdamageitems.storeId}</TableCell>
-                      <TableCell>{storekeepdamageitems.itemId}</TableCell>
-                      
+                      <TableCell>ST:{shop.id}</TableCell>
+                      <TableCell>{shop.date}</TableCell>
+                      <TableCell>{shop.quantity}</TableCell>
+                      <TableCell>{shop.storeId}</TableCell>
+                      <TableCell>{shop.itemId}</TableCell>
+
                       <TableCell>
                         <Button.Group>
                           <Button
@@ -473,7 +416,6 @@ export default function fetchdamageitems() {
                         handleDeleteShop(shopIdToDelete);
                       }}
                     >
-
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>
@@ -489,4 +431,3 @@ export default function fetchdamageitems() {
     </div>
   );
 }
-  
