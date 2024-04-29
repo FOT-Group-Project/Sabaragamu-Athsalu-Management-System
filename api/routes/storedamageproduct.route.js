@@ -5,7 +5,7 @@ const damageproductControllers = require('../controllers/storedamageproduct.cont
 
 const router = express.Router();
 
-router.get('/getStoredamageItem',verifyToken,damageproductControllers.getDamageProduct);
+router.get('/getStoredamageItem',  damageproductControllers.getDamageProduct);
 router.patch('/EditStoredamageItem/:id',verifyToken,damageproductControllers.EditDamageProduct);
 router.delete('/deleteStoredamageItem/:id',verifyToken ,damageproductControllers.deleteDamageProduct);
 

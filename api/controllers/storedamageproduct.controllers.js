@@ -126,43 +126,73 @@ function EditDamageProduct(req, res) {
 
 //delete function for StoreKeepDamageItem table
 function  deleteDamageProduct(req, res, next) {
-   models.StoreKeepDamageItem.destroy({
-      where: {
-        id: req.params.id,
-      },
-    })
-      .then((result) => {
-        if (result === 0) {
-          return res.status(404).json({
-            success: false,
-            message: "User not found",
+    const handleDeleteDamageItem = async () => {
+        try {
+          const response = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
           });
+      
+          if (response.status === 200) {
+            const data = await response.json();
+            console.log(data.message);
+            setStoreItems((prevItems) => prevItems.filter((item) => item.id !== stordamageIdToDelete));
+            setShowModal(false);
+          } else if (response.status === 404) {
+            const data = await response.json();
+            console.error(data.message);
+            setErrorMessage(data.message);
+            setShowModal(false);
+          } else if (response.status === 400) {
+            const data = await response.json();
+            setErrorMessage(data.message);
+            setShowModalDeletelock(true);
+          } else {
+            console.error("Unexpected error");
+          }
+        } catch (error) {
+          console.error("Failed to delete damage item:", error);
         }
-        res.status(200).json({
-          success: true,
-          message: "User deleted successfully",
-        });
+      };
+      
+    }
+
+//submimit add item form add storekeepdamageitem table
+function submitAddItemForm(event) {
+    event.preventDefault();
+    const newItem = {
+      date: date,
+      quantity: quantity,
+      storeId: storeId,
+      itemId: itemId,
+    };
+    console.log(newItem);
+    fetch("/api/damageproduct/addStoredamageItem", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newItem),
+    })
+      .then((response) => {
+        if (response.status === 201) {
+          console.log("Damage item added successfully");
+          setStoreItems((prevItems) => [...prevItems, newItem]);
+          setShowModal(false);
+        } else {
+          console.error("Failed to add damage item");
+        }
       })
       .catch((error) => {
-        if (error instanceof models.Sequelize.ForeignKeyConstraintError) {
-          return res.status(400).json({
-            success: false,
-            message: "User cannot be deleted because of foreign key constraint",
-          });
-        }
-        return res.status(500).json({
-          success: false,
-          message: "Internal Server Error",
-          error: error,
-        });
+        console.error("Failed to add damage item:", error);
       });
   }
-  
-
-
 
 module.exports = {
     getDamageProduct: getDamageProduct,
     EditDamageProduct: EditDamageProduct,
     deleteDamageProduct: deleteDamageProduct,
+    submitAddItemForm
 };

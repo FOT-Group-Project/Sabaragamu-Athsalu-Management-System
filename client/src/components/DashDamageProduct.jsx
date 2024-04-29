@@ -44,7 +44,7 @@ export default function fetchdamageitems() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storekeepdamageitemsIdToDelete, setstorekeepdamageitemsIdToDelete] = useState("");
-  const [users, setUsers] = useState([]);
+
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
 const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
@@ -53,8 +53,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
-  const [showModalDeletelock, setShowModalDeletelock] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+
 
  
 
@@ -73,9 +72,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   };
 
 
-  
-
-
   //affter sending the data to the database table refresh the page
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
@@ -90,63 +86,35 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   };
 
 
-  // const handleDeleteUser = async () => {
-  //   if (currentUser.id === userIdToDelete) {
-  //     setShowAlert(true);
-  //     setShowModal(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
-  //       method: "DELETE",
-  //     });
-  //     const data = await res.json();
-  //     if(res.status == 400) {
-  //       setShowModalDeletelock(true);
-  //       setErrorMessage(data.message);
-  //       setShowModal(false);
-  //     }
-  //     if (res.ok) {
-  //       setUsers((prev) => prev.filter((user) => user._id !== stordamageIdToDelete));
-  //       setShowModal(false);
-      
-  //     }
-  //     else {
-  //       console.log(data.message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
-
-// function to delete the storekeepdamageitems from the table
-const handleDeleteUser = async () => {
-  try {
-    const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    if(res.status == 400) {
-      setShowModalDeletelock(true);
-      setErrorMessage(data.message);
+  const handleDeleteUser = async () => {
+    if (currentUser.id === userIdToDelete) {
+      setShowAlert(true);
       setShowModal(false);
+      return;
     }
-    if (res.ok) {
-      setStoreKeepDamageItems((prev) => prev.filter((user) => user._id !== stordamageIdToDelete));
-      setShowModal(false);
-    
-    }
-    else {
-      console.log(data.message);
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-  
 
-
+    try {
+      const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if(res.status == 400) {
+        setShowModalDeletelock(true);
+        setErrorMessage(data.message);
+        setShowModal(false);
+      }
+      if (res.ok) {
+        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
+        setShowModal(false);
+        fetchUsers();
+      }
+      else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
   
@@ -507,5 +475,4 @@ const handleDeleteUser = async () => {
       </AnimatePresence>
     </div>
   );
-}
 }
