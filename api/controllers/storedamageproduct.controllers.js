@@ -126,38 +126,33 @@ function EditDamageProduct(req, res) {
 
 //delete function for StoreKeepDamageItem table
 function  deleteDamageProduct(req, res, next) {
-    const handleDeleteDamageItem = async () => {
-        try {
-          const response = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
+    const id = req.params.id;
+    models.StoreKeepDamageItem.destroy({
+            where: {
+                id: id,
             },
-          });
-      
-          if (response.status === 200) {
-            const data = await response.json();
-            console.log(data.message);
-            setStoreItems((prevItems) => prevItems.filter((item) => item.id !== stordamageIdToDelete));
-            setShowModal(false);
-          } else if (response.status === 404) {
-            const data = await response.json();
-            console.error(data.message);
-            setErrorMessage(data.message);
-            setShowModal(false);
-          } else if (response.status === 400) {
-            const data = await response.json();
-            setErrorMessage(data.message);
-            setShowModalDeletelock(true);
-          } else {
-            console.error("Unexpected error");
-          }
-        } catch (error) {
-          console.error("Failed to delete damage item:", error);
-        }
-      };
-      
-    }
+        })
+        .then((result) => {
+            if (result) {
+                res.status(200).json({
+                    success: true,
+                    message: "DamageProduct deleted successfully",
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: "DamageProduct not found",
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).json({
+                success: false,
+                message: "Some error occurred",
+                error: error,
+            });
+        });
+}
 
 //submimit add item form add storekeepdamageitem table
 function submitAddItemForm(event) {
@@ -194,5 +189,5 @@ module.exports = {
     getDamageProduct: getDamageProduct,
     EditDamageProduct: EditDamageProduct,
     deleteDamageProduct: deleteDamageProduct,
-    submitAddItemForm
+    submitAddItemForm: submitAddItemForm,
 };

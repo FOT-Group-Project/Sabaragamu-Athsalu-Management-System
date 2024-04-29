@@ -87,12 +87,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
 
 
   const handleDeleteUser = async () => {
-    if (currentUser.id === userIdToDelete) {
-      setShowAlert(true);
-      setShowModal(false);
-      return;
-    }
-
     try {
       const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
         method: "DELETE",
@@ -415,7 +409,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                           <Button
                             onClick={() => {
                               setShowModal(true);
-                              setShopIdToDelete(damageitems.shop);
+                              setStordamageIdToDelete(shop.id);
                             }}
                             color="gray"
                           >
