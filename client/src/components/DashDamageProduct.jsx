@@ -44,15 +44,20 @@ export default function fetchdamageitems() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [storekeepdamageitemsIdToDelete, setstorekeepdamageitemsIdToDelete] = useState("");
-
+  const [users, setUsers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
-
+const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const [formData, setFormData] = useState({});
   const [storekeepdamageitems, setStoreKeepDamageItems] = useState([]);
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
+  const [showModalDeletelock, setShowModalDeletelock] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+ 
+
 
 
   //fetch storeitem data from StoreItem table
@@ -68,6 +73,9 @@ export default function fetchdamageitems() {
   };
 
 
+  
+
+
   //affter sending the data to the database table refresh the page
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
@@ -80,6 +88,65 @@ export default function fetchdamageitems() {
     console.log(formData);
 
   };
+
+
+  // const handleDeleteUser = async () => {
+  //   if (currentUser.id === userIdToDelete) {
+  //     setShowAlert(true);
+  //     setShowModal(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
+  //       method: "DELETE",
+  //     });
+  //     const data = await res.json();
+  //     if(res.status == 400) {
+  //       setShowModalDeletelock(true);
+  //       setErrorMessage(data.message);
+  //       setShowModal(false);
+  //     }
+  //     if (res.ok) {
+  //       setUsers((prev) => prev.filter((user) => user._id !== stordamageIdToDelete));
+  //       setShowModal(false);
+      
+  //     }
+  //     else {
+  //       console.log(data.message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+
+// function to delete the storekeepdamageitems from the table
+const handleDeleteUser = async () => {
+  try {
+    const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    if(res.status == 400) {
+      setShowModalDeletelock(true);
+      setErrorMessage(data.message);
+      setShowModal(false);
+    }
+    if (res.ok) {
+      setStoreKeepDamageItems((prev) => prev.filter((user) => user._id !== stordamageIdToDelete));
+      setShowModal(false);
+    
+    }
+    else {
+      console.log(data.message);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+  
+
+
 
   return (
   
@@ -351,7 +418,7 @@ export default function fetchdamageitems() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {console.log(storeitems.length)}
+              
                 {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
@@ -373,10 +440,14 @@ export default function fetchdamageitems() {
                             <FaUserEdit className="mr-3 h-4 w-4" />
                             Edit
                           </Button>
+
+
+
+                          
                           <Button
                             onClick={() => {
                               setShowModal(true);
-                              setShopIdToDelete(damageitems.id);
+                              setShopIdToDelete(damageitems.shop);
                             }}
                             color="gray"
                           >
@@ -421,12 +492,7 @@ export default function fetchdamageitems() {
                     Are you sure you want to delete this user?
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button
-                      color="red"
-                      onClick={() => {
-                        handleDeleteShop(shopIdToDelete);
-                      }}
-                    >
+                  <Button color="failure" onClick={handleDeleteUser}>
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>
@@ -441,4 +507,5 @@ export default function fetchdamageitems() {
       </AnimatePresence>
     </div>
   );
+}
 }

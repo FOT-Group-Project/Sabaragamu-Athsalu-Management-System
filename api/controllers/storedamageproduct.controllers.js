@@ -125,34 +125,39 @@ function EditDamageProduct(req, res) {
         
 
 //delete function for StoreKeepDamageItem table
-function deleteDamageProduct(req, res) {
-    const id = req.params.id;
-    models.StoreKeepDamageItem.destroy({
-            where: {
-                id: id,
-            },
-        })
-        .then((result) => {
-            if (result) {
-                res.status(200).json({
-                    success: true,
-                    message: "DamageProduct deleted successfully",
-                });
-            } else {
-                res.status(404).json({
-                    success: false,
-                    message: "DamageProduct not found",
-                });
-            }
-        })
-        .catch((error) => {
-            res.status(500).json({
-                success: false,
-                message: "Some error occurred",
-                error: error,
-            });
+function  deleteDamageProduct(req, res, next) {
+   models.StoreKeepDamageItem.destroy({
+      where: {
+        id: req.params.id,
+      },
+    })
+      .then((result) => {
+        if (result === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+        res.status(200).json({
+          success: true,
+          message: "User deleted successfully",
         });
-}
+      })
+      .catch((error) => {
+        if (error instanceof models.Sequelize.ForeignKeyConstraintError) {
+          return res.status(400).json({
+            success: false,
+            message: "User cannot be deleted because of foreign key constraint",
+          });
+        }
+        return res.status(500).json({
+          success: false,
+          message: "Internal Server Error",
+          error: error,
+        });
+      });
+  }
+  
 
 
 
