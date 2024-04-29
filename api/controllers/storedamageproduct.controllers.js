@@ -1,5 +1,6 @@
 const Validator = require("fastest-validator");
 const models = require("../models");
+const e = require("express");
 
 
 
@@ -85,10 +86,48 @@ function getDamageProduct(req, res) {
 }
 
 
+//Edit function for StoreKeepDamageItem table
+function EditDamageProduct(req, res) {
+    const id = req.params.id;
+    const updateFields = {
+        date: req.body.date,
+        quantity: req.body.quantity,
+        storeId: req.body.storeId,
+        itemId: req.body.itemId,
+    };
+
+    models.StoreKeepDamageItem.update(updateFields, {
+            where: {
+                id: id,
+            },
+        })
+        .then((result) => {
+            if (result) {
+                res.status(200).json({
+                    success: true,
+                    message: "DamageProduct updated successfully",
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: "DamageProduct not found",
+                });
+            }
+        })
+        .catch((error) => {
+            res.status(500).json({
+                success: false,
+                message: "Some error occurred",
+                error: error,
+            });
+        });
+}
+        
+
 
 
 
 module.exports = {
     getDamageProduct: getDamageProduct,
-    //addDamageProduct: addDamageProduct
+    EditDamageProduct: EditDamageProduct
 };
