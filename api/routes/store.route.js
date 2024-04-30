@@ -9,5 +9,6 @@ router.post("/createstores", verifyToken, storeController.createStores);
 router.get("/getstores", verifyToken, storeController.getStores);
 router.delete("/deletestore/:storeId", verifyToken, storeController.deleteStore);
 router.put("/updatestore/:storeId", verifyToken, storeController.updateStore);
+router.get("/getstore/:storeKeeperId", verifyToken, storeController.getStoreIdByStoreKeeperId);
 
 module.exports = router;
