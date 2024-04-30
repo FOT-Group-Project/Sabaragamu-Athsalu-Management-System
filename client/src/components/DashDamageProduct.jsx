@@ -55,7 +55,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const [storeitems, setStoreItems] = useState([]);
   const[StoredamageItem, setStoredamageItems] = useState([]);
 
-
  
 
 //fetch storitem data from storeitem table
@@ -247,7 +246,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                         type="submit"
                         disabled={createLoding}
                       >
-                        {createLoding ? (
+                        {createLoding? (
                           <>
                             <Spinner size="sm" />
                             <span className="pl-3">Loading...</span>
