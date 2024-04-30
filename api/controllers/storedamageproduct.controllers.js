@@ -4,7 +4,16 @@ const e = require("express");
 
 
 
-
+//get StoredamageItem from StoredamageItem table
+function getstoritem(req, res) {
+    models.StoreItem.findAll()
+        .then((data) => {
+            res.status(200).json({ success: true, data: data });
+        })
+        .catch((err) => {
+            res.status(500).json({ success: false, message: "Some error occurred" });
+        });
+}
 
 
 
@@ -131,4 +140,5 @@ module.exports = {
     EditDamageProduct: EditDamageProduct,
     deleteDamageProduct: deleteDamageProduct,
     submitAddItemForm: submitAddItemForm,
+    getstoritem: getstoritem,
 };

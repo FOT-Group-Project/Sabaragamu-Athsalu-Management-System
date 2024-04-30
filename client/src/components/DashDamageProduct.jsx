@@ -59,7 +59,11 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
 
 
 
-  //fetch storeitem data from StoreItem table
+
+
+
+
+  //fetch storedamadeitem data from StoredamageItem table
   const fetchStoreItems = async () => {
     try {
       const response = await fetch("/api/damageproduct/getStoredamageItem");
