@@ -53,20 +53,37 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
+  const[StoredamageItem, setStoredamageItems] = useState([]);
 
 
  
 
+//fetch storitem data from storeitem table
 
+  const fetchStoreItems = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getstoritem");
+      const data = await response.json();
+      setStoredamageItems(data.data);
 
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
+      fetchStoreItems();
+    }
+  }, []);
 
 
 
 
   //fetch storedamadeitem data from StoredamageItem table
-  const fetchStoreItems = async () => {
+  const fetchStoredamageItems = async () => {
     try {
-      const response = await fetch("/api/damageproduct/getStoredamageItem");
+      const response = await fetch("/api/stordamageproduct/getStoredamageItem");
       const data = await response.json();
       setStoreItems(data.data);
       
@@ -76,10 +93,12 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   };
 
 
+  
+
   //affter sending the data to the database table refresh the page
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
-      fetchStoreItems();
+     fetchStoredamageItems();
     }
   }, []);
 
@@ -92,7 +111,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
 
   const handleDeleteUser = async () => {
     try {
-      const res = await fetch(`/api/damageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
+      const res = await fetch(`/api/stordamageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -213,7 +232,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                           shadow
                           onChange={handleChange}
                         >
-                          {storeitems.map((storeitem) => (
+                          {StoredamageItem.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
                               {storeitem.itemId}
                             </option>
@@ -331,11 +350,10 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.storename}
                         >
-                          {storeitems.map((storeitem) => (
-                            <option key={storeitem.name} value={storeitem.name}>
-                              {storeitem.storename}
+                          {StoredamageItem.map((storeitem) => (
+                            <option key={storeitem.id} value={storeitem.id}>
+                              {storeitem.itemId}
                             </option>
                           ))}
                         </Select>

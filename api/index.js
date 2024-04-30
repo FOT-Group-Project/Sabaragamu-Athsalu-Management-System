@@ -10,8 +10,9 @@ const shopRoutes = require("./routes/shop.route");
 const salesReportRoutes = require("./routes/salesReport.route");
 const cookieParser = require("cookie-parser");
 const shopItemRoutes = require("./routes/shopItem.route");
-const damageproduct= require("./routes/storedamageproduct.route");
-const addDamageProduct = require("./controllers/storedamageproduct.controllers");
+const stordamageproduct= require("./routes/storedamageproduct.route");
+
+
 
 
 const app = express();
@@ -33,7 +34,8 @@ app.use("/api/shop", shopRoutes);
 app.use("/api/sales-report", salesReportRoutes);
 app.use("/api/shop-item", shopItemRoutes);
 app.use("/api/storekeepermanagestore", storeKeepermanagestore);
-app.use("/api/damageproduct", damageproduct);
+app.use("/api/stordamageproduct", stordamageproduct);
+
 
 
 

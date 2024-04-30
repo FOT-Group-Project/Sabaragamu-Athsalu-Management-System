@@ -20,10 +20,6 @@ function getstoritem(req, res) {
 
 
 
-
-
-
-
 //get StoredamageItem from StoredamageItem table
 function getDamageProduct(req, res) {
     models.StoreKeepDamageItem.findAll()
@@ -114,7 +110,7 @@ function submitAddItemForm(event) {
       itemId: itemId,
     };
     console.log(newItem);
-    fetch("/api/damageproduct/addStoredamageItem", {
+    fetch("/api/stordamageproduct/sumbmitStoredamageItem", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
