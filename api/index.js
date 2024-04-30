@@ -10,6 +10,7 @@ const shopRoutes = require("./routes/shop.route");
 const salesReportRoutes = require("./routes/salesReport.route");
 const cookieParser = require("cookie-parser");
 const shopItemRoutes = require("./routes/shopItem.route");
+const storeItemRoutes = require("./routes/storeitem.route");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/associations", associationRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/sales-report", salesReportRoutes);
 app.use("/api/shop-item", shopItemRoutes);
+app.use("/api/store-item", storeItemRoutes);
 app.use("/api/storekeepermanagestore", storeKeepermanagestore);
 
 app.use((err, req, res, next) => {

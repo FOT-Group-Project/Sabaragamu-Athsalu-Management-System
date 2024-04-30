@@ -16,6 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'seller',
         onDelete: 'RESTRICT',
       });
+
+      Shop.belongsToMany(models.Product, {
+        through: 'ShopItem',
+        as: 'item',
+        foreignKey: 'shopId',
+      });
     }
   }
   Shop.init({

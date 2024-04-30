@@ -18,6 +18,13 @@ module.exports = (sequelize, DataTypes) => {
         as: 'store',
         foreignKey: 'itemId',
       });
+
+      //Product belongstomany Shop
+      Product.belongsToMany(models.Shop, {
+        through: 'ShopItem',
+        as: 'shop',
+        foreignKey: 'itemId',
+      });
     }
   }
   Product.init({

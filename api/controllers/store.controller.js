@@ -170,10 +170,29 @@ function updateStore(req, res) {
     });
 }
 
+//Get StoreId by StoreKeeperId 
+function getStoreIdByStoreKeeperId(req, res) {
+  models.StoreKeeperManageStore.findOne({
+    where: { storeKeeperId: req.params.storeKeeperId },
+  })
+    .then((data) => {
+      res.status(200).json({
+        success: true,
+        message: "Store retrieved successfully",
+        store: data,
+      });
+    })
+    .catch((err) => {
+      console.error("Error fetching store:", err);
+      res.status(500).json({ success: false, message: err });
+    });
+  }
+
 module.exports = {
   createStore: createStore,
   getStores: getStores,
   deleteStore: deleteStore,
   updateStore: updateStore,
   createStores: createStores,
+  getStoreIdByStoreKeeperId: getStoreIdByStoreKeeperId,
 };
