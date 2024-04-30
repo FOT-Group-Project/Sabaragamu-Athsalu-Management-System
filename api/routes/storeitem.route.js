@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/getstoreitems/:storeKeeperId", verifyToken, storeItemController.getStoresItems);
 router.get("/getstoreitem/:id", verifyToken, storeItemController.getStoresItemId);
 router.put(
-  "/senditem/:id/:storeId/:itemId",
+  "/senditem/:id/:shopId/:itemId",
   verifyToken,
   storeItemController.sendStoreItemoShop
 );

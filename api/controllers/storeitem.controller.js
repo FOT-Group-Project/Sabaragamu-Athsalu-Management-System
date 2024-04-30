@@ -5,8 +5,8 @@ const { parse } = require("dotenv");
 function sendStoreItemoShop(req, res) {
   models.StoreItem.findOne({
     where: { id: req.params.id },
-  }).then((dataX) => {
-    quantity = parseInt(dataX.quantity) - parseInt(req.body.quantity);
+  }).then((itemData) => {
+    quantity = parseInt(itemData.quantity) - parseInt(req.body.quantity);
 
     if (quantity < 0) {
       res.status(404).json({
@@ -17,17 +17,17 @@ function sendStoreItemoShop(req, res) {
     }
 
     models.StoreItem.update(
-      { quantity: dataX.quantity - req.body.quantity },
+      { quantity: itemData.quantity - req.body.quantity },
       { where: { id: req.params.id } }
     )
       .then((data) => {
         if (data == 1) {
-          models.StoreItem.findOne({
-            where: { storeId: req.params.storeId, itemId: req.params.itemId },
+          models.ShopItem.findOne({
+            where: { shopId: req.params.shopId, itemId: req.params.itemId },
             include: [
               {
-                model: models.Store,
-                as: "store",
+                model: models.Shop,
+                as: "shop",
               },
               {
                 model: models.Product,
@@ -39,11 +39,11 @@ function sendStoreItemoShop(req, res) {
               if (dataB != null) {
                 quantity =
                   parseInt(dataB.quantity) + parseInt(req.body.quantity);
-                models.StoreItem.update(
+                models.ShopItem.update(
                   { quantity: quantity },
                   {
                     where: {
-                      storeId: req.params.storeId,
+                      shopId: req.params.shopId,
                       itemId: req.params.itemId,
                     },
                   }
@@ -51,41 +51,41 @@ function sendStoreItemoShop(req, res) {
                   .then((data) => {
                     res.status(200).json({
                       success: true,
-                      message: "Updated already existing store item",
+                      message: "Updated already existing shop item",
                       shopItem: data,
                     });
                   })
                   .catch((err) => {
-                    console.error("Error sending store item:", err);
+                    console.error("Error sending shop item:", err);
                     res.status(500).json({ success: false, message: err });
                   });
               } else {
-                models.StoreItem.create({
-                  storeId: req.params.storeId,
+                models.ShopItem.create({
+                  shopId: req.params.shopId,
                   itemId: req.params.itemId,
                   quantity: req.body.quantity,
                 })
                   .then((data) => {
                     res.status(200).json({
                       success: true,
-                      message: "Created new store item",
+                      message: "Created new shop item",
                       shopItem: data,
                     });
                   })
                   .catch((err) => {
-                    console.error("Error sending store item:", err);
+                    console.error("Error sending shop item:", err);
                     res.status(500).json({ success: false, message: err });
                   });
               }
             })
             .catch((err) => {
-              console.error("Error fetching store item:", err);
+              console.error("Error fetching shop item:", err);
               res.status(500).json({ success: false, message: err });
             });
         } else {
           res.status(404).json({
             success: false,
-            message: "Store item not found",
+            message: "Shop item not found",
           });
         }
       })
