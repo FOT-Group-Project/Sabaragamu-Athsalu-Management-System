@@ -17,6 +17,23 @@ function getstoritem(req, res) {
 
 
 
+//send deta to storekeepdamageitem table cliking on submit button
+function addDamageProduct(req, res) {
+    
+    const newDamageProduct = {
+        date: req.body.date,
+        quantity: req.body.quantity,
+        storeId: req.body.storeId,
+        itemId: req.body.itemId,
+    };
+    models.StoreKeepDamageItem.create(newDamageProduct)
+    .then((data) => {
+        res.status(201).json({success:true, message:"DamageProduct added successfully", data:data});
+    })
+    .catch((err) => {
+        res.status(500).json({success:false, message:"Some error occurred", error:err});
+    });
+}
 
 
 
@@ -137,4 +154,5 @@ module.exports = {
     deleteDamageProduct: deleteDamageProduct,
     submitAddItemForm: submitAddItemForm,
     getstoritem: getstoritem,
+    addDamageProduct: addDamageProduct,
 };

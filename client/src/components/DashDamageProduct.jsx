@@ -56,6 +56,40 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const[StoredamageItem, setStoredamageItems] = useState([]);
 
  
+//sed data to afer click submit buttern the storekeeperdamageitem table
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/stordamageproduct/addStoredamageItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModal(false);
+        fetchStores();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
+  };
+        
+
+
 
 //fetch storitem data from storeitem table
 
@@ -175,7 +209,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
               <Modal.Header>Add Dmage Items</Modal.Header>
               <Modal.Body>
                 <div className="space-y-6">
-                  <form onSubmit={""} className="flex flex-col flex-grow gap-4">
+                  <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
@@ -334,6 +368,9 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                             <option key={storeitem.id} value={storeitem.id}>
                               {storeitem.storeId}
                             </option>
+
+
+
                           ))}
                         </Select>
                       </div>
@@ -349,6 +386,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                           required
                           shadow
                           onChange={handleChange}
+                          value={formData.itemId}
                         >
                           {StoredamageItem.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
