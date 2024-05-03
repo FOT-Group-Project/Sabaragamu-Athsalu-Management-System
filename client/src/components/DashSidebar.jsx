@@ -141,15 +141,17 @@ export default function DashSidebar() {
               </Link>
             )}
 
-            <Link to="/dashboard?tab=products">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={HiShoppingBag}
-                active={tab === "products"}
-              >
-                Products
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role === "Admin" && (
+              <Link to="/dashboard?tab=products">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={HiShoppingBag}
+                  active={tab === "products"}
+                >
+                  Products
+                </Sidebar.Item>
+              </Link>
+            )}
 
             {currentUser.role === "Admin" && (
               <Link to="/dashboard?tab=shops">
@@ -182,6 +184,16 @@ export default function DashSidebar() {
             </Link>
             {currentUser.role === "StoreKeeper" && (
               <>
+                <Link to="/dashboard?tab=storekeeperproducts">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "storekeeperproducts"}
+                  >
+                    Products
+                  </Sidebar.Item>
+                </Link>
+
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"

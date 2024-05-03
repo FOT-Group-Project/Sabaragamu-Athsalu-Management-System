@@ -17,6 +17,7 @@ import DashDamageProduct from "../components/DashDamageProduct";
 
 import DashSalesReport from "../components/DashSalesReport";
 import DashStoreKeeperSendStock from "../components/storekeeper/DashStoreKeeperSendStock";
+import DashStoreKeeperProducts from "../components/storekeeper/DashStoreKeeperProducts";
 
 
 export default function Dashboard() {
@@ -74,6 +75,9 @@ export default function Dashboard() {
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
       {tab === "salesReport" && <DashSalesReport />}
+
+      {/* DashStoreKeeperProducts */}
+      {tab === "storekeeperproducts" && <DashStoreKeeperProducts />}
     </div>
   );
 }
