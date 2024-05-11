@@ -43,20 +43,20 @@ export default function fetchdamageitems() {
   const { currentUser } = useSelector((state) => state.user);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [storekeepdamageitemsIdToDelete, setstorekeepdamageitemsIdToDelete] = useState("");
+  const [storekeepdamageitemsIdToDelete, setstorekeepdamageitemsIdToDelete] =
+    useState("");
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
-const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
+  const [stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   const [formData, setFormData] = useState({});
   const [storekeepdamageitems, setStoreKeepDamageItems] = useState([]);
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
-  const[StoredamageItem, setStoredamageItems] = useState([]);
+  const [StoredamageItem, setStoredamageItems] = useState([]);
 
- 
-//sed data to afer click submit buttern the storekeeperdamageitem table
+  //sed data to afer click submit buttern the storekeeperdamageitem table
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCreateLoding(true);
@@ -87,18 +87,14 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
       setCreateLoding(false);
     }
   };
-        
 
-
-
-//fetch storitem data from storeitem table
+  //fetch storitem data from storeitem table
 
   const fetchStoreItems = async () => {
     try {
       const response = await fetch("/api/stordamageproduct/getstoritem");
       const data = await response.json();
       setStoredamageItems(data.data);
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -110,45 +106,39 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
     }
   }, []);
 
-
-
-
   //fetch storedamadeitem data from StoredamageItem table
   const fetchStoredamageItems = async () => {
     try {
       const response = await fetch("/api/stordamageproduct/getStoredamageItem");
       const data = await response.json();
       setStoreItems(data.data);
-      
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-
-  
-
   //affter sending the data to the database table refresh the page
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
-     fetchStoredamageItems();
+      fetchStoredamageItems();
     }
   }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
-
   };
-
 
   const handleDeleteUser = async () => {
     try {
-      const res = await fetch(`/api/stordamageproduct/deleteStoredamageItem/${stordamageIdToDelete}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/stordamageproduct/deleteStoredamageItem/${stordamageIdToDelete}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
-      if(res.status == 400) {
+      if (res.status == 400) {
         setShowModalDeletelock(true);
         setErrorMessage(data.message);
         setShowModal(false);
@@ -157,8 +147,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
-      }
-      else {
+      } else {
         console.log(data.message);
       }
     } catch (error) {
@@ -167,8 +156,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
   };
 
   return (
-  
-
     <div className="p-3 w-full">
       <AnimatePresence>
         <motion.div
@@ -209,7 +196,10 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
               <Modal.Header>Add Dmage Items</Modal.Header>
               <Modal.Body>
                 <div className="space-y-6">
-                  <form onSubmit={handleSubmit} className="flex flex-col flex-grow gap-4">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col flex-grow gap-4"
+                  >
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
@@ -280,7 +270,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                         type="submit"
                         disabled={createLoding}
                       >
-                        {createLoding? (
+                        {createLoding ? (
                           <>
                             <Spinner size="sm" />
                             <span className="pl-3">Loading...</span>
@@ -350,7 +340,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                         />
                       </div>
                       <div>
-                     
                         <div className="mb-2 block">
                           <Label value="Store id" />
                         </div>
@@ -363,14 +352,10 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                           onChange={handleChange}
                           value={formData.storeId}
                         >
-                          
                           {storeitems.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
                               {storeitem.storeId}
                             </option>
-
-
-
                           ))}
                         </Select>
                       </div>
@@ -432,14 +417,13 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                   <TableHeadCell> ID</TableHeadCell>
                   <TableHeadCell>Date</TableHeadCell>
                   <TableHeadCell>itemId </TableHeadCell>
-                  <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>storeId </TableHeadCell>
-                  <TableHeadCell>itemId </TableHeadCell>
+                  <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-              
+
                 {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
@@ -462,9 +446,6 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                             Edit
                           </Button>
 
-
-
-                          
                           <Button
                             onClick={() => {
                               setShowModal(true);
@@ -513,7 +494,7 @@ const[stordamageIdToDelete, setStordamageIdToDelete] = useState("");
                     Are you sure you want to delete this user?
                   </h3>
                   <div className="flex justify-center gap-4">
-                  <Button color="failure" onClick={handleDeleteUser}>
+                    <Button color="failure" onClick={handleDeleteUser}>
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>

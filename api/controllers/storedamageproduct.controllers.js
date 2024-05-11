@@ -39,7 +39,17 @@ function addDamageProduct(req, res) {
 
 //get StoredamageItem from StoredamageItem table
 function getDamageProduct(req, res) {
-    models.StoreKeepDamageItem.findAll()
+    models.StoreKeepDamageItem.findAll(
+        {
+            include: [
+                {
+                    model: models.Store,
+                    as: "store",
+                },
+              
+            ],
+        }
+    )
         .then((data) => {
             res.status(200).json({ success: true, data: data });
         })

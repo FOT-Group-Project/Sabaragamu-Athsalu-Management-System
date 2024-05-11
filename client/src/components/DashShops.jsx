@@ -445,7 +445,7 @@ export default function DashShops() {
                       <TableCell>{shop.shopName}</TableCell>
                       <TableCell>{shop.address}</TableCell>
                       <TableCell>{shop.phone}</TableCell>
-                      <TableCell>{shop.seller.firstname}</TableCell>
+                      {/* <TableCell>{shop.seller.firstname}</TableCell> */}
                       <TableCell>
                         <Button.Group>
                           <Button
