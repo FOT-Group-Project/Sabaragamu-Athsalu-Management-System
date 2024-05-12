@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
@@ -7,10 +8,22 @@ import DashShops from "../components/DashShops";
 import DashStores from "../components/DashStores";
 import DashProducts from "../components/DashProducts";
 import DashboardComp from "../components/DashboardComp";
+import DashPOS from "../components/seller/DashPOS";
+import SellerDashboardHome from "../components/seller/SellerDashboardHome";
+import DashSellerProducts from "../components/seller/DashSellerProducts";
+import DashSellerInvetory from "../components/seller/DashSellerInvetory";
+import DashSellerSendStock from "../components/seller/DashSellerSendStock";
+import DashDamageProduct from "../components/DashDamageProduct";
+import DashSaleHistory from "../components/DashSaleHistory";
+
+import DashSalesReport from "../components/DashSalesReport";
+
 
 export default function Dashboard() {
   const loaction = useLocation();
   const [tab, setTab] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
+
   useEffect(() => {
     const urlParams = new URLSearchParams(loaction.search);
     const tabFromUrl = urlParams.get("tab");
@@ -32,10 +45,34 @@ export default function Dashboard() {
       {tab === "shops" && <DashShops />}
       {/* stores */}
       {tab === "stores" && <DashStores />}
+      {/* invetory */}
+      {tab === "invetory" && <DashSellerInvetory />}
+
+      {/* damage product */}
+      {tab === "damageproducts" && <DashDamageProduct />}
+
+      {/* sendstock */}
+      {tab === "sendstock" && currentUser.role === "Seller" && (
+        <DashSellerSendStock />
+      )}
+
       {/* products */}
-      {tab === "products" && <DashProducts />}
+      {tab === "products" && currentUser.role === "Admin" && <DashProducts />}
+      {tab === "products" && currentUser.role === "Seller" && (
+        <DashSellerProducts />
+      )}
       {/* dash */}
-      {tab === "dash" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Seller" && (
+        <SellerDashboardHome />
+      )}
+      {/* pos */}
+      {tab === "pos" && <DashPOS />}
+      {/* salesReport */}
+      {tab === "salesReport" && <DashSalesReport />}
+
+      {/*Sale Histor*/}
+      {tab === "saleHistory" && <DashSaleHistory />}
     </div>
   );
 }

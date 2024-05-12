@@ -23,6 +23,45 @@ function getUsers(req, res, next) {
     });
 }
 
+//get all sellers
+function getSellers(req, res, next) {
+  models.User.findAll({ where: { role: "Seller" } })
+    .then((sellers) => {
+      res.status(200).json({
+        success: true,
+        message: "Sellers retrieved successfully",
+        sellers: sellers,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
+//get all storekeepers
+function getStorekeepers(req, res, next) {  
+  models.User.findAll({ where: { role: "Storekeeper" } })
+    .then((storekeepers) => {
+      res.status(200).json({
+        success: true,
+        message: "Storekeepers retrieved successfully",
+        storekeepers: storekeepers,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
+
 function save(req, res) {
   const user = {
     firstname: req.body.firstname,
@@ -51,6 +90,37 @@ function save(req, res) {
     });
 }
 
+//add multiple users
+function addUsers(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const users = req.body.map(user => ({
+    firstname: user.firstname,
+    lastname: user.lastname,
+    phone: user.phone,
+    email: user.email,
+    password: user.password,
+    role: user.role,
+    profilepicurl: user.profilepicurl
+  }));
+
+  models.User.bulkCreate(users)
+    .then((result) => {
+      res.status(201).json({
+        message: "Users added successfully",
+        users: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding users",
+        error: error,
+      });
+    });
+}
+
 function createUser(req, res, next) {
   if (!req.body.role === "Admin") {
     return res.status(403).json({
@@ -66,13 +136,6 @@ function createUser(req, res, next) {
         message: "Password must be at least 6 characters",
       });
     }
-  }
-
-  if (!(req.body.password.toString() === req.body.confirmPassword.toString())) {
-    return res.status(400).json({
-      success: false,
-      message: "Password not same as confirm password",
-    });
   }
 
   if (req.body.username) {
@@ -316,7 +379,7 @@ function updateUserTable(req, res, next) {
       const updatedUser = {
         username: req.body.username,
         email: req.body.email,
-        password: req.body.password,
+        password: hash,
         profilepicurl: req.body.profilepicurl,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -382,7 +445,13 @@ function deleteUser(req, res, next) {
       });
     })
     .catch((error) => {
-      res.status(500).json({
+      if (error instanceof models.Sequelize.ForeignKeyConstraintError) {
+        return res.status(400).json({
+          success: false,
+          message: "User cannot be deleted because of foreign key constraint",
+        });
+      }
+      return res.status(500).json({
         success: false,
         message: "Internal Server Error",
         error: error,
@@ -398,4 +467,7 @@ module.exports = {
   signout: signout,
   updateUserTable: updateUserTable,
   deleteUser: deleteUser,
+  getSellers: getSellers,
+  getStorekeepers: getStorekeepers,
+  addUsers: addUsers,
 };

@@ -11,17 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.StoreSendToShop.belongsTo(models.Store, {foreignKey: 'storeId'})
-      models.StoreSendToShop.belongsTo(models.Shop, {foreignKey: 'shopId'})
-      models.StoreSendToShop.belongsTo(models.Product, {foreignKey: 'itemId'})
     }
   }
   StoreSendToShop.init({
-    date: DataTypes.DATE,
-    quantity: DataTypes.INTEGER,
     storeId: DataTypes.INTEGER,
     shopId: DataTypes.INTEGER,
-    itemId: DataTypes.INTEGER
+    itemId: DataTypes.INTEGER,
+    date: DataTypes.DATE,
+    quantity: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'StoreSendToShop',
