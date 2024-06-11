@@ -98,10 +98,61 @@ function sendStoreItemoShop(req, res) {
     });
   } catch (err) {
     console.error("Error sending shop item:", err);
-    res.status(500).json({ success: false, message: err});
+    res.status(500).json({ success: false, message: err });
   }
 }
 
+//Add data to storeitem table: if the store item is not already in the store, add it, else update the quantity
+//only quantity can be updated
+function addStoreItem(req, res) {
+  try {
+    models.StoreItem.findOne({
+      where: { storeId: req.body.storeId, itemId: req.body.itemId },
+    })
+      .then((data) => {
+        if (data != null) {
+          quantity = parseInt(data.quantity) + parseInt(req.body.quantity);
+          models.StoreItem.update(
+            { quantity: quantity },
+            { where: { storeId: req.body.storeId, itemId: req.body.itemId } }
+          )
+            .then((data) => {
+              res.status(200).json({
+                success: true,
+                message: "Updated already existing store item",
+                storeItem: data,
+              });
+            })
+            .catch((err) => {
+              console.error("Error adding store item:", err);
+              res.status(500).json({ success: false, message: err });
+            });
+        } else {
+          models.StoreItem.create(req.body)
+            .then((data) => {
+              res.status(200).json({
+                success: true,
+                message: "Created new store item",
+                storeItem: data,
+              });
+            })
+            .catch((err) => {
+              console.error("Error adding store item:", err);
+              res.status(500).json({ success: false, message: err });
+            });
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching store item:", err);
+        res.status(500).json({ success: false, message: err });
+      });
+  } catch (err) {
+    console.error("Error adding store item:", err);
+    res.status(500).json({ success: false, message: err });
+  }
+}
+
+//Get data from storeitem table by id
 function getStoresItemId(req, res) {
   models.StoreItem.findOne({
     where: { id: req.params.id },
@@ -163,9 +214,67 @@ function getStoresItems(req, res) {
     });
 }
 
+//Update function storeitem table
+function updateStoreItem(req, res) {
+  const id = req.params.id;
+  models.StoreItem.update(req.body, {
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.status(200).json({
+          success: true,
+          message: "Store item updated successfully",
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: "Store item not found",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Some error occurred",
+        error: err,
+      });
+    });
+}
+
+//Delete function storeitem table
+function deleteStoreItem(req, res) {
+  const id = req.params.id;
+  models.StoreItem.destroy({
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.status(200).json({
+          success: true,
+          message: "Store item deleted successfully",
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: "Store item not found",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Some error occurred",
+        error: err,
+      });
+    });
+}
+
 module.exports = {
   getStoresItems: getStoresItems,
   getStoresItemId: getStoresItemId,
   sendStoreItemoShop: sendStoreItemoShop,
+  updateStoreItem: updateStoreItem,
+  deleteStoreItem: deleteStoreItem,
+  addStoreItem: addStoreItem,
 };
-
