@@ -238,10 +238,10 @@ export default function DashSellerInvetory() {
                                 {sale.quantity}
                               </td>
                               <td className="text-right text-gray-700">
-                                {sale.unitPrice.toFixed(2)}
+                                Rs.{sale.unitPrice.toFixed(2)}
                               </td>
                               <td className="text-right text-gray-700">
-                                ${(sale.quantity * sale.unitPrice).toFixed(2)}
+                                Rs.{(sale.quantity * sale.unitPrice).toFixed(2)}
                               </td>
                             </tr>
                           ))}
@@ -254,7 +254,7 @@ export default function DashSellerInvetory() {
                           <td className="text-right font-bold text-gray-700"></td>
                           <td className="text-right font-bold text-gray-700"></td>
                           <td className="text-right font-bold text-gray-700">
-                            $
+                            Rs.
                             {selectedBill
                               ? calculateTotalAmount(selectedBill).toFixed(2)
                               : ""}
@@ -339,7 +339,7 @@ export default function DashSellerInvetory() {
                           <span key={sale.id}>{sale.itemId}, </span>
                         ))}
                       </TableCell> */}
-                      <TableCell>{calculateTotalAmount(bill)}</TableCell>
+                      <TableCell>Rs. {calculateTotalAmount(bill)}</TableCell>
                       <TableCell>
                         <Button.Group>
                           <Button

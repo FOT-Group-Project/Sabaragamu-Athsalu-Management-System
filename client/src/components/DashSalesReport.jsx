@@ -318,7 +318,7 @@ export default function DashSalesReport() {
                       key={sale.id}
                       className="bg-white dark:border-gray-700 dark:bg-gray-800"
                     >
-                      <TableCell>{sale.itemId}</TableCell>
+                      <TableCell>Item :{sale.itemId}</TableCell>
                       <TableCell>{sale.productName}</TableCell>
                       <TableCell>{sale.type}</TableCell>
                       <TableCell>{sale.quantity}</TableCell>
