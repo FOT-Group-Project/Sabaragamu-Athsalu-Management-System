@@ -391,7 +391,12 @@ export default function DashSellerInvetory() {
                             <CiViewList className="mr-3 h-4 w-4" />
                             View
                           </Button>
-                          <Button color="gray">
+                          <Button
+                            color="gray"
+                            onClick={() => {
+                              setSelectedBill(bill);
+                            }}
+                          >
                             <PiExportBold className="mr-3 h-4 w-4" />
                             Export
                           </Button>
