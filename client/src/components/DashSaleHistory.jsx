@@ -75,14 +75,24 @@ export default function DashSellerInvetory() {
   };
 
   //function to print selected bill
-  const printBill = () => { 
+  const printBill = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);
     doc.text("Invoice", 10, 10);
-    doc.text("Date : " + new Date(selectedBill[0].buyDateTime).toLocaleDateString(), 10, 20);
+    doc.text(
+      "Date : " + new Date(selectedBill[0].buyDateTime).toLocaleDateString(),
+      10,
+      20
+    );
     doc.text("INV# : " + generateBillId(selectedBill), 10, 30);
     doc.text("Bill To:", 10, 40);
-    doc.text(selectedBill[0].Customer.firstname + " " + selectedBill[0].Customer.lastname, 10, 50);
+    doc.text(
+      selectedBill[0].Customer.firstname +
+        " " +
+        selectedBill[0].Customer.lastname,
+      10,
+      50
+    );
     doc.text(selectedBill[0].Customer.phone, 10, 60);
     doc.text(selectedBill[0].Customer.email, 10, 70);
     doc.text("Description", 10, 80);
@@ -101,7 +111,7 @@ export default function DashSellerInvetory() {
     doc.text("Rs." + calculateTotalAmount(selectedBill).toFixed(2), 150, y);
     doc.text("Thank you for your business!", 10, y + 10);
     doc.save(generateBillId(selectedBill) + ".pdf");
-  }
+  };
 
   // Function to generate bill ID
   const generateBillId = (bill) => {
@@ -118,6 +128,13 @@ export default function DashSellerInvetory() {
       .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
+
+  // Effect to handle printing after selecting a bill
+  useEffect(() => {
+    if (selectedBill) {
+      printBill();
+    }
+  }, [selectedBill]);
 
   return (
     <div className="p-3 w-full">
@@ -378,12 +395,12 @@ export default function DashSellerInvetory() {
                             <PiExportBold className="mr-3 h-4 w-4" />
                             Export
                           </Button>
-                          <Button color="gray"
+                          <Button
+                            color="gray"
                             onClick={() => {
-                              //set bill and print
                               setSelectedBill(bill);
-                              printBill();
-                          }}>
+                            }}
+                          >
                             <FiPrinter className="mr-3 h-4 w-4" />
                             Print
                           </Button>
