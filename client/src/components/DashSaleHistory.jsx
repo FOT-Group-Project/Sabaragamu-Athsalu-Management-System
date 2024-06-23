@@ -25,14 +25,7 @@ import { PiExportBold } from "react-icons/pi";
 import Logolight from "../assets/logolight.png";
 import Logodark from "../assets/logodark.png";
 import { IoMdClose } from "react-icons/io";
-import {
-  PDFViewer,
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-} from "@react-pdf/renderer";
+import jsPDF from "jspdf";
 
 export default function DashSellerInvetory() {
   const { currentUser } = useSelector((state) => state.user);
@@ -80,6 +73,35 @@ export default function DashSellerInvetory() {
       0
     );
   };
+
+  //function to print selected bill
+  const printBill = () => { 
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text("Invoice", 10, 10);
+    doc.text("Date : " + new Date(selectedBill[0].buyDateTime).toLocaleDateString(), 10, 20);
+    doc.text("INV# : " + generateBillId(selectedBill), 10, 30);
+    doc.text("Bill To:", 10, 40);
+    doc.text(selectedBill[0].Customer.firstname + " " + selectedBill[0].Customer.lastname, 10, 50);
+    doc.text(selectedBill[0].Customer.phone, 10, 60);
+    doc.text(selectedBill[0].Customer.email, 10, 70);
+    doc.text("Description", 10, 80);
+    doc.text("Quantity", 60, 80);
+    doc.text("Unit Price", 100, 80);
+    doc.text("Total Price", 150, 80);
+    let y = 90;
+    selectedBill.forEach((sale) => {
+      doc.text(sale.Product.itemName, 10, y);
+      doc.text(sale.quantity.toString(), 60, y);
+      doc.text("Rs." + sale.unitPrice.toFixed(2), 100, y);
+      doc.text("Rs." + (sale.quantity * sale.unitPrice).toFixed(2), 150, y);
+      y += 10;
+    });
+    doc.text("Total", 10, y);
+    doc.text("Rs." + calculateTotalAmount(selectedBill).toFixed(2), 150, y);
+    doc.text("Thank you for your business!", 10, y + 10);
+    doc.save(generateBillId(selectedBill) + ".pdf");
+  }
 
   // Function to generate bill ID
   const generateBillId = (bill) => {
@@ -356,7 +378,12 @@ export default function DashSellerInvetory() {
                             <PiExportBold className="mr-3 h-4 w-4" />
                             Export
                           </Button>
-                          <Button color="gray">
+                          <Button color="gray"
+                            onClick={() => {
+                              //set bill and print
+                              setSelectedBill(bill);
+                              printBill();
+                          }}>
                             <FiPrinter className="mr-3 h-4 w-4" />
                             Print
                           </Button>
