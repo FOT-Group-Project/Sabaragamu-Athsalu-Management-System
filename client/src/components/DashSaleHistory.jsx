@@ -113,6 +113,7 @@ export default function DashSellerInvetory() {
     doc.save(generateBillId(selectedBill) + ".pdf");
   };
 
+  
   // Function to generate bill ID
   const generateBillId = (bill) => {
     const { customerId, shopId, buyDateTime } = bill[0];
