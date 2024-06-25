@@ -19,6 +19,7 @@ import {
   Select,
   Spinner,
   Toast,
+  Badge,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -44,6 +45,7 @@ import {
   HiXCircle,
   HiCurrencyDollar,
   HiCheck,
+  HiCheckCircle,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
 
@@ -270,34 +272,52 @@ export default function DashPOS() {
                           <TableCell>{product.item.sku}</TableCell>
                           <TableCell>{product.item.manufacturer}</TableCell>
                           <TableCell>Rs. {product.item.itemPrice}</TableCell>
-                          <TableCell>{product.quantity}</TableCell>
-                          <TableCell></TableCell>
                           <TableCell>
-                            <Button
-                              disabled={selectedCustomer <= 0}
-                              onClick={() => handleAddToSelected(product.id)}
-                              color={
-                                selectedProducts.some(
-                                  (p) => p.id === product.id
-                                )
-                                  ? "green"
-                                  : "gray"
+                            <Badge
+                              className="pl-3 pr-3"
+                              color={product.quantity > 0 ? "green" : "red"}
+                              icon={
+                                product.quantity > 0 ? HiCheckCircle : HiXCircle
                               }
                             >
-                              {selectedProducts.some(
-                                (p) => p.id === product.id
-                              ) ? (
-                                <>
-                                  Added
-                                  <HiOutlineCheckCircle className="ml-3 h-4 w-4" />
-                                </>
-                              ) : (
-                                <>
-                                  Add
-                                  <HiOutlineArrowCircleRight className="ml-3 h-4 w-4" />
-                                </>
-                              )}
-                            </Button>
+                              {product.quantity} in stock
+                            </Badge>
+
+                          
+                          </TableCell>
+                          <TableCell></TableCell>
+                          <TableCell>
+                            {product.quantity > 0 ? (
+                              <Button
+                                //disabled={selectedCustomer <= 0}
+                                onClick={() => handleAddToSelected(product.id)}
+                                color={
+                                  selectedProducts.some(
+                                    (p) => p.id === product.id
+                                  )
+                                    ? "green"
+                                    : "gray"
+                                }
+                              >
+                                {selectedProducts.some(
+                                  (p) => p.id === product.id
+                                ) ? (
+                                  <>
+                                    Added
+                                    <HiOutlineCheckCircle className="ml-3 h-4 w-4" />
+                                  </>
+                                ) : (
+                                  <>
+                                    Add
+                                    <HiOutlineArrowCircleRight className="ml-3 h-4 w-4" />
+                                  </>
+                                )}
+                              </Button>
+                            ) : (
+                              <Button color="gray" disabled>
+                                Out of stock
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       </Table.Body>
@@ -310,240 +330,193 @@ export default function DashPOS() {
             </div>
 
             <div className="md:w-1/3">
-              {selectedCustomer > 0 ? (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -50 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex gap-3 justify-between">
-                      <div>
-                        <p>
-                          <b>Customer Name : </b> {selectedCustomer}
-                        </p>
-                        <p>
-                          <b>Date & Time : </b>
-                          {new Date().toLocaleString()}
-                        </p>
-                      </div>
-
-                      <Button
-                        className="mb-3"
-                        color="gray"
-                        size="sm"
-                        onClick={() => setShowModal1(true)}
-                      >
-                        <MdDeleteForever className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="mt-5 justify-between text-center ">
-                      <b>
-                        <p>Product List</p>
-                      </b>
-
-                      <hr className="md-2 mt-2" />
-                    </div>
+              <>
+                <motion.div
+                  initial={{ opacity: 0, y: -50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex gap-3 justify-between">
                     <div>
-                      {selectedProducts.length > 0 ? (
-                        <>
-                          <motion.div
-                            initial={{ opacity: 0, y: -50 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -50 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <Table hoverable className="shadow-md w-full mt-2">
-                              <TableHead>
-                                <TableHeadCell>Product Name</TableHeadCell>
-                                <TableHeadCell>QTY</TableHeadCell>
-                                <TableHeadCell>Price</TableHeadCell>
-                                <TableHeadCell></TableHeadCell>
-                              </TableHead>
-                              {selectedProducts.map((product) => (
-                                <Table.Body
-                                  className="divide-y"
-                                  key={product.id}
-                                >
-                                  <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                    <TableCell>
-                                      <b>{product.item.itemName}</b>
-                                    </TableCell>
-                                    <TableCell>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: "0.5rem",
-                                        }}
-                                      >
-                                        <MdRemove
-                                          onClick={() =>
-                                            handleDecreaseQuantity(product.id)
-                                          }
-                                          style={{ cursor: "pointer" }}
-                                        />
-                                        <span>{product.quantity}</span>
-
-                                        <MdAdd
-                                          onClick={() =>
-                                            handleIncreaseQuantity(product.id)
-                                          }
-                                          style={{ cursor: "pointer" }}
-                                        />
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      Rs.
-                                      {product.item.itemPrice *
-                                        product.quantity}
-                                    </TableCell>
-                                    <TableCell>
-                                      <Button
-                                        onClick={() =>
-                                          handleRemoveFromSelected(product.id)
-                                        }
-                                        color="gray"
-                                      >
-                                        <MdDeleteForever className=" h-4 w-4" />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                </Table.Body>
-                              ))}
-                            </Table>
-                          </motion.div>
-                        </>
-                      ) : (
-                        <div className="mt-5 justify-between text-center text-gray-400 text-sm">
-                          <p>You have not selected items yet!</p>
-                        </div>
-                      )}
+                      <p>
+                        <b>Date & Time : </b>
+                        {new Date().toLocaleString()}
+                      </p>
                     </div>
+                  </div>
+                  <div className="mt-5 justify-between text-center ">
+                    <b>
+                      <p>Product List</p>
+                    </b>
 
+                    <hr className="md-2 mt-2" />
+                  </div>
+                  <div>
                     {selectedProducts.length > 0 ? (
                       <>
                         <motion.div
-                          initial={{ opacity: 0, y: 50 }}
+                          initial={{ opacity: 0, y: -50 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 50 }}
+                          exit={{ opacity: 0, y: -50 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <div className="mt-5 justify-between text-center ">
-                            <b>
-                              <p>Totale Price</p>
-                            </b>
+                          <Table hoverable className="shadow-md w-full mt-2">
+                            <TableHead>
+                              <TableHeadCell>Product Name</TableHeadCell>
+                              <TableHeadCell>QTY</TableHeadCell>
+                              <TableHeadCell>Price</TableHeadCell>
+                              <TableHeadCell></TableHeadCell>
+                            </TableHead>
+                            {selectedProducts.map((product) => (
+                              <Table.Body className="divide-y" key={product.id}>
+                                <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                  <TableCell>
+                                    <b>{product.item.itemName}</b>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.5rem",
+                                      }}
+                                    >
+                                      <MdRemove
+                                        onClick={() =>
+                                          handleDecreaseQuantity(product.id)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      />
+                                      <span>{product.quantity}</span>
 
-                            <hr className="md-2 mt-2" />
-                          </div>
-
-                          <div className="mt-5  text-center ">
-                            <div className="mr-2 ml-2 mb-3 flex justify-between">
-                              <p>
-                                <b>Sub Total :</b>
-                              </p>
-                              <p>Rs. {calculateSubtotal()}</p>
-                            </div>
-                            <div className="mr-2 ml-2 mb-3 flex justify-between">
-                              <p>
-                                <b>Discont % :</b>
-                              </p>
-                              <TextInput
-                                type="number"
-                                value={discountPercentage}
-                                onChange={(e) =>
-                                  setDiscountPercentage(
-                                    Math.max(0, e.target.value)
-                                  )
-                                }
-                                placeholder="Enter discount percentage"
-                                className=" w-20 h-8 mb-3"
-                                size="sm"
-                              />
-                            </div>
-
-                            {discountPercentage > 0 && (
-                              <div className="mr-2 ml-2 mb-3 flex justify-between">
-                                <p>
-                                  <b>Discounte Price : </b>
-                                </p>
-                                <p>
-                                  Rs.{" "}
-                                  {(
-                                    calculateTotalPrice() - calculateSubtotal()
-                                  ).toFixed(2)}
-                                </p>
-                              </div>
-                            )}
-
-                            <div className="mr-2 ml-2 flex justify-between">
-                              <p>
-                                <b>Paybale Amount :</b>
-                              </p>
-                              <p>
-                                <b className=" text-red-600 text-xl">
-                                  Rs. {calculateTotalPrice()}
-                                </b>
-                              </p>
-                            </div>
-
-                            <hr className="md-2 mt-2" />
-
-                            <div className="mt-4 flex gap-4">
-                              <Button color="blue" className="w-full">
-                                <HiCurrencyDollar className="h-4 w-4 mr-2" />
-                                Pay - Rs. {calculateTotalPrice()}
-                              </Button>
-                              <Button
-                                onClick={() => setShowModal(true)}
-                                color="red"
-                                className="w-full"
-                              >
-                                <HiXCircle className="h-4 w-4 mr-2" />
-                                Cancel
-                              </Button>
-                            </div>
-
-                            <hr className="md-2 mt-2" />
-                          </div>
+                                      <MdAdd
+                                        onClick={() =>
+                                          handleIncreaseQuantity(product.id)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                      />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    Rs.
+                                    {product.item.itemPrice * product.quantity}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button
+                                      onClick={() =>
+                                        handleRemoveFromSelected(product.id)
+                                      }
+                                      color="gray"
+                                    >
+                                      <MdDeleteForever className=" h-4 w-4" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              </Table.Body>
+                            ))}
+                          </Table>
                         </motion.div>
                       </>
                     ) : (
-                      <div className="mt-5 justify-between text-center "></div>
-                    )}
-                  </motion.div>
-                </>
-              ) : (
-                <>
-                  <div className="flex justify-center">
-                    <div>
-                      <p>
-                        Select already existing customer or add new customer
-                      </p>
-
-                      <div className="mt-4 flex gap-4">
-                        <Select
-                          value={selectedCustomer}
-                          onChange={handleCustomerChange}
-                        >
-                          <option value="">Select a customer</option>
-                          {customers.map((customer) => (
-                            <option key={customer.id} value={customer.id}>
-                              {customer.firstname + " " + customer.lastname}
-                            </option>
-                          ))}
-                        </Select>
-
-                        <Button color="blue" className="">
-                          <MdAdd className="h-4 w-4 mr-2" />
-                          Add new customer
-                        </Button>
+                      <div className="mt-5 justify-between text-center text-gray-400 text-sm">
+                        <p>You have not selected items yet!</p>
                       </div>
-                    </div>
+                    )}
                   </div>
-                </>
-              )}
+
+                  {selectedProducts.length > 0 ? (
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="mt-5 justify-between text-center ">
+                          <b>
+                            <p>Totale Price</p>
+                          </b>
+
+                          <hr className="md-2 mt-2" />
+                        </div>
+
+                        <div className="mt-5  text-center ">
+                          <div className="mr-2 ml-2 mb-3 flex justify-between">
+                            <p>
+                              <b>Sub Total :</b>
+                            </p>
+                            <p>Rs. {calculateSubtotal()}</p>
+                          </div>
+                          <div className="mr-2 ml-2 mb-3 flex justify-between">
+                            <p>
+                              <b>Discont % :</b>
+                            </p>
+                            <TextInput
+                              type="number"
+                              value={discountPercentage}
+                              onChange={(e) =>
+                                setDiscountPercentage(
+                                  Math.max(0, e.target.value)
+                                )
+                              }
+                              placeholder="Enter discount percentage"
+                              className=" w-20 h-8 mb-3"
+                              size="sm"
+                            />
+                          </div>
+
+                          {discountPercentage > 0 && (
+                            <div className="mr-2 ml-2 mb-3 flex justify-between">
+                              <p>
+                                <b>Discounte Price : </b>
+                              </p>
+                              <p>
+                                Rs.{" "}
+                                {(
+                                  calculateTotalPrice() - calculateSubtotal()
+                                ).toFixed(2)}
+                              </p>
+                            </div>
+                          )}
+
+                          <div className="mr-2 ml-2 flex justify-between">
+                            <p>
+                              <b>Paybale Amount :</b>
+                            </p>
+                            <p>
+                              <b className=" text-red-600 text-xl">
+                                Rs. {calculateTotalPrice()}
+                              </b>
+                            </p>
+                          </div>
+
+                          <hr className="md-2 mt-2" />
+
+                          <div className="mt-4 flex gap-4">
+                            <Button color="blue" className="w-full">
+                              <HiCurrencyDollar className="h-4 w-4 mr-2" />
+                              Pay - Rs. {calculateTotalPrice()}
+                            </Button>
+                            <Button
+                              onClick={() => setShowModal(true)}
+                              color="red"
+                              className="w-full"
+                            >
+                              <HiXCircle className="h-4 w-4 mr-2" />
+                              Cancel
+                            </Button>
+                          </div>
+
+                          <hr className="md-2 mt-2" />
+                        </div>
+                      </motion.div>
+                    </>
+                  ) : (
+                    <div className="mt-5 justify-between text-center "></div>
+                  )}
+                </motion.div>
+              </>
             </div>
           </div>
 
