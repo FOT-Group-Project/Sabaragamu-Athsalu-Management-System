@@ -26,6 +26,7 @@ import Logolight from "../assets/logolight.png";
 import Logodark from "../assets/logodark.png";
 import { IoMdClose } from "react-icons/io";
 import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 export default function DashSellerInvetory() {
   const { currentUser } = useSelector((state) => state.user);
@@ -75,43 +76,146 @@ export default function DashSellerInvetory() {
     );
   };
 
-  //function to print selected bill
+  // //function to print selected bill
+  // const printBill = () => {
+  //   const doc = new jsPDF();
+  //   doc.setFontSize(12);
+  //   doc.text("Invoice", 10, 10);
+  //   doc.text(
+  //     "Date : " + new Date(selectBillPrint[0].buyDateTime).toLocaleDateString(),
+  //     10,
+  //     20
+  //   );
+  //   doc.text("INV# : " + generateBillId(selectBillPrint), 10, 30);
+  //   doc.text("Bill To:", 10, 40);
+  //   doc.text(
+  //     selectBillPrint[0].Customer.firstname +
+  //       " " +
+  //       selectBillPrint[0].Customer.lastname,
+  //     10,
+  //     50
+  //   );
+  //   doc.text(selectBillPrint[0].Customer.phone, 10, 60);
+  //   doc.text(selectBillPrint[0].Customer.email, 10, 70);
+  //   doc.text("Description", 10, 80);
+  //   doc.text("Quantity", 60, 80);
+  //   doc.text("Unit Price", 100, 80);
+  //   doc.text("Total Price", 150, 80);
+  //   let y = 90;
+  //   selectBillPrint.forEach((sale) => {
+  //     doc.text(sale.Product.itemName, 10, y);
+  //     doc.text(sale.quantity.toString(), 60, y);
+  //     doc.text("Rs." + sale.unitPrice.toFixed(2), 100, y);
+  //     doc.text("Rs." + (sale.quantity * sale.unitPrice).toFixed(2), 150, y);
+  //     y += 10;
+  //   });
+  //   doc.text("Total", 10, y);
+  //   doc.text("Rs." + calculateTotalAmount(selectBillPrint).toFixed(2), 150, y);
+  //   doc.text("Thank you for your business!", 10, y + 10);
+  //   doc.save(generateBillId(selectBillPrint) + ".pdf");
+  // };
+
   const printBill = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    doc.text("Invoice", 10, 10);
-    doc.text(
-      "Date : " + new Date(selectBillPrint[0].buyDateTime).toLocaleDateString(),
-      10,
-      20
-    );
-    doc.text("INV# : " + generateBillId(selectBillPrint), 10, 30);
-    doc.text("Bill To:", 10, 40);
-    doc.text(
-      selectBillPrint[0].Customer.firstname +
-        " " +
-        selectBillPrint[0].Customer.lastname,
-      10,
-      50
-    );
-    doc.text(selectBillPrint[0].Customer.phone, 10, 60);
-    doc.text(selectBillPrint[0].Customer.email, 10, 70);
-    doc.text("Description", 10, 80);
-    doc.text("Quantity", 60, 80);
-    doc.text("Unit Price", 100, 80);
-    doc.text("Total Price", 150, 80);
-    let y = 90;
-    selectBillPrint.forEach((sale) => {
-      doc.text(sale.Product.itemName, 10, y);
-      doc.text(sale.quantity.toString(), 60, y);
-      doc.text("Rs." + sale.unitPrice.toFixed(2), 100, y);
-      doc.text("Rs." + (sale.quantity * sale.unitPrice).toFixed(2), 150, y);
-      y += 10;
+    // Define a custom page size for a 58mm wide paper
+    const doc = new jsPDF({
+      unit: "mm",
+      format: [58, 100], // Width: 58mm, Height: 100mm (adjust height as needed)
     });
-    doc.text("Total", 10, y);
-    doc.text("Rs." + calculateTotalAmount(selectBillPrint).toFixed(2), 150, y);
-    doc.text("Thank you for your business!", 10, y + 10);
-    doc.save(generateBillId(selectBillPrint) + ".pdf");
+
+    const invoice = selectBillPrint[0];
+    const date = new Date(invoice.buyDateTime);
+
+    // Add Logo - Adjust the size and position for narrow paper
+    doc.addImage(Logolight, "PNG", 5, 5, 20, 5); // Adjust as necessary
+
+    // Invoice title and details
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Invoice", 55, 7, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(`Date: ${date.toLocaleDateString()}`, 55, 10.5, {
+      align: "right",
+    });
+    doc.text(`INV#: ${generateBillId(selectBillPrint)}`, 55, 14, {
+      align: "right",
+    });
+
+    // Bill to section
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Bill To:", 5, 25);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `${invoice.Customer.firstname} ${invoice.Customer.lastname}`,
+      5,
+      30
+    );
+    doc.text(invoice.Customer.phone, 5, 35);
+    doc.text(invoice.Customer.email, 5, 40);
+
+    // Add a horizontal line separator
+    doc.setDrawColor(0, 0, 0); // black color
+    doc.line(5, 45, 55, 45); // horizontal line (x1, y1, x2, y2)
+
+    // Add table with sales details
+    const tableOptions = {
+      startY: 55, // Adjust startY to align the table properly with preceding content
+      head: [["Description", "Qty", "Unit", "Total"]],
+      body: selectBillPrint.map((sale) => [
+        sale.Product.itemName,
+        sale.quantity,
+        `Rs.${sale.unitPrice.toFixed(2)}`,
+        `Rs.${(sale.quantity * sale.unitPrice).toFixed(2)}`,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [60, 141, 188] },
+      styles: { cellPadding: 1, fontSize: 6 }, // Smaller font and padding for narrow paper
+      columnStyles: {
+        0: { cellWidth: 30 }, // Description column width
+        1: { cellWidth: 8 }, // Quantity column width
+        2: { cellWidth: 10 }, // Unit Price column width
+        3: { cellWidth: 10 }, // Total Price column width
+      },
+      tableWidth: "wrap", // Wrap content to fit the width
+    };
+
+    doc.autoTable(tableOptions);
+    // Calculate and add total amount
+    const totalY = doc.lastAutoTable.finalY + 5;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total", 5, totalY);
+    doc.text(
+      `Rs.${calculateTotalAmount(selectBillPrint).toFixed(2)}`,
+      55,
+      totalY,
+      { align: "right" }
+    );
+    doc.setFont("helvetica", "normal");
+
+    // Add a horizontal line separator above the footer
+    doc.line(5, totalY + 3, 55, totalY + 3);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+
+    // Calculate the page width
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Get the text width in the current font and size
+    const text = "Thank you for your business!";
+    const textWidth = doc.getTextWidth(text);
+
+    // Calculate the x position for centered text
+    const xCenter = (pageWidth - textWidth) / 2;
+
+    // Add the centered text at the calculated position
+    doc.text(text, xCenter, totalY + 8);
+
+    // Save the PDF with a meaningful file name
+    doc.save(`${generateBillId(selectBillPrint)}.pdf`);
   };
 
   // Function to generate bill ID
