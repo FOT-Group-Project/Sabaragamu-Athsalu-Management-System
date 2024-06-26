@@ -33,6 +33,7 @@ export default function DashSellerInvetory() {
   const [sales, setSales] = useState([]);
   const [selectedBill, setSelectedBill] = useState(null);
   const [selectBillPrint, setSelectBillPrint] = useState(null);
+  const [selectedBillExport, setSelectedBillExport] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useSelector((state) => state.theme.theme);
 
@@ -114,6 +115,94 @@ export default function DashSellerInvetory() {
   //   doc.text("Thank you for your business!", 10, y + 10);
   //   doc.save(generateBillId(selectBillPrint) + ".pdf");
   // };
+
+
+  const exportBill = () => {
+    const doc = new jsPDF();
+    const invoice = selectedBillExport[0];
+    const date = new Date(invoice.buyDateTime);
+
+    // Add Logo
+    doc.addImage(Logolight, "PNG", 10, 10, 35, 10); // Adjust position and size as necessary
+
+    // Invoice title and details
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("Invoice", 200, 15, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(`Date: ${date.toLocaleDateString()}`, 200, 20, { align: "right" });
+    doc.text(`INV#: ${generateBillId(selectedBillExport)}`, 200, 25, {
+      align: "right",
+    });
+
+    // Bill to section
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Bill To:", 10, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `${invoice.Customer.firstname} ${invoice.Customer.lastname}`,
+      10,
+      50
+    );
+    doc.text(invoice.Customer.phone, 10, 60);
+    doc.text(invoice.Customer.email, 10, 70);
+
+    // Add a horizontal line separator
+    doc.setDrawColor(0, 0, 0); // black color
+    doc.line(10, 75, 200, 75); // horizontal line (x1, y1, x2, y2)
+
+    // Add table with sales details
+    doc.autoTable({
+      startY: 80,
+      head: [["Description", "Quantity", "Unit Price", "Total Price"]],
+      body: selectedBillExport.map((sale) => [
+        sale.Product.itemName,
+        sale.quantity,
+        `Rs.${sale.unitPrice.toFixed(2)}`,
+        `Rs.${(sale.quantity * sale.unitPrice).toFixed(2)}`,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [60, 141, 188] },
+      styles: { cellPadding: 3, fontSize: 10 },
+      columnStyles: {
+        0: { cellWidth: 60 }, // Description column width
+        1: { cellWidth: 20 }, // Quantity column width
+        2: { cellWidth: 30 }, // Unit Price column width
+        3: { cellWidth: 30 }, // Total Price column width
+      },
+    });
+
+    // Calculate and add total amount
+    const totalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total", 10, totalY);
+    doc.text(
+      `Rs.${calculateTotalAmount(selectedBillExport).toFixed(2)}`,
+      200,
+      totalY,
+      { align: "right" }
+    );
+    doc.setFont("helvetica", "normal");
+
+    // Add a horizontal line separator above the footer
+    doc.line(10, totalY + 5, 200, totalY + 5);
+
+    // Footer
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const text = "Thank you for your business!";
+    const textWidth = doc.getTextWidth(text);
+    const xCenter = (pageWidth - textWidth) / 2;
+    doc.text(text, xCenter, totalY + 15);
+
+    // Save the PDF with a meaningful file name
+    doc.save(`${generateBillId(selectedBillExport)}.pdf`);
+  };
+
 
   const printBill = () => {
     // Define a custom page size for a 58mm wide paper
@@ -240,6 +329,13 @@ export default function DashSellerInvetory() {
       printBill();
     }
   }, [selectBillPrint]);
+
+  //effect to handle export after selecting a bill
+  useEffect(() => {
+    if (selectedBillExport) {
+      exportBill();
+    }
+  },[selectedBillExport]);
 
   return (
     <div className="p-3 w-full">
@@ -499,7 +595,7 @@ export default function DashSellerInvetory() {
                           <Button
                             color="gray"
                             onClick={() => {
-                              setSelectedBill(bill);
+                              setSelectedBillExport(bill);
                             }}
                           >
                             <PiExportBold className="mr-3 h-4 w-4" />
