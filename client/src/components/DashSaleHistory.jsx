@@ -116,7 +116,6 @@ export default function DashSellerInvetory() {
   //   doc.save(generateBillId(selectBillPrint) + ".pdf");
   // };
 
-
   const exportBill = () => {
     const doc = new jsPDF();
     const invoice = selectedBillExport[0];
@@ -203,7 +202,6 @@ export default function DashSellerInvetory() {
     doc.save(`${generateBillId(selectedBillExport)}.pdf`);
   };
 
-
   const printBill = () => {
     // Define a custom page size for a 58mm wide paper
     const doc = new jsPDF({
@@ -249,8 +247,8 @@ export default function DashSellerInvetory() {
 
     // Add table with sales details
     const tableOptions = {
-      startY: 55, // Adjust startY to align the table properly with preceding content
-      head: [["Description", "Qty", "Unit", "Total"]],
+      startY: 47, // Adjust startY to align the table properly with preceding content
+      head: [["Descreption", "Qty", "Unit", "Total"]],
       body: selectBillPrint.map((sale) => [
         sale.Product.itemName,
         sale.quantity,
@@ -259,14 +257,15 @@ export default function DashSellerInvetory() {
       ]),
       theme: "striped",
       headStyles: { fillColor: [60, 141, 188] },
-      styles: { cellPadding: 1, fontSize: 6 }, // Smaller font and padding for narrow paper
+      styles: { cellPadding: 1, fontSize: 5 }, // Smaller font and padding for narrow paper
       columnStyles: {
-        0: { cellWidth: 30 }, // Description column width
+        0: { cellWidth: 15 }, // Description column width
         1: { cellWidth: 8 }, // Quantity column width
-        2: { cellWidth: 10 }, // Unit Price column width
-        3: { cellWidth: 10 }, // Total Price column width
+        2: { cellWidth: 15 }, // Unit Price column width
+        3: { cellWidth: 15 }, // Total Price column width
       },
-      tableWidth: "wrap", // Wrap content to fit the width
+      tableWidth: "auto", // Align content to the left by not wrapping it to fit the entire width
+      margin: { left: 3 }, // Set the left margin to 3 units
     };
 
     doc.autoTable(tableOptions);
@@ -335,7 +334,7 @@ export default function DashSellerInvetory() {
     if (selectedBillExport) {
       exportBill();
     }
-  },[selectedBillExport]);
+  }, [selectedBillExport]);
 
   return (
     <div className="p-3 w-full">
