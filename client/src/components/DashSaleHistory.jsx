@@ -206,14 +206,14 @@ export default function DashSellerInvetory() {
     // Define a custom page size for a 58mm wide paper
     const doc = new jsPDF({
       unit: "mm",
-      format: [58, 100], // Width: 58mm, Height: 100mm (adjust height as needed)
+      format: [58, 100], // Width: 58mm, Height: 100mm 
     });
 
     const invoice = selectBillPrint[0];
     const date = new Date(invoice.buyDateTime);
 
     // Add Logo - Adjust the size and position for narrow paper
-    doc.addImage(Logolight, "PNG", 5, 5, 20, 5); // Adjust as necessary
+    doc.addImage(Logolight, "PNG", 5, 5, 20, 5); // Adjust position and size
 
     // Invoice title and details
     doc.setFontSize(8);
@@ -248,7 +248,7 @@ export default function DashSellerInvetory() {
     // Add table with sales details
     const tableOptions = {
       startY: 47, // Adjust startY to align the table properly with preceding content
-      head: [["Descreption", "Qty", "Unit", "Total"]],
+      head: [["Description", "Qty", "Unit", "Total"]],
       body: selectBillPrint.map((sale) => [
         sale.Product.itemName,
         sale.quantity,
@@ -269,6 +269,7 @@ export default function DashSellerInvetory() {
     };
 
     doc.autoTable(tableOptions);
+
     // Calculate and add total amount
     const totalY = doc.lastAutoTable.finalY + 5;
     doc.setFontSize(8);
@@ -302,8 +303,25 @@ export default function DashSellerInvetory() {
     // Add the centered text at the calculated position
     doc.text(text, xCenter, totalY + 8);
 
-    // Save the PDF with a meaningful file name
-    doc.save(`${generateBillId(selectBillPrint)}.pdf`);
+    // Generate the PDF as a Blob
+    const pdfBlob = doc.output("blob");
+
+    // Create a URL for the Blob
+    const url = URL.createObjectURL(pdfBlob);
+
+    // Open the URL in a new window/tab
+    const printWindow = window.open(url);
+
+    // If successfully opened the new window/tab, call print
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    } else {
+      console.warn(
+        "Unable to open the print window. Please check your browser settings."
+      );
+    }
   };
 
   // Function to generate bill ID
