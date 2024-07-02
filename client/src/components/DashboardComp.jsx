@@ -9,7 +9,7 @@ import {
   HiTrendingUp,
   HiOutlineCurrencyDollar,
 } from "react-icons/hi";
-import { Button, Table, Breadcrumb } from "flowbite-react";
+import { Button, Table, Breadcrumb, Select } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Chart from "chart.js/auto";
@@ -332,7 +332,7 @@ export default function DashboardComp() {
     fetchProducts();
   }, []);
 
-  const handleChange = (e) => { 
+  const handleChange = (e) => {
     const storeId = e.target.value;
     if (storeId) {
       const fetchSalesByShopId = async () => {
@@ -361,7 +361,7 @@ export default function DashboardComp() {
       };
       fetchSales();
     }
-  }
+  };
 
   return (
     <div className="p-3 w-full md:mx-auto">
@@ -383,10 +383,11 @@ export default function DashboardComp() {
             Dashboard
           </h1>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex gap-2 mb-4">
             <select
               id="storeId"
               onChange={handleChange}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
               <option value="">Select Store</option>
               {stores.map((store) => (

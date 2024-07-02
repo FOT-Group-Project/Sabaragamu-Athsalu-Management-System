@@ -70,7 +70,7 @@ export default function DashStores() {
         storeName: store.storeName,
         phone: store.phone,
         address: store.address,
-        storeKeeperFirstName: store.storeKeeper.map(sk => sk.firstname).length > 0 ? store.storeKeeper.slice(-1).map(sk => sk.firstname) : "Not Assign Yet",
+        storeKeeperFirstName: store.storeKeeper.map(sk => sk.firstname).length > 0 ? store.storeKeeper.slice(-1).map(sk => sk.firstname) : "No Store Keeper Assigned",
         storeKeeperManageStoreDate: store.storeKeeper.map(sk => sk.StoreKeeperManageStore.date) ? new Date(store.storeKeeper.slice(-1).map(sk => sk.StoreKeeperManageStore.date)).toLocaleDateString() : "Not Assign Yet"
       }));
       
