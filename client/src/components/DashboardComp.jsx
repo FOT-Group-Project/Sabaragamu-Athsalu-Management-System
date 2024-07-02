@@ -383,11 +383,14 @@ export default function DashboardComp() {
             Dashboard
           </h1>
 
+          
+
+          
           <div className="flex gap-2 mb-4">
             <select
               id="storeId"
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-gray-200 w-1/4 md:w-1/6"
             >
               <option value="">Select Store</option>
               {stores.map((store) => (
