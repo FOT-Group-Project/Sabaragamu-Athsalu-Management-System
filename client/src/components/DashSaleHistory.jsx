@@ -410,7 +410,7 @@ export default function DashSellerInvetory() {
                         />
                       ) : (
                         <img
-                          src={Logodark}
+                          src={Logolight}
                           className="h-10"
                           alt="Flowbite Logo"
                         />
