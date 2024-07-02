@@ -282,8 +282,6 @@ export default function DashPOS() {
                             >
                               {product.quantity} in stock
                             </Badge>
-
-                          
                           </TableCell>
                           <TableCell></TableCell>
                           <TableCell>
@@ -372,7 +370,9 @@ export default function DashPOS() {
                               <Table.Body className="divide-y" key={product.id}>
                                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                   <TableCell>
-                                    <b>{product.item.itemName}</b>
+                                    <b>
+                                      {product.item.itemName}
+                                    </b>
                                   </TableCell>
                                   <TableCell>
                                     <div
