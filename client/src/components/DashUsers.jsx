@@ -259,7 +259,7 @@ export default function DashUsers() {
         method: "DELETE",
       });
       const data = await res.json();
-      if(res.status == 400) {
+      if (res.status == 400) {
         setShowModalDeletelock(true);
         setErrorMessage(data.message);
         setShowModal(false);
@@ -268,8 +268,7 @@ export default function DashUsers() {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
-      }
-      else {
+      } else {
         console.log(data.message);
       }
     } catch (error) {
@@ -452,35 +451,26 @@ export default function DashUsers() {
                         />
                       </div>
                       <div>
-                <Label htmlFor="password" value="Password" />
-                <div className="relative">
-                  <TextInput
-                    id="password"
-                    type={isPasswordVisible ? "text" : "password"} // Use visibility state to determine input type
-                    placeholder="**********"
-                    onChange={handleChange}
-                    required
-                    shadow
-                    disabled={imageFileUploading}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {isPasswordVisible ? <HiEyeOff /> : <HiEye />} 
-                  </button>
-                </div>
-              </div>
-
-
-
-             
-
-
-
-
-
+                        <Label htmlFor="password" value="Password" />
+                        <div className="relative">
+                          <TextInput
+                            id="password"
+                            type={isPasswordVisible ? "text" : "password"} // Use visibility state to determine input type
+                            placeholder="**********"
+                            onChange={handleChange}
+                            required
+                            shadow
+                            disabled={imageFileUploading}
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {isPasswordVisible ? <HiEyeOff /> : <HiEye />}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <div className="gap-2">
                       <div>
@@ -881,7 +871,10 @@ export default function DashUsers() {
                     {errorMessage}
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button color="blue" onClick={() => setShowModalDeletelock(false)}>
+                    <Button
+                      color="blue"
+                      onClick={() => setShowModalDeletelock(false)}
+                    >
                       Okay
                     </Button>
                   </div>
