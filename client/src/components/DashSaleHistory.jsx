@@ -36,6 +36,13 @@ export default function DashSellerInvetory() {
   const [selectedBillExport, setSelectedBillExport] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useSelector((state) => state.theme.theme);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const isFilterActive = searchQuery.length > 0;
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   const fetchSales = async () => {
     try {
@@ -54,6 +61,14 @@ export default function DashSellerInvetory() {
   useEffect(() => {
     fetchSales();
   }, []);
+
+  useEffect(() => {
+    if (isFilterActive) {
+      setSales(filteredSales);
+    } else {
+      fetchSales();
+    }
+  }, [searchQuery]);
 
   // Function to group sales by customerId, shopId, and buyDateTime
   const groupSales = (sales) => {
@@ -76,6 +91,19 @@ export default function DashSellerInvetory() {
       0
     );
   };
+
+  // Function to filter sales based on search query
+  const filteredSales = sales.filter((bill) => {
+    const customerName = bill[0].Customer
+      ? `${bill[0].Customer.firstname} ${bill[0].Customer.lastname}`
+      : "Unknown";
+    const shopName = bill[0].Shop ? bill[0].Shop.shopName : "Unknown";
+    const buyDate = new Date(bill[0].buyDateTime).toLocaleDateString();
+    const buyTime = new Date(bill[0].buyDateTime).toLocaleTimeString();
+    const totalAmount = calculateTotalAmount(bill);
+    const searchValues = `${customerName} ${shopName} ${buyDate} ${buyTime} ${totalAmount}`;
+    return searchValues.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   // //function to print selected bill
   // const printBill = () => {
@@ -323,7 +351,7 @@ export default function DashSellerInvetory() {
       );
     }
   };
-  
+
   // Function to generate bill ID
   const generateBillId = (bill) => {
     const { customerId, shopId, buyDateTime } = bill[0];
