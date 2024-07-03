@@ -63,6 +63,7 @@ export default function DashSellerInvetory() {
         // Group sales by customerId, shopId, and buyDateTime
         const groupedSales = groupSales(data.sales);
         setSales(groupedSales);
+        setFilteredSales(groupedSales);
       }
     } catch (error) {
       console.log(error.message);
@@ -393,7 +394,23 @@ export default function DashSellerInvetory() {
   };
 
   useEffect(() => {
-    fetchSales();
+    if (currentUser.role === "Admin") {
+      fetchSales();
+    } else if (currentUser.role === "Seller") {
+      //get user's shopId from shop table
+      const fetchShopId = async () => {
+        try {
+          const res = await fetch(`api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchSalesByShopId(data.shops[0].id);
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      };
+      fetchShopId();
+    }
   }, []);
 
   useEffect(() => {
