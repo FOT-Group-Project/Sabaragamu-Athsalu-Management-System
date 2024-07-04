@@ -9,5 +9,4 @@ router.get('/getsales/:shopId', verifyToken, salesReportController.showSalesBySh
 router.post('/addsale', verifyToken, salesReportController.save);
 router.post('/addsales', verifyToken, salesReportController.addSales);
 
-
 module.exports = router;
