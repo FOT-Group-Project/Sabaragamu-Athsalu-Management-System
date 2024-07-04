@@ -9,5 +9,10 @@ router.post(
   verifyToken,
   customerReturnItemController.save
 );
+router.post(
+  "/addcustomerreturnitems",
+  verifyToken,
+  customerReturnItemController.addreturns
+);
 
 module.exports = router;

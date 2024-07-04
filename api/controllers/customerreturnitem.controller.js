@@ -82,8 +82,41 @@ function save(req, res) {
     });
 }
 
+//add return sales by one function for testing using array
+function addreturns(req, res){
+   if (!Array.isArray(req.body)) {
+     return res.status(400).json({ message: "Invalid request body" });
+  }
+  
+  let returnSales = req.body.map((returnSale) => {
+    return {
+      customerId: returnSale.customerId,
+      itemId: returnSale.itemId,
+      shopId: returnSale.shopId,
+      returnDateTime: returnSale.returnDateTime,
+      buyDateTime: returnSale.buyDateTime,
+      reason: returnSale.reason,
+      quantity: returnSale.quantity,
+    };
+  });
 
-
-module.exports = {
-    save: save
+  models.CustomerReturnItem.bulkCreate(returnSales)
+    .then((result) => {
+      res.status(201).json({
+        message: "Return sales added successfully",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding return sales",
+        error: error,
+      });
+    });
 }
+
+// Export all functions
+module.exports = {
+  save: save,
+  addreturns: addreturns,
+};
