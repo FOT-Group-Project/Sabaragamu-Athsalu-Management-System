@@ -191,6 +191,45 @@ function showReturnSalesByCustomerId(req, res) {
   })
 }
 
+//get returns by itemId
+function showReturnSalesByItemId(req, res) {
+  models.CustomerReturnItem.findAll({
+    where: { itemId: req.parms.itemId },
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname", "lastname", "email", "phone"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
+    .then((result) => {
+      res.status(200).json({
+        success: true,
+        message: "Sales Returns",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+  })
+
+}
+
 //show all return sales
 function showReturnSales(req, res) {
   models.CustomerReturnItem.findAll({
@@ -229,11 +268,13 @@ function showReturnSales(req, res) {
 
 }
 
+
 // Export all functions
 module.exports = {
   save: save,
   addreturns: addreturns,
   showReturnSalesByShopId: showReturnSalesByShopId,
   showReturnSalesByCustomerId: showReturnSalesByCustomerId,
-  showReturnSales: showReturnSales,
+  showReturnSales: showReturnSales, 
+  showReturnSalesByItemId:showReturnSalesByItemId,
 };
