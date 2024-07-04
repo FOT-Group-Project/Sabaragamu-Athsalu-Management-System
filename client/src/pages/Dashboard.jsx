@@ -17,6 +17,7 @@ import DashDamageProduct from "../components/DashDamageProduct";
 import DashSaleHistory from "../components/DashSaleHistory";
 
 import DashSalesReport from "../components/DashSalesReport";
+import StoreKeeperDashboardHome from "../components/storeKeeper/StoreKeeperDashboardHome";
 
 
 export default function Dashboard() {
@@ -61,11 +62,13 @@ export default function Dashboard() {
       {tab === "products" && currentUser.role === "Seller" && (
         <DashSellerProducts />
       )}
+      {}
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (
         <SellerDashboardHome />
       )}
+      {tab === "dash" && currentUser.role === "StoreKeeper" && (<StoreKeeperDashboardHome />)}
       {/* pos */}
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
