@@ -115,8 +115,125 @@ function addreturns(req, res){
     });
 }
 
+//show return sales by shopID
+function showReturnSalesByShopId(req, res) {
+  models.CustomerReturnItem.findAll({
+    where: { shopId: req.parms.shopId },
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname", "lastname", "email", "phone"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
+    .then((result) => {
+      res.status(200).json({
+        success: true,
+        message: "Sales Returns",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+  })
+}
+
+//get return sales by customerid
+function showReturnSalesByCustomerId(req, res) {
+  models.CustomerReturnItem.findAll({
+    where: { customerId: req.parms.customerId },
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname", "lastname", "email", "phone"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
+    .then((result) => {
+      res.status(200).json({
+        success: true,
+        message: "Sales Returns",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+  })
+}
+
+//show all return sales
+function showReturnSales(req, res) {
+  models.CustomerReturnItem.findAll({
+    include: [
+      {
+        model: models.User,
+        as: "Customer",
+        attributes: ["firstname", "lastname", "email", "phone"],
+      },
+      {
+        model: models.Product,
+        as: "Product",
+        attributes: ["itemName"],
+      },
+      {
+        model: models.Shop,
+        as: "Shop",
+        attributes: ["shopName"],
+      },
+    ],
+  })
+    .then((result) => {
+      res.status(200).json({
+        success: true,
+        message: "Sales Returns",
+        sales: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+  })
+
+}
+
 // Export all functions
 module.exports = {
   save: save,
   addreturns: addreturns,
+  showReturnSalesByShopId: showReturnSalesByShopId,
+  showReturnSalesByCustomerId: showReturnSalesByCustomerId,
+  showReturnSales: showReturnSales,
 };
