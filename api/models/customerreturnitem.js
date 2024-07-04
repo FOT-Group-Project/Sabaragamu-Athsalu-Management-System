@@ -11,6 +11,30 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      // define association of CustomerReturnItem with Item
+      CustomerReturnItem.belongsTo(models.User, {
+        foreignKey: 'customerId',
+        as: 'Customer',
+      });
+
+      // define association of CustomerReturnItem with Shop
+      CustomerReturnItem.belongsTo(models.Shop, {
+        foreignKey: 'shopId',
+        as: 'Shop',
+      });
+      
+      // define association of CustomerReturnItem with Item
+      CustomerReturnItem.belongsTo(models.Product, {
+        foreignKey: 'itemId',
+        as: 'Product',
+      });
+
+      // define association of CustomerReturnItem with buyDateTime
+      CustomerReturnItem.belongsTo(models.CustomerBuyItem, {
+        foreignKey: 'buyDateTime',
+        as: 'CustomerBuyItem',
+      });
     }
   }
   CustomerReturnItem.init({
