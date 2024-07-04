@@ -326,7 +326,6 @@ export default function DashProfile() {
                       required
                       shadow
                       onChange={handleChange}
-                     
                     />
 
                     <Button

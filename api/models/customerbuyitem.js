@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+  
   CustomerBuyItem.init({
     customerId: DataTypes.INTEGER,
     itemId: DataTypes.INTEGER,
