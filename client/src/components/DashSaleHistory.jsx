@@ -14,8 +14,6 @@ import {
   Modal,
 } from "flowbite-react";
 import { useSelector } from "react-redux";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 import { Label, Select } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +21,7 @@ import { CiViewList } from "react-icons/ci";
 import { FiPrinter } from "react-icons/fi";
 import { PiExportBold } from "react-icons/pi";
 import Logolight from "../assets/logolight.png";
-import Logodark from "../assets/logodark.png";
+// import Logodark from "../assets/logodark.png";
 import { IoMdClose } from "react-icons/io";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
