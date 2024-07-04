@@ -29,5 +29,10 @@ router.get(
   verifyToken,
   customerReturnItemController.showReturnSales
 );
+router.get(
+  "/getreturnsbyitem/:itemId",
+  verifyToken,
+  customerReturnItemController.showReturnSalesByItemId
+);
 
 module.exports = router;
