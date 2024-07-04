@@ -14,5 +14,20 @@ router.post(
   verifyToken,
   customerReturnItemController.addreturns
 );
+router.get(
+  "/getreturnsbyshop/:shopId",
+  verifyToken,
+  customerReturnItemController.showReturnSalesByShopId
+);
+router.get(
+  "/getreturnsbycustomer/:customerId",
+  verifyToken,
+  customerReturnItemController.showReturnSalesByCustomerId
+);
+router.get(
+  "/getreturns",
+  verifyToken,
+  customerReturnItemController.showReturnSales
+);
 
 module.exports = router;
