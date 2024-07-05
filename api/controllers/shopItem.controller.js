@@ -166,6 +166,31 @@ function getShopsItems(req, res) {
 }
 
 function buyItems(req, res) {
+
+  if (req.body.quantity < 1) {
+    res.status(400).json({
+      success: false,
+      message: "Quantity should be greater than 0",
+    });
+    return;
+  }
+
+  if (req.body.unitPrice < 1) {
+    res.status(400).json({
+      success: false,
+      message: "Unit price should be greater than 0",
+    });
+    return;
+  }
+
+  if (req.body.customerId == null || req.body.itemId == null || req.body.shopId == null || req.body.buyDateTime == null || req.body.type == null || req.body.quantity == null ) {
+    res.status(400).json({
+      success: false,
+      message: "Missing required fields",
+    });
+    return;
+  }
+
   const buyItem = {
     customerId: req.body.customerId,
     itemId: req.body.itemId,
