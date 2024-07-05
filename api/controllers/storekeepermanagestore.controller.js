@@ -54,6 +54,34 @@ function assignStoreKeeper(req, res) {
     });
 }
 
+//Get store by storekeeper id
+function getStoresByStoreKeeperId(req, res) {
+  models.StoreKeeperManageStore.findAll({
+    where: { storeKeeperId: req.params.storeKeeperId },
+    include: [
+      {
+        model: models.Store,
+        as: "store",
+      },
+    ],
+  })
+    .then((data) => {
+      res.status(200).json({
+        success: true,
+        message: "StoreKeeper stores retrieved successfully",
+        stores: data,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Some error occurred",
+        error: err,
+      });
+    });
+}
+
 module.exports = {
     assignStoreKeeper: assignStoreKeeper,
+    getStoresByStoreKeeperId: getStoresByStoreKeeperId,
 };
