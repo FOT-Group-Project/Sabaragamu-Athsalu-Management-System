@@ -15,6 +15,7 @@ import DashSellerInvetory from "../components/seller/DashSellerInvetory";
 import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
 import DashSaleHistory from "../components/DashSaleHistory";
+import DashCustomerReturnItem from "../components/seller/DashCustomerReturnItem";
 
 import DashSalesReport from "../components/DashSalesReport";
 import StoreKeeperDashboardHome from "../components/storeKeeper/StoreKeeperDashboardHome";
@@ -64,13 +65,16 @@ export default function Dashboard() {
         <DashSellerProducts />
       )}
       {tab === "products" && currentUser.role === "StoreKeeper" && (
-        <DashStoreKeeperProducts />)}
+        <DashStoreKeeperProducts />
+      )}
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (
         <SellerDashboardHome />
       )}
-      {tab === "dash" && currentUser.role === "StoreKeeper" && (<StoreKeeperDashboardHome />)}
+      {tab === "dash" && currentUser.role === "StoreKeeper" && (
+        <StoreKeeperDashboardHome />
+      )}
       {/* pos */}
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
@@ -78,6 +82,11 @@ export default function Dashboard() {
 
       {/*Sale Histor*/}
       {tab === "saleHistory" && <DashSaleHistory />}
+
+      {/*Return Items */}
+      {tab === "returnItems" && currentUser.role === "Seller" && (
+        <DashCustomerReturnItem />
+      )}
     </div>
   );
 }

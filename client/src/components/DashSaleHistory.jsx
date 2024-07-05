@@ -391,6 +391,22 @@ export default function DashSellerInvetory() {
     setFilteredSales(filtered);
   };
 
+  const fetchSalesByShopId = async (shopId) => { 
+    try {
+      const res = await fetch(`api/sales-report/getsales/${shopId}`);
+      const data = await res.json();
+      if (res.ok) {
+        // Group sales by customerId, shopId, and buyDateTime
+        const groupedSales = groupSales(data.sales);
+        setSales(groupedSales);
+        setFilteredSales(groupedSales);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  
+  }
+
   useEffect(() => {
     if (currentUser.role === "Admin") {
       fetchSales();
