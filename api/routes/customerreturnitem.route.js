@@ -4,6 +4,8 @@ const verifyToken = require("../utils/verifyUser");
 
 const router = express.Router();
 
+
+// Add a new customer return item 
 router.post("/addcustomerreturnitem",verifyToken,customerReturnItemController.save);
 router.post("/addcustomerreturnitems",verifyToken,customerReturnItemController.addreturns);
 router.get("/getreturnsbyshop/:shopId",verifyToken,customerReturnItemController.showReturnSalesByShopId);
