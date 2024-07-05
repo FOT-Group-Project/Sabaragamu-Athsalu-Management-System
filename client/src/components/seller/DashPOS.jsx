@@ -619,21 +619,6 @@ export default function DashPOS() {
                                 <b className="">Name : </b>
                                 {}
                               </p>
-                              <p>
-                                <b>Price : </b> Rs. {}
-                              </p>
-                              <div className="flex gap-3 ">
-                                <p>
-                                  <b>Quantity : </b>{" "}
-                                </p>
-                                <Badge
-                                  className="pl-3 pr-3"
-                                  color="green"
-                                  icon={HiCheckCircle}
-                                >
-                                  in stock
-                                </Badge>
-                              </div>
                             </div>
                           </>
                         ) : (
