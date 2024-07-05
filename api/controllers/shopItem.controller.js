@@ -165,8 +165,13 @@ function getShopsItems(req, res) {
     });
 }
 
+function buyItems(req, res) {
+
+}
+
 module.exports = {
   getShopsItems: getShopsItems,
   getShopsItemId: getShopsItemId,
   sendShopItemoShop: sendShopItemoShop,
+  buyItems: buyItems,
 };
