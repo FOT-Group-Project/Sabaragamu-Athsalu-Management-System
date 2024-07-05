@@ -290,7 +290,7 @@ export default function DashboardComp() {
   };
   fetchStores();
 
-  //fetch sales, users and products
+  // fetch sales, users and products
   useEffect(() => {
     const fetchSales = async () => {
       try {
