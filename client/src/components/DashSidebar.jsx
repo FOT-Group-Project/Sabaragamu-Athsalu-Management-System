@@ -20,6 +20,7 @@ import { FaShoppingBag } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
 import { motion } from "framer-motion";
 import { RiFileDamageFill } from "react-icons/ri";
+import { MdAssignmentReturn } from "react-icons/md";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -116,6 +117,18 @@ export default function DashSidebar() {
                 </Link>
               </>
             )}
+            
+            {currentUser.role === "Seller" && (
+              <Link to="/dashboard?tab=returnItems">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  icon={MdAssignmentReturn}
+                  active={tab === "returnItems"}
+                >
+                  Return Items
+                </Sidebar.Item>
+              </Link>
+            )}
 
             <Link to="/dashboard?tab=profile">
               <Sidebar.Item
@@ -182,14 +195,13 @@ export default function DashSidebar() {
                 Sales History
               </Sidebar.Item>
             </Link>
-            
+
             <Link to="/dashboard?tab=salesReport">
               <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
                 Sales Report
               </Sidebar.Item>
             </Link>
 
-            
             {currentUser.role === "StoreKeeper" && (
               <Link to="/dashboard?tab=damageproducts">
                 <Sidebar.Item
