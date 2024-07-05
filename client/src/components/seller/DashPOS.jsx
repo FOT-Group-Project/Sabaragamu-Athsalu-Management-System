@@ -46,6 +46,7 @@ import {
   HiCurrencyDollar,
   HiCheck,
   HiCheckCircle,
+  HiPaperAirplane,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
 
@@ -63,6 +64,8 @@ export default function DashPOS() {
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [createUserError, setCreateUserError] = useState(null);
+  const [createLoding, setCreateLoding] = useState(false);
 
   // Function to handle search query change
   const handleSearchChange = (e) => {
@@ -596,7 +599,106 @@ export default function DashPOS() {
             >
               <Modal.Header>Order Details</Modal.Header>
               <Modal.Body>
-                <div className="space-y-6"></div>
+                <div className="space-y-6">
+                  <form
+                    onSubmit={null}
+                    className="flex flex-col flex-grow gap-4"
+                  >
+                    {createUserError && (
+                      <Alert color="failure">{createUserError}</Alert>
+                    )}
+                    <div className="flex gap-5 mb-4">
+                      <div className="w-1/2 ">
+                        {showModal2 ? (
+                          <>
+                            <div className="">
+                              <h1 className="text-lg text-gray-700">
+                                <b>Product List</b>
+                              </h1>
+                              <p className="mt-3">
+                                <b className="">Name : </b>
+                                {}
+                              </p>
+                              <p>
+                                <b>Price : </b> Rs. {}
+                              </p>
+                              <div className="flex gap-3 ">
+                                <p>
+                                  <b>Quantity : </b>{" "}
+                                </p>
+                                <Badge
+                                  className="pl-3 pr-3"
+                                  color="green"
+                                  icon={HiCheckCircle}
+                                >
+                                  in stock
+                                </Badge>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mb-4">
+                      <div className="w-1/2">
+                        <div className="mb-2 block">
+                          <Label value="Item Quantity" />
+                        </div>
+                      </div>
+                      {/* <div className="w-1/2">
+                        <div className="mb-2 block">
+                          <Label value="Select Shop" />
+                        </div>
+                        <Select
+                          id="shopId"
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              shopId: e.target.value,
+                            })
+                          }
+                          required
+                          shadow
+                        >
+                          <option value="">Select a Shop</option>
+                          {shops.map((shop) => (
+                            <option key={shop.id} value={shop.id}>
+                              {shop.shopName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div> */}
+                    </div>
+
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        color="blue"
+                        type="submit"
+                        disabled={createLoding}
+                      >
+                        {createLoding ? (
+                          <>
+                            <Spinner size="sm" />
+                            <span className="pl-3">Loading...</span>
+                          </>
+                        ) : (
+                          "Send Stock"
+                        )}
+                        <HiPaperAirplane className="ml-2 h-4 w-4 rotate-90" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="gray"
+                        onClick={() => setOpenModal(false)}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </form>
+                </div>
               </Modal.Body>
             </motion.div>
           </Modal>
