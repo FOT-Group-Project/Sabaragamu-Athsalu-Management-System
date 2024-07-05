@@ -133,7 +133,7 @@ function getShopsItemId(req, res) {
 
 function getShopsItems(req, res) {
   models.ShopItem.findAll({
-    where: { shopId: req.params.sellerId},
+    where: { shopId: req.params.sellerId },
     include: [
       {
         model: models.Shop,
@@ -166,7 +166,29 @@ function getShopsItems(req, res) {
 }
 
 function buyItems(req, res) {
+  const buyItem = {
+    customerId: req.body.customerId,
+    itemId: req.body.itemId,
+    shopId: req.body.shopId,
+    buyDateTime: req.body.buyDateTime,
+    unitPrice: req.body.unitPrice,
+    type: req.body.type,
+    quantity: req.body.quantity,
+    dueAmount: req.body.dueAmount,
+  };
 
+  models.CustomerBuyItem.create(buyItem)
+    .then((data) => {
+      res.status(200).json({
+        success: true,
+        message: "Item bought successfully",
+        item: data,
+      });
+    })
+    .catch((err) => {
+      console.error("Error buying item:", err);
+      res.status(500).json({ success: false, message: err });
+    });
 }
 
 module.exports = {
