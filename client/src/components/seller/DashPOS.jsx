@@ -58,6 +58,7 @@ export default function DashPOS() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -370,9 +371,7 @@ export default function DashPOS() {
                               <Table.Body className="divide-y" key={product.id}>
                                 <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                   <TableCell>
-                                    <b>
-                                      {product.item.itemName}
-                                    </b>
+                                    <b>{product.item.itemName}</b>
                                   </TableCell>
                                   <TableCell>
                                     <div
@@ -494,7 +493,11 @@ export default function DashPOS() {
                           <hr className="md-2 mt-2" />
 
                           <div className="mt-4 flex gap-4">
-                            <Button color="blue" className="w-full">
+                            <Button
+                              color="blue"
+                              className="w-full"
+                              onClick={() => setShowModal2(true)}
+                            >
                               <HiCurrencyDollar className="h-4 w-4 mr-2" />
                               Pay - Rs. {calculateTotalPrice()}
                             </Button>
@@ -580,6 +583,20 @@ export default function DashPOS() {
                     </Button>
                   </div>
                 </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal show={showModal2} onClose={() => setShowModal2(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header>Order Details</Modal.Header>
+              <Modal.Body>
+                <div className="space-y-6"></div>
               </Modal.Body>
             </motion.div>
           </Modal>
