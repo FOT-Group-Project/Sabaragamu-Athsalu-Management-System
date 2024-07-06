@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { Sidebar } from "flowbite-react";
-import { useSelector, useDispatch } from "react-redux";
-import { signoutSuccess } from "../redux/user/userSlice";
+import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import {
   HiArrowSmRight,
   HiChartPie,
-  HiInbox,
+  HiClipboardList,
+  HiColorSwatch,
   HiShoppingBag,
+  HiSortAscending,
   HiTable,
   HiUser,
   HiUsers,
-  HiColorSwatch,
-  HiClipboardList,
-  HiSortAscending,
 } from "react-icons/hi";
 import { HiBuildingStorefront } from "react-icons/hi2";
-import { FaShoppingBag } from "react-icons/fa";
 import { IoMdHome } from "react-icons/io";
-import { motion } from "framer-motion";
-import { RiFileDamageFill } from "react-icons/ri";
 import { MdAssignmentReturn } from "react-icons/md";
+import { RiFileDamageFill } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -117,7 +115,7 @@ export default function DashSidebar() {
                 </Link>
               </>
             )}
-            
+
             {currentUser.role === "Seller" && (
               <Link to="/dashboard?tab=returnItems">
                 <Sidebar.Item
@@ -203,15 +201,27 @@ export default function DashSidebar() {
             </Link>
 
             {currentUser.role === "StoreKeeper" && (
-              <Link to="/dashboard?tab=damageproducts">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={RiFileDamageFill}
-                  active={tab === "damageproducts"}
-                >
-                  Damage Products
-                </Sidebar.Item>
-              </Link>
+              <>
+                <Link to="/dashboard?tab=sendstock">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={RiFileDamageFill}
+                    active={tab === "sendstock"}
+                  >
+                    Send Stock
+                  </Sidebar.Item>
+                </Link>
+                
+                <Link to="/dashboard?tab=damageproducts">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={RiFileDamageFill}
+                    active={tab === "damageproducts"}
+                  >
+                    Damage Products
+                  </Sidebar.Item>
+                </Link>
+              </>
             )}
 
             <Link onClick={handleSignout}>

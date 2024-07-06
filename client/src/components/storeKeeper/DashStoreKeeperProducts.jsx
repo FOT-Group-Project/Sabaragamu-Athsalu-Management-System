@@ -44,20 +44,23 @@ export default function DashStoreKeeperProducts() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
 
-  // const [currentUserStore, setCurrentUserStore] = useState(null);
+  const [stores, setStores] = useState([]);
 
   const fetchStoreProducts = async () => {
     try {
       const storeRes = await fetch(
         `/api/storekeepermanagestore/getstoresbystorekeeperid/${currentUser.id}`
       );
+
       const storeData = await storeRes.json();
 
       if (storeRes.ok) {
         const productsRes = await fetch(
           `/api/store-item/getstoreitems/${storeData.stores[0].storeId}`
         );
+
         const productsData = await productsRes.json();
+        
         if (productsRes.ok) {
           setProducts(productsData.storeItems);
           if (productsData.storeItems.length < 9) {
@@ -69,7 +72,19 @@ export default function DashStoreKeeperProducts() {
       console.log(error.message);
     }
   };
-  
+
+  const fetchStores = async () => {
+    try {
+      const storeRes = await fetch(`/api/store/getstores`);
+      const storeData = await storeRes.json();
+
+      if (storeRes.ok) {
+        setStores(storeData.stores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   //Fetch all products from products table
   const fetchProducts = async () => {
@@ -94,25 +109,26 @@ export default function DashStoreKeeperProducts() {
     //fetchCurrentUserStore();
     fetchStoreProducts();
     fetchProducts();
-    //fetchStores();
+    fetchStores();
   }, [currentUser.id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
-    console.log(formData);
+    // console.log(formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCreateLoding(true);
     try {
-      const res = await fetch("/api/product/addproduct", {
-        method: "POST",
+      const res = await fetch("/api/store-item/addstoreitem", {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+      console.log(res);
       const data = await res.json();
       if (!res.ok) {
         setCreateUserError(data.message);
@@ -125,6 +141,8 @@ export default function DashStoreKeeperProducts() {
         setCreateLoding(false);
         setOpenModal(false);
         fetchProducts();
+        // window.location.reload();
+        setFormData({});
       }
     } catch (error) {
       // setCreateUserError("Something went wrong");
@@ -135,10 +153,10 @@ export default function DashStoreKeeperProducts() {
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
     setCreateLoding(true);
-    console.log(formData.id);
+    
     try {
       const res = await fetch(
-        `/api/store-item/updatestoreitem/${formData.id}`,
+        `/api/store-item/updatestoreitem`,
         {
           method: "PATCH",
           headers: {
@@ -159,7 +177,9 @@ export default function DashStoreKeeperProducts() {
         setCreateLoding(false);
         setOpenModalEdit(false);
         fetchProducts();
-        navigate("/dashboard?tab=store");
+        // navigate("/dashboard?tab=products");
+        window.location.reload();
+        setFormData({});
       }
     } catch (error) {
       // setCreateUserError("Something went wrong");
@@ -189,8 +209,6 @@ export default function DashStoreKeeperProducts() {
       console.log(error.message);
     }
   };
-
-  console.log(products);
 
   return (
     <div className="p-3 w-full">
@@ -249,27 +267,29 @@ export default function DashStoreKeeperProducts() {
                         <div className="mb-2 block">
                           <Label value="Store Name" />
                         </div>
-                        <TextInput
-                          id="storeId"
-                          type="text"
-                          required
-                          shadow
-                          onChange={handleChange}
-                          defaultValue={storeNames.storeName}
-                        />
+                          <TextInput
+                            id="storeId"
+                            type="text"
+                            required
+                            shadow
+                            onChange={handleChange}
+                            defaultValue={formData.storeName}
+                          />
                       </div>
                       <div>
                         <div className="mb-2 block">
                           <Label value="Product Name" />
                         </div>
-                        <TextInput
-                          id="itemId"
-                          type="text"
-                          required
-                          shadow
-                          onChange={handleChange}
-                          defaultValue={formData.itemName}
-                        />
+                        
+                          <TextInput
+                            id="itemId"
+                            type="text"
+                            required
+                            shadow
+                            onChange={handleChange}
+                            defaultValue={formData.itemName}
+                          />
+                        
                       </div>
                       {/* Quantity */}
                       <div>
@@ -338,14 +358,19 @@ export default function DashStoreKeeperProducts() {
                         <div className="mb-2 block">
                           <Label value="Store Name" />
                         </div>
-                        <TextInput
-                          id="itemName"
-                          type="text"
-                          placeholder="Batic Shirt"
+                        <Select
+                          id="storeId"
+                          onChange={handleChange}
                           required
                           shadow
-                          onChange={handleChange}
-                        />
+                        >
+                          <option value="">Select a store</option>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
                       {/* Select option for choose a product */}
                       <div>
@@ -437,7 +462,14 @@ export default function DashStoreKeeperProducts() {
                           <Button
                             onClick={() => {
                               setOpenModalEdit(true);
-                              setFormData(product);
+                              setFormData({
+                                storeId: product.storeId,
+                                itemId: product.itemId,
+                                quantity: product.quantity,
+                                storeName: product.store.storeName,
+                                itemName: product.item.itemName,
+                              
+                              });
                             }}
                             color="gray"
                           >
@@ -482,10 +514,11 @@ export default function DashStoreKeeperProducts() {
                 <div className="text-center">
                   <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
                   <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this user?
+                    Are you sure you want to delete this product?
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button color="failure" onClick={handleDeleteProduct}>
+                    {/* Delete Function */}
+                    <Button color="failure" onClick={() => {}}>
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>

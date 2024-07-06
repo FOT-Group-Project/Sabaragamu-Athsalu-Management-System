@@ -11,7 +11,7 @@ router.put(
   verifyToken,
   storeItemController.sendStoreItemoShop
 );
-router.patch("/updatestoreitem/:id", verifyToken, storeItemController.updateStoreItem);
+router.patch("/updatestoreitem", verifyToken, storeItemController.updateStoreItem);
 router.delete("/deletestoreitem/:id", verifyToken, storeItemController.deleteStoreItem);
 router.patch("/addstoreitem", verifyToken, storeItemController.addStoreItem);
 
