@@ -36,6 +36,23 @@ function addDamageProduct(req, res) {
 }
 
 
+//get product id  from product table
+
+function getProductId(req, res) {
+    models.Product.findAll()
+        .then((data) => {
+            res.status(200).json({ success: true, data: data });
+        }
+        )
+        .catch((err) => {
+            res.status(500).json({ success: false, message: "Some error occurred" });
+        }
+        
+        );
+
+}
+
+
 
 //get StoredamageItem from StoredamageItem table
 function getDamageProduct(req, res) {
@@ -165,4 +182,5 @@ module.exports = {
     submitAddItemForm: submitAddItemForm,
     getstoritem: getstoritem,
     addDamageProduct: addDamageProduct,
+    getProductId: getProductId,
 };

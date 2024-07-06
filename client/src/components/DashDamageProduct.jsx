@@ -54,6 +54,8 @@ export default function fetchdamageitems() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
+
+  const [products, setProducts] = useState([]);
   const [StoredamageItem, setStoredamageItems] = useState([]);
 
   //sed data to afer click submit buttern the storekeeperdamageitem table
@@ -116,6 +118,27 @@ export default function fetchdamageitems() {
       console.error("Error:", error);
     }
   };
+
+
+
+  //fetch product data from product table
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getproduct");
+      const data = await response.json();
+      setProducts(data.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
+      fetchProducts();
+    }
+  }, []);
+
 
   //affter sending the data to the database table refresh the page
   useEffect(() => {
@@ -234,14 +257,20 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="storeId" />
                         </div>
-                        <TextInput
-                          id="storeId"
+                        <Select
+                          id="storId"
                           type="text"
                           placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
-                        />
+                        >
+                          {storeitems.map((storeitem) => (
+                            <option key={storeitem.id} value={storeitem.id}>
+                              {storeitem.itemId}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
                       <div>
                         <div className="mb-2 block">
@@ -255,9 +284,9 @@ export default function fetchdamageitems() {
                           shadow
                           onChange={handleChange}
                         >
-                          {StoredamageItem.map((storeitem) => (
-                            <option key={storeitem.id} value={storeitem.id}>
-                              {storeitem.itemId}
+                          {products.map((productsitem) => (
+                            <option key={productsitem.id} value={productsitem.id}>
+                              {productsitem.itemId}
                             </option>
                           ))}
                         </Select>
@@ -431,6 +460,7 @@ export default function fetchdamageitems() {
                       <TableCell>{shop.date}</TableCell>
                       <TableCell>{shop.itemId}</TableCell>
                       <TableCell>{shop.storeId}</TableCell>
+
                       <TableCell>{shop.quantity}</TableCell>
 
                       <TableCell>
