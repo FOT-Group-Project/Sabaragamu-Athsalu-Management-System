@@ -1,4 +1,5 @@
 const models = require("../models");
+const { Op } = require("sequelize");
 
 // Create and Save a new CustomerReturnItem
 function save(req, res) {
@@ -83,11 +84,11 @@ function save(req, res) {
 }
 
 //add return sales by one function for testing using array
-function addreturns(req, res){
-   if (!Array.isArray(req.body)) {
-     return res.status(400).json({ message: "Invalid request body" });
+function addreturns(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
   }
-  
+
   let returnSales = req.body.map((returnSale) => {
     return {
       customerId: returnSale.customerId,
@@ -135,6 +136,19 @@ function showReturnSalesByShopId(req, res) {
         as: "Shop",
         attributes: ["shopName"],
       },
+      {
+        model: models.CustomerBuyItem,
+        as: "BuyItem",
+        attributes: ["buyDateTime", "unitPrice"],
+        required: true, // Ensure it's a strict join
+        where: {
+          [Op.and]: [
+            { customerId: { [Op.col]: "CustomerReturnItem.customerId" } },
+            { shopId: { [Op.col]: "CustomerReturnItem.shopId" } },
+            { buyDateTime: { [Op.col]: "CustomerReturnItem.buyDateTime" } },
+          ],
+        },
+      },
     ],
   })
     .then((result) => {
@@ -148,7 +162,7 @@ function showReturnSalesByShopId(req, res) {
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
-        error: error,
+        error: error.message,
       });
     });
 }
@@ -227,7 +241,6 @@ function showReturnSalesByItemId(req, res) {
         error: error,
       });
     });
-
 }
 
 //show all return sales
@@ -264,10 +277,8 @@ function showReturnSales(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
-
+    });
 }
-
 
 // Export all functions
 module.exports = {
@@ -275,6 +286,6 @@ module.exports = {
   addreturns: addreturns,
   showReturnSalesByShopId: showReturnSalesByShopId,
   showReturnSalesByCustomerId: showReturnSalesByCustomerId,
-  showReturnSales: showReturnSales, 
-  showReturnSalesByItemId:showReturnSalesByItemId,
+  showReturnSales: showReturnSales,
+  showReturnSalesByItemId: showReturnSalesByItemId,
 };
