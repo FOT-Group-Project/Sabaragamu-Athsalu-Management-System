@@ -14,18 +14,26 @@ import {
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import { Label } from "flowbite-react";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
   const [returnItems, setReturnItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredReturnItems, setFilteredReturnItems] = useState([]);
+  const [returnDateTime, setReturnDateTime] = useState(null);
 
-  const isFilterActive = searchQuery.length > 0;
+  // Determine if the filter is active
+  const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+  };
+
+  // Handle date input change
+  const handleDateChange = (e) => {
+    setReturnDateTime(e.target.value);
   };
 
   // Fetch return items
@@ -56,12 +64,12 @@ export default function DashCustomerReturnItem() {
     }
   };
 
-  // Filter return items based on search query
+  // Filter return items based on search query and return date
   useEffect(() => {
     if (isFilterActive) {
       setFilteredReturnItems(
         returnItems.filter((item) => {
-          return (
+          const matchesSearchQuery =
             item.Customer.firstname
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
@@ -84,14 +92,20 @@ export default function DashCustomerReturnItem() {
             item.reason.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (item.BuyItem.unitPrice * item.quantity)
               .toString()
-              .includes(searchQuery.toLowerCase())
-          );
+              .includes(searchQuery.toLowerCase());
+          // Check if return date matches
+          const matchesReturnDate = returnDateTime
+            ? new Date(item.returnDateTime).toISOString().split("T")[0] ===
+              returnDateTime
+            : true;
+
+          return matchesSearchQuery && matchesReturnDate;
         })
       );
     } else {
       setFilteredReturnItems(returnItems);
     }
-  }, [searchQuery, returnItems]);
+  }, [searchQuery, returnDateTime, returnItems]);
 
   // Fetch return items based on user role
   useEffect(() => {
@@ -143,10 +157,12 @@ export default function DashCustomerReturnItem() {
             <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
               Return Items : Report
             </h1>
+
             <Button color="blue" className="h-10 ml-2">
               Export to Excel
             </Button>
           </div>
+
           <div className="flex flex-wrap items-center justify-between">
             <div className="flex items-center">
               <TextInput
@@ -155,8 +171,19 @@ export default function DashCustomerReturnItem() {
                 placeholder="Search"
                 className="w-full md:w-52 h-10 mb-2 md:mb-0 md:mr-2"
               />
+              <div className="flex items-center space-x-2">
+                <Label>Filter by Return Date</Label>
+                <TextInput
+                  id="date"
+                  type="date"
+                  value={returnDateTime || ""}
+                  onChange={handleDateChange}
+                  className="w-full md:w-48 h-10 mb-2 md:mb-0 md:mr-2"
+                />
+              </div>
             </div>
           </div>
+
           <div className="mt-4">
             <Table hoverable className="shadow-md w-full">
               <TableHead>
