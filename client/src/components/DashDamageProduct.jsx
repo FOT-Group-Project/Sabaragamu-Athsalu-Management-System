@@ -276,7 +276,10 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="ItemId" />
                         </div>
+                      
+                      
                         <Select
+
                           id="itemId"
                           type="text"
                           placeholder="2536f"
@@ -284,12 +287,14 @@ export default function fetchdamageitems() {
                           shadow
                           onChange={handleChange}
                         >
-                          {products.map((productsitem) => (
-                            <option key={productsitem.id} value={productsitem.id}>
-                              {productsitem.itemId}
+                          {products.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemId}
                             </option>
                           ))}
                         </Select>
+
+
                       </div>
                     </div>
 
