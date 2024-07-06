@@ -183,7 +183,10 @@ export default function DashCustomerReturnItem() {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button style={{ backgroundColor: "red" }} className="h-10 w-32 ml-2">
+              <Button
+                style={{ backgroundColor: "red" }}
+                className="h-10 w-32 ml-2"
+              >
                 Add Retuns
               </Button>
             </div>
@@ -204,7 +207,10 @@ export default function DashCustomerReturnItem() {
               <TableBody>
                 {(isFilterActive ? filteredReturnItems : returnItems).map(
                   (sale) => (
-                    <TableRow key={sale.id}>
+                    <TableRow
+                      key={sale.id}
+                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                    >
                       <TableCell>
                         {`${sale.Customer.firstname} ${sale.Customer.lastname}`}
                       </TableCell>
