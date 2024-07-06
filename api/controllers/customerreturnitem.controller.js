@@ -1,4 +1,5 @@
 const models = require("../models");
+const { Op } = require("sequelize");
 
 // Create and Save a new CustomerReturnItem
 function save(req, res) {
@@ -83,11 +84,11 @@ function save(req, res) {
 }
 
 //add return sales by one function for testing using array
-function addreturns(req, res){
-   if (!Array.isArray(req.body)) {
-     return res.status(400).json({ message: "Invalid request body" });
+function addreturns(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
   }
-  
+
   let returnSales = req.body.map((returnSale) => {
     return {
       customerId: returnSale.customerId,
@@ -118,7 +119,7 @@ function addreturns(req, res){
 //show return sales by shopID
 function showReturnSalesByShopId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { shopId: req.parms.shopId },
+    where: { shopId: req.params.shopId },
     include: [
       {
         model: models.User,
@@ -135,6 +136,19 @@ function showReturnSalesByShopId(req, res) {
         as: "Shop",
         attributes: ["shopName"],
       },
+      {
+        model: models.CustomerBuyItem,
+        as: "BuyItem",
+        attributes: ["buyDateTime", "unitPrice"],
+        required: true, // Ensure it's a strict join
+        where: {
+          [Op.and]: [
+            { customerId: { [Op.col]: "CustomerReturnItem.customerId" } },
+            { shopId: { [Op.col]: "CustomerReturnItem.shopId" } },
+            { buyDateTime: { [Op.col]: "CustomerReturnItem.buyDateTime" } },
+          ],
+        },
+      },
     ],
   })
     .then((result) => {
@@ -148,15 +162,15 @@ function showReturnSalesByShopId(req, res) {
       res.status(500).json({
         success: false,
         message: "Internal Server Error",
-        error: error,
+        error: error.message,
       });
-  })
+    });
 }
 
 //get return sales by customerid
 function showReturnSalesByCustomerId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { customerId: req.parms.customerId },
+    where: { customerId: req.params.customerId },
     include: [
       {
         model: models.User,
@@ -188,13 +202,13 @@ function showReturnSalesByCustomerId(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
+    });
 }
 
 //get returns by itemId
 function showReturnSalesByItemId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { itemId: req.parms.itemId },
+    where: { itemId: req.params.itemId },
     include: [
       {
         model: models.User,
@@ -226,8 +240,7 @@ function showReturnSalesByItemId(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
-
+    });
 }
 
 //show all return sales
@@ -264,10 +277,8 @@ function showReturnSales(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
-
+    });
 }
-
 
 // Export all functions
 module.exports = {
@@ -275,6 +286,6 @@ module.exports = {
   addreturns: addreturns,
   showReturnSalesByShopId: showReturnSalesByShopId,
   showReturnSalesByCustomerId: showReturnSalesByCustomerId,
-  showReturnSales: showReturnSales, 
-  showReturnSalesByItemId:showReturnSalesByItemId,
+  showReturnSales: showReturnSales,
+  showReturnSalesByItemId: showReturnSalesByItemId,
 };
