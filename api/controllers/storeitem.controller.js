@@ -261,7 +261,7 @@ function updateStoreItem(req, res) {
 function deleteStoreItem(req, res) {
   const id = req.params.id;
   models.StoreItem.destroy({
-    where: { id: id },
+    where: { storeId: req.body.storeId, itemId: req.body.itemId },
   })
     .then((num) => {
       if (num == 1) {
