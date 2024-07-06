@@ -66,6 +66,12 @@ export default function DashPOS() {
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("cash");
+
+  // Handler to update the selected value
+  const handleChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
 
   // Function to handle search query change
   const handleSearchChange = (e) => {
@@ -650,16 +656,15 @@ export default function DashPOS() {
 
                             <div className="w-full ">
                               <h1 className="text-lg text-gray-700 mb-5">
-                                <b>Payment Type</b>
+                                <b>Select Payment Type</b>
                               </h1>
 
                               <div class="flex items-center mb-4">
                                 <input
-                                  checked
-                                  id="cash"
                                   type="radio"
                                   value="cash"
-                                  name="credit"
+                                  checked={selectedValue === "cash"}
+                                  onChange={handleChange}
                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 ></input>
                                 <label
@@ -671,10 +676,10 @@ export default function DashPOS() {
                               </div>
                               <div class="flex items-center">
                                 <input
-                                  id="credit"
                                   type="radio"
                                   value="credit"
-                                  name="credit"
+                                  checked={selectedValue === "credit"}
+                                  onChange={handleChange}
                                   class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 ></input>
                                 <label
@@ -685,41 +690,49 @@ export default function DashPOS() {
                                 </label>
                               </div>
 
-                              <h1 className="text-lg text-gray-700 mt-5">
-                                <b>Totale Price</b>
-                              </h1>
-                              <div className="mr-2 ml-2 mb-3 flex justify-between">
-                                <p>
-                                  <b>Sub Total :</b>
-                                </p>
-                                <p>Rs. {calculateSubtotal()}</p>
-                              </div>
+                              {selectedValue == "cash" ? (
+                                <>
+                                  <h1 className="text-lg text-gray-700 mt-5">
+                                    <b>Totale Price</b>
+                                  </h1>
+                                  <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                    <p>
+                                      <b>Sub Total :</b>
+                                    </p>
+                                    <p>Rs. {calculateSubtotal()}</p>
+                                  </div>
 
-                              {discountPercentage > 0 && (
-                                <div className="mr-2 ml-2 mb-3 flex justify-between">
-                                  <p>
-                                    <b>Discounte Price : </b>
-                                  </p>
-                                  <p>
-                                    Rs.{" "}
-                                    {(
-                                      calculateTotalPrice() -
-                                      calculateSubtotal()
-                                    ).toFixed(2)}
-                                  </p>
-                                </div>
+                                  {discountPercentage > 0 && (
+                                    <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                      <p>
+                                        <b>Discounte Price : </b>
+                                      </p>
+                                      <p>
+                                        Rs.{" "}
+                                        {(
+                                          calculateTotalPrice() -
+                                          calculateSubtotal()
+                                        ).toFixed(2)}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  <div className="mr-2 ml-2 flex justify-between">
+                                    <p>
+                                      <b>Paybale Amount :</b>
+                                    </p>
+                                    <p>
+                                      <b className=" text-red-600 text-xl">
+                                        Rs. {calculateTotalPrice()}
+                                      </b>
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                  <>
+                                  
+                                  </>
                               )}
-
-                              <div className="mr-2 ml-2 flex justify-between">
-                                <p>
-                                  <b>Paybale Amount :</b>
-                                </p>
-                                <p>
-                                  <b className=" text-red-600 text-xl">
-                                    Rs. {calculateTotalPrice()}
-                                  </b>
-                                </p>
-                              </div>
                             </div>
                           </>
                         ) : (
