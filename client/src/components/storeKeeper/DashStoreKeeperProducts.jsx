@@ -141,8 +141,7 @@ export default function DashStoreKeeperProducts() {
         setCreateLoding(false);
         setOpenModal(false);
         fetchProducts();
-        // window.location.reload();
-        setFormData({});
+        window.location.reload();
       }
     } catch (error) {
       // setCreateUserError("Something went wrong");
@@ -179,7 +178,6 @@ export default function DashStoreKeeperProducts() {
         fetchProducts();
         // navigate("/dashboard?tab=products");
         window.location.reload();
-        setFormData({});
       }
     } catch (error) {
       // setCreateUserError("Something went wrong");
@@ -378,7 +376,7 @@ export default function DashStoreKeeperProducts() {
                           <Label value="Product" />
                         </div>
                         <Select
-                          id="productId"
+                          id="itemId"
                           onChange={handleChange}
                           required
                           shadow
@@ -410,6 +408,7 @@ export default function DashStoreKeeperProducts() {
                         color="blue"
                         type="submit"
                         disabled={createLoding}
+                        
                       >
                         {createLoding ? (
                           <>
