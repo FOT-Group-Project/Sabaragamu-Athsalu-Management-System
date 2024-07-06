@@ -188,9 +188,13 @@ export default function DashStoreKeeperProducts() {
   const handleDeleteProduct = async () => {
     try {
       const res = await fetch(
-        `/api/product/deleteproduct/${productIdToDelete}`,
+        `/api/store-item/deletestoreitem`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         }
       );
       const data = await res.json();
@@ -200,6 +204,7 @@ export default function DashStoreKeeperProducts() {
         );
         setShowModal(false);
         fetchProducts();
+        window.location.reload();
       } else {
         console.log(data.message);
       }
@@ -478,7 +483,10 @@ export default function DashStoreKeeperProducts() {
                           <Button
                             onClick={() => {
                               setShowModal(true);
-                              setproductIdToDelete(product.id);
+                              setFormData({
+                                storeId: product.storeId,
+                                itemId: product.itemId
+                              });
                             }}
                             color="gray"
                           >
@@ -513,11 +521,11 @@ export default function DashStoreKeeperProducts() {
                 <div className="text-center">
                   <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
                   <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this product?
+                    Are you sure you want to delete this store-item?
                   </h3>
                   <div className="flex justify-center gap-4">
                     {/* Delete Function */}
-                    <Button color="failure" onClick={() => {}}>
+                    <Button color="failure" onClick={handleDeleteProduct}>
                       Yes, I'm sure
                     </Button>
                     <Button color="gray" onClick={() => setShowModal(false)}>
