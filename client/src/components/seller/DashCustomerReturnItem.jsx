@@ -21,9 +21,64 @@ import {
   Toast,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
+import { useSelector } from "react-redux";
 
 
 export default function DashCustomerReturnItem() {
+  const { currentUser } = useSelector((state) => state.user);
+  const [returnItems, setReturnItems] = useState([]);
+
+  //fetch return items
+  const fetchReturnItems = async () => {
+    try {
+      const res = await fetch(`/api/customerreturnitem/getreturns`);
+      const data = await res.json();
+      if (res.ok) {
+        setReturnItems(data.sales);
+      }
+    }catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  //fetch return items by shop id
+  const fetchReturnItemsbyShopId = async (shopId) => { 
+    try {
+      const res = await fetch(
+        `/api/customerreturnitem/getreturnsbyshop/${shopId}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setReturnItems(data.sales);
+      }
+    }catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  //fetch return items by customer id
+  useEffect(() => { 
+    if (currentUser.role === "Admin") {
+      fetchReturnItems();
+    }else if (currentUser.role === "Seller") {
+      //get user's shop id
+      const fetchShopId = async () => {
+        try {
+          const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchReturnItemsbyShopId(data.shop[0].id);
+          }
+        }catch (error) {
+          console.error(error);
+        }
+      };
+      fetchShopId();
+    }
+  }, []);
+
   return (
     <div className="p-3 w-full">
       <AnimatePresence>
