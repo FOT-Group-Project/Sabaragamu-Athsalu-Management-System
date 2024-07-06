@@ -23,7 +23,13 @@ import {
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 
-
+/**
+ * Renders the dashboard component for displaying customer return items.
+ * Fetches return items from the API based on the user's role and shop ID.
+ * Displays a table with customer return item details.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
   const [returnItems, setReturnItems] = useState([]);
@@ -36,14 +42,13 @@ export default function DashCustomerReturnItem() {
       if (res.ok) {
         setReturnItems(data.sales);
       }
-    }catch (error) {
+    } catch (error) {
       console.error(error);
     }
   };
 
-
   //fetch return items by shop id
-  const fetchReturnItemsbyShopId = async (shopId) => { 
+  const fetchReturnItemsbyShopId = async (shopId) => {
     try {
       const res = await fetch(
         `/api/customerreturnitem/getreturnsbyshop/${shopId}`
@@ -52,17 +57,16 @@ export default function DashCustomerReturnItem() {
       if (res.ok) {
         setReturnItems(data.sales);
       }
-    }catch (error) {
+    } catch (error) {
       console.error(error.message);
     }
   };
 
-
   //fetch return items by customer id
-  useEffect(() => { 
+  useEffect(() => {
     if (currentUser.role === "Admin") {
       fetchReturnItems();
-    }else if (currentUser.role === "Seller") {
+    } else if (currentUser.role === "Seller") {
       //get user's shop id
       const fetchShopId = async () => {
         try {
@@ -83,7 +87,6 @@ export default function DashCustomerReturnItem() {
           console.error("Error fetching shop ID:", error);
         }
       };
-
 
       fetchShopId();
     }
@@ -127,6 +130,7 @@ export default function DashCustomerReturnItem() {
                 <TableHeadCell>Amount Paid</TableHeadCell>
               </TableHead>
               <TableBody>
+
                 {returnItems.map((sale) => (
                   <TableRow key={sale.id}>
                     <TableCell>
@@ -134,11 +138,15 @@ export default function DashCustomerReturnItem() {
                     </TableCell>
                     <TableCell>{sale.Product.itemName}</TableCell>
                     <TableCell>{sale.quantity}</TableCell>
-                    {/* <TableCell>{sale.product.price}</TableCell> */}
-                    <TableCell>{sale.buyDateTime}</TableCell>
-                    <TableCell>{sale.returnDateTime}</TableCell>
+                    <TableCell>{sale.BuyItem.unitPrice}</TableCell>
+                    <TableCell>
+                      {new Date(sale.buyDateTime).toLocaleString()}
+                    </TableCell>
+                    <TableCell>{new Date(sale.returnDateTime).toLocaleString()}</TableCell>
                     <TableCell>{sale.reason}</TableCell>
-                    {/* <TableCell>{sale.amount}</TableCell> */}
+                    <TableCell>
+                      {sale.BuyItem.unitPrice * sale.quantity}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
