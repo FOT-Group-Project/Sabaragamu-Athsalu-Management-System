@@ -158,7 +158,7 @@ export default function DashCustomerReturnItem() {
               Return Items : Report
             </h1>
 
-            <Button color="blue" className="h-10 ml-2">
+            <Button color="blue" className="h-10  ml-2">
               Export to Excel
             </Button>
           </div>
@@ -182,6 +182,14 @@ export default function DashCustomerReturnItem() {
                 />
               </div>
             </div>
+            <div className="flex justify-end">
+              <Button
+                // style={{ backgroundColor: "red" }}
+                className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+              >
+                Add Retuns
+              </Button>
+            </div>
           </div>
 
           <div className="mt-4">
@@ -199,7 +207,10 @@ export default function DashCustomerReturnItem() {
               <TableBody>
                 {(isFilterActive ? filteredReturnItems : returnItems).map(
                   (sale) => (
-                    <TableRow key={sale.id}>
+                    <TableRow
+                      key={sale.id}
+                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                    >
                       <TableCell>
                         {`${sale.Customer.firstname} ${sale.Customer.lastname}`}
                       </TableCell>
