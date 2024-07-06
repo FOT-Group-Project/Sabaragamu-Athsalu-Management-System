@@ -659,7 +659,7 @@ export default function DashPOS() {
                                 <b>Select Payment Type</b>
                               </h1>
 
-                              <div class="flex items-center mb-4">
+                              <div class="flex items-center mb-2">
                                 <input
                                   type="radio"
                                   value="cash"
@@ -729,9 +729,7 @@ export default function DashPOS() {
                                   </div>
                                 </>
                               ) : (
-                                  <>
-                                  
-                                  </>
+                                <></>
                               )}
                             </div>
                           </>
