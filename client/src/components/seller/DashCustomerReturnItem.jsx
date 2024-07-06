@@ -158,7 +158,7 @@ export default function DashCustomerReturnItem() {
               Return Items : Report
             </h1>
 
-            <Button color="blue" className="h-10 ml-2">
+            <Button color="blue" className="h-10  ml-2">
               Export to Excel
             </Button>
           </div>
@@ -181,6 +181,11 @@ export default function DashCustomerReturnItem() {
                   className="w-full md:w-48 h-10 mb-2 md:mb-0 md:mr-2"
                 />
               </div>
+            </div>
+            <div className="flex justify-end">
+              <Button style={{ backgroundColor: "red" }} className="h-10 w-32 ml-2">
+                Add Retuns
+              </Button>
             </div>
           </div>
 
