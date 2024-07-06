@@ -429,9 +429,9 @@ export default function fetchdamageitems() {
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>ST:{shop.id}</TableCell>
                       <TableCell>{shop.date}</TableCell>
-                      <TableCell>{shop.quantity}</TableCell>
-                      <TableCell>{shop.storeId}</TableCell>
                       <TableCell>{shop.itemId}</TableCell>
+                      <TableCell>{shop.storeId}</TableCell>
+                      <TableCell>{shop.quantity}</TableCell>
 
                       <TableCell>
                         <Button.Group>
