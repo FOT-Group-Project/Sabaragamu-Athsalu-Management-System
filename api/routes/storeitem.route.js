@@ -12,7 +12,7 @@ router.put(
   storeItemController.sendStoreItemoShop
 );
 router.patch("/updatestoreitem", verifyToken, storeItemController.updateStoreItem);
-router.delete("/deletestoreitem/:id", verifyToken, storeItemController.deleteStoreItem);
+router.delete("/deletestoreitem", verifyToken, storeItemController.deleteStoreItem);
 router.patch("/addstoreitem", verifyToken, storeItemController.addStoreItem);
 
 module.exports = router;
