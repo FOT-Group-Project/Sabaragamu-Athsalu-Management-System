@@ -184,8 +184,8 @@ export default function DashCustomerReturnItem() {
             </div>
             <div className="flex justify-end">
               <Button
-                style={{ backgroundColor: "red" }}
-                className="h-10 w-32 ml-2"
+                // style={{ backgroundColor: "red" }}
+                className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
               >
                 Add Retuns
               </Button>
