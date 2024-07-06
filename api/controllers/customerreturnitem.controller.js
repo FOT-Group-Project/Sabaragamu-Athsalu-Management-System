@@ -118,7 +118,7 @@ function addreturns(req, res){
 //show return sales by shopID
 function showReturnSalesByShopId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { shopId: req.parms.shopId },
+    where: { shopId: req.params.shopId },
     include: [
       {
         model: models.User,
@@ -150,13 +150,13 @@ function showReturnSalesByShopId(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
+    });
 }
 
 //get return sales by customerid
 function showReturnSalesByCustomerId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { customerId: req.parms.customerId },
+    where: { customerId: req.params.customerId },
     include: [
       {
         model: models.User,
@@ -188,13 +188,13 @@ function showReturnSalesByCustomerId(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
+    });
 }
 
 //get returns by itemId
 function showReturnSalesByItemId(req, res) {
   models.CustomerReturnItem.findAll({
-    where: { itemId: req.parms.itemId },
+    where: { itemId: req.params.itemId },
     include: [
       {
         model: models.User,
@@ -226,7 +226,7 @@ function showReturnSalesByItemId(req, res) {
         message: "Internal Server Error",
         error: error,
       });
-  })
+    });
 
 }
 
