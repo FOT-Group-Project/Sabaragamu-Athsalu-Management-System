@@ -608,54 +608,124 @@ export default function DashPOS() {
                       <Alert color="failure">{createUserError}</Alert>
                     )}
                     <div className="flex gap-5 mb-4">
-                      <div className="w-1/2 ">
+                      <div className="w-full flex gap-8">
                         {showModal2 ? (
                           <>
                             <div className="">
                               <h1 className="text-lg text-gray-700">
                                 <b>Product List</b>
                               </h1>
-                              <p className="mt-3">
-                                <b className="">Name : </b>
-                                {}
-                              </p>
+                              <Table>
+                                <TableHead>
+                                  <TableHeadCell>Product Name</TableHeadCell>
+                                  <TableHeadCell>QTY</TableHeadCell>
+                                  <TableHeadCell>Price</TableHeadCell>
+                                </TableHead>
+                                {selectedProducts.map((product) => (
+                                  <Table.Body
+                                    className="divide-y"
+                                    key={product.id}
+                                  >
+                                    <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                      <TableCell>
+                                        <b>{product.item.itemName}</b>
+                                      </TableCell>
+                                      <TableCell>
+                                        <span>{product.quantity}</span>
+                                      </TableCell>
+                                      <TableCell>
+                                        Rs.
+                                        {product.item.itemPrice *
+                                          product.quantity}
+                                      </TableCell>
+                                    </TableRow>
+                                  </Table.Body>
+                                ))}
+                              </Table>
+
+                              <div className="mt-5  text-center ">
+                                <hr className="md-2 mt-2" />
+                              </div>
+                            </div>
+
+                            <div className="w-full ">
+                              <h1 className="text-lg text-gray-700 mb-5">
+                                <b>Payment Type</b>
+                              </h1>
+
+                              <div class="flex items-center mb-4">
+                                <input
+                                  checked
+                                  id="cash"
+                                  type="radio"
+                                  value="cash"
+                                  name="credit"
+                                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                ></input>
+                                <label
+                                  for="default-radio-1"
+                                  class="ms-2 text-lg font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Cash
+                                </label>
+                              </div>
+                              <div class="flex items-center">
+                                <input
+                                  id="credit"
+                                  type="radio"
+                                  value="credit"
+                                  name="credit"
+                                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                ></input>
+                                <label
+                                  for="default-radio-2"
+                                  class="ms-2 text-lg font-medium text-gray-900 dark:text-gray-300"
+                                >
+                                  Credit
+                                </label>
+                              </div>
+
+                              <h1 className="text-lg text-gray-700 mt-5">
+                                <b>Totale Price</b>
+                              </h1>
+                              <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                <p>
+                                  <b>Sub Total :</b>
+                                </p>
+                                <p>Rs. {calculateSubtotal()}</p>
+                              </div>
+
+                              {discountPercentage > 0 && (
+                                <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                  <p>
+                                    <b>Discounte Price : </b>
+                                  </p>
+                                  <p>
+                                    Rs.{" "}
+                                    {(
+                                      calculateTotalPrice() -
+                                      calculateSubtotal()
+                                    ).toFixed(2)}
+                                  </p>
+                                </div>
+                              )}
+
+                              <div className="mr-2 ml-2 flex justify-between">
+                                <p>
+                                  <b>Paybale Amount :</b>
+                                </p>
+                                <p>
+                                  <b className=" text-red-600 text-xl">
+                                    Rs. {calculateTotalPrice()}
+                                  </b>
+                                </p>
+                              </div>
                             </div>
                           </>
                         ) : (
                           <></>
                         )}
                       </div>
-                    </div>
-
-                    <div className="flex gap-2 mb-4">
-                      <div className="w-1/2">
-                        <div className="mb-2 block">
-                          <Label value="Item Quantity" />
-                        </div>
-                      </div>
-                      {/* <div className="w-1/2">
-                        <div className="mb-2 block">
-                          <Label value="Select Shop" />
-                        </div>
-                        <Select
-                          id="shopId"
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              shopId: e.target.value,
-                            })
-                          }
-                          required
-                          shadow
-                        >
-                          <option value="">Select a Shop</option>
-                          {shops.map((shop) => (
-                            <option key={shop.id} value={shop.id}>
-                              {shop.shopName}
-                            </option>
-                          ))}
-                        </Select>
-                      </div> */}
                     </div>
 
                     <div className="flex gap-2 justify-end">
@@ -677,7 +747,7 @@ export default function DashPOS() {
                       <Button
                         size="sm"
                         color="gray"
-                        onClick={() => setOpenModal(false)}
+                        onClick={() => setShowModal2(false)}
                       >
                         Decline
                       </Button>
