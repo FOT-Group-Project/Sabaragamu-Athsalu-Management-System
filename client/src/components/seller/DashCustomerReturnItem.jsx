@@ -53,7 +53,7 @@ export default function DashCustomerReturnItem() {
         setReturnItems(data.sales);
       }
     }catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   };
 
@@ -68,13 +68,23 @@ export default function DashCustomerReturnItem() {
         try {
           const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
           const data = await res.json();
+          console.log("Shop ID Response:", data); // Log the response for debugging
           if (res.ok) {
-            fetchReturnItemsbyShopId(data.shop[0].id);
+            if (Array.isArray(data.shops) && data.shops.length > 0) {
+              const shopId = data.shops[0].id; // Access the first shop's ID
+              fetchReturnItemsbyShopId(shopId);
+            } else {
+              console.error("No shops found for the current user.");
+            }
+          } else {
+            console.error("API response error:", data);
           }
-        }catch (error) {
-          console.error(error);
+        } catch (error) {
+          console.error("Error fetching shop ID:", error);
         }
       };
+
+
       fetchShopId();
     }
   }, []);
@@ -96,6 +106,44 @@ export default function DashCustomerReturnItem() {
             </Link>
             <Breadcrumb.Item>Return Items</Breadcrumb.Item>
           </Breadcrumb>
+          <div className="flex items-center justify-between">
+            <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
+              Return Items : Report
+            </h1>
+            <Button color="blue" className="h-10 ml-2">
+              Export to Excel
+            </Button>
+          </div>
+          <div className="mt-4">
+            <Table hoverable className="shadow-md w-full">
+              <TableHead>
+                <TableHeadCell>Customer Name</TableHeadCell>
+                <TableHeadCell>Product Name</TableHeadCell>
+                <TableHeadCell>Quantity</TableHeadCell>
+                <TableHeadCell>Unit Price</TableHeadCell>
+                <TableHeadCell>Buy Date Time</TableHeadCell>
+                <TableHeadCell>Return Date Time</TableHeadCell>
+                <TableHeadCell>Reason</TableHeadCell>
+                <TableHeadCell>Amount Paid</TableHeadCell>
+              </TableHead>
+              <TableBody>
+                {returnItems.map((sale) => (
+                  <TableRow key={sale.id}>
+                    <TableCell>
+                      {`${sale.Customer.firstname} ${sale.Customer.lastname}`}
+                    </TableCell>
+                    <TableCell>{sale.Product.itemName}</TableCell>
+                    <TableCell>{sale.quantity}</TableCell>
+                    {/* <TableCell>{sale.product.price}</TableCell> */}
+                    <TableCell>{sale.buyDateTime}</TableCell>
+                    <TableCell>{sale.returnDateTime}</TableCell>
+                    <TableCell>{sale.reason}</TableCell>
+                    {/* <TableCell>{sale.amount}</TableCell> */}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
