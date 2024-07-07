@@ -166,7 +166,6 @@ function getShopsItems(req, res) {
 }
 
 function buyItems(req, res) {
-
   if (req.body.quantity < 1) {
     res.status(400).json({
       success: false,
@@ -183,7 +182,14 @@ function buyItems(req, res) {
     return;
   }
 
-  if (req.body.customerId == null || req.body.itemId == null || req.body.shopId == null || req.body.buyDateTime == null || req.body.type == null || req.body.quantity == null ) {
+  if (
+    req.body.customerId == null ||
+    req.body.itemId == null ||
+    req.body.shopId == null ||
+    req.body.buyDateTime == null ||
+    req.body.type == null ||
+    req.body.quantity == null
+  ) {
     res.status(400).json({
       success: false,
       message: "Missing required fields",
@@ -204,10 +210,35 @@ function buyItems(req, res) {
 
   models.CustomerBuyItem.create(buyItem)
     .then((data) => {
-      res.status(200).json({
-        success: true,
-        message: "Item bought successfully",
-        item: data,
+      // res.status(200).json({
+      //   success: true,
+      //   message: "Item bought successfully",
+      //   item: data,
+      // });
+
+      models.ShopItem.findOne({
+        where: { id: data.itemId },
+      }).then((dataX) => {
+        quantity = parseInt(dataX.quantity) - parseInt(data.quantity);
+
+        if (quantity < 0) {
+          res.status(404).json({
+            success: false,
+            message: "Not enough quantity",
+          });
+          return;
+        }
+
+        models.ShopItem.update(
+          { quantity: dataX.quantity - data.quantity },
+          { where: { id: data.itemId } }
+        ).then((data) => {
+          res.status(200).json({
+            success: true,
+            message: "Item bought successfully",
+            item: data,
+          });
+        });
       });
     })
     .catch((err) => {
