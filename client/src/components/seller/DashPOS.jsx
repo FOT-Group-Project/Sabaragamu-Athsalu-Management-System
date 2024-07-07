@@ -218,6 +218,11 @@ export default function DashPOS() {
     setShowModal1(false);
   };
 
+  const handelBuyItems = () => {
+    
+  
+  };
+  
   return (
     <div className="p-3 w-full">
       <AnimatePresence>
@@ -612,10 +617,7 @@ export default function DashPOS() {
               <Modal.Header>Order Details</Modal.Header>
               <Modal.Body>
                 <div className="space-y-6">
-                  <form
-                    onSubmit={null}
-                    className="flex flex-col flex-grow gap-4"
-                  >
+                  <form className="flex flex-col flex-grow gap-4">
                     {createUserError && (
                       <Alert color="failure">{createUserError}</Alert>
                     )}
@@ -748,8 +750,8 @@ export default function DashPOS() {
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
-                        type="submit"
                         disabled={createLoding}
+                        onClick={handelBuyItems}
                       >
                         {createLoding ? (
                           <>
@@ -757,7 +759,7 @@ export default function DashPOS() {
                             <span className="pl-3">Loading...</span>
                           </>
                         ) : (
-                          "Send Stock"
+                          "Confirm Order"
                         )}
                         <HiPaperAirplane className="ml-2 h-4 w-4 rotate-90" />
                       </Button>
