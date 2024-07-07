@@ -221,12 +221,12 @@ export default function DashPOS() {
 
   const handelBuyItems = () => {
     if (selectedValue == "cash") {
-      orderDetails.type = "cash";
+      orderDetails.type = "Cash";
       orderDetails.customerId = 7;
       orderDetails.dueAmount = 0;
     }
     if (selectedValue == "credit") {
-      orderDetails.type = "credit";
+      orderDetails.type = "Credit";
       orderDetails.customerId = selectedCustomer;
     }
 
@@ -255,12 +255,16 @@ export default function DashPOS() {
             setSelectedProducts([]);
             setSelectedCustomer([]);
             Toast.success("Order placed successfully!");
+            fetchProducts();
           }
         });
       } catch (error) {
         console.log(error.message);
       }
+      fetchProducts();
     });
+
+    fetchProducts();
   };
 
   return (
