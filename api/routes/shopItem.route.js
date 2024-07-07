@@ -11,5 +11,6 @@ router.put(
   verifyToken,
   shopItemController.sendShopItemoShop
 );
+router.post("/buyitems", verifyToken, shopItemController.buyItems);
 
 module.exports = router;

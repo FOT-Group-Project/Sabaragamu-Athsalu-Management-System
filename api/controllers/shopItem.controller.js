@@ -133,7 +133,7 @@ function getShopsItemId(req, res) {
 
 function getShopsItems(req, res) {
   models.ShopItem.findAll({
-    where: { shopId: req.params.sellerId},
+    where: { shopId: req.params.sellerId },
     include: [
       {
         model: models.Shop,
@@ -165,8 +165,91 @@ function getShopsItems(req, res) {
     });
 }
 
+function buyItems(req, res) {
+  if (req.body.quantity < 1) {
+    res.status(400).json({
+      success: false,
+      message: "Quantity should be greater than 0",
+    });
+    return;
+  }
+
+  if (req.body.unitPrice < 1) {
+    res.status(400).json({
+      success: false,
+      message: "Unit price should be greater than 0",
+    });
+    return;
+  }
+
+  if (
+    req.body.customerId == null ||
+    req.body.itemId == null ||
+    req.body.shopId == null ||
+    req.body.buyDateTime == null ||
+    req.body.type == null ||
+    req.body.quantity == null
+  ) {
+    res.status(400).json({
+      success: false,
+      message: "Missing required fields",
+    });
+    return;
+  }
+
+  const buyItem = {
+    customerId: req.body.customerId,
+    itemId: req.body.itemId,
+    shopId: req.body.shopId,
+    buyDateTime: req.body.buyDateTime,
+    unitPrice: req.body.unitPrice,
+    type: req.body.type,
+    quantity: req.body.quantity,
+    dueAmount: req.body.dueAmount,
+  };
+
+  models.CustomerBuyItem.create(buyItem)
+    .then((data) => {
+      // res.status(200).json({
+      //   success: true,
+      //   message: "Item bought successfully",
+      //   item: data,
+      // });
+
+      models.ShopItem.findOne({
+        where: { id: data.itemId },
+      }).then((dataX) => {
+        quantity = parseInt(dataX.quantity) - parseInt(data.quantity);
+
+        if (quantity < 0) {
+          res.status(404).json({
+            success: false,
+            message: "Not enough quantity",
+          });
+          return;
+        }
+
+        models.ShopItem.update(
+          { quantity: dataX.quantity - data.quantity },
+          { where: { id: data.itemId } }
+        ).then((data) => {
+          res.status(200).json({
+            success: true,
+            message: "Item bought successfully",
+            item: data,
+          });
+        });
+      });
+    })
+    .catch((err) => {
+      console.error("Error buying item:", err);
+      res.status(500).json({ success: false, message: err });
+    });
+}
+
 module.exports = {
   getShopsItems: getShopsItems,
   getShopsItemId: getShopsItemId,
   sendShopItemoShop: sendShopItemoShop,
+  buyItems: buyItems,
 };
