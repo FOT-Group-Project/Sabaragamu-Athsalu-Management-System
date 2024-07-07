@@ -744,6 +744,7 @@ export default function DashPOS() {
 
                               {selectedValue == "cash" ? (
                                 <>
+                                  <hr className="md-2 mt-10" />
                                   <h1 className="text-lg text-gray-700 mt-5">
                                     <b>Totale Price</b>
                                   </h1>
