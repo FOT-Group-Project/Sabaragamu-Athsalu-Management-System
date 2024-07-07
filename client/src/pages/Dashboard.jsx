@@ -18,6 +18,7 @@ import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import SellerDashboardHome from "../components/seller/SellerDashboardHome";
 
 import DashSalesReport from "../components/DashSalesReport";
+import AccountantDashboardHome from "../components/accountant/AccountantDashboardHome";
 import DashDirectorProducts from "../components/director/DashDirectorProducts";
 import DirectorDashboardHome from "../components/director/DirectorDashboardHome";
 import DashStoreKeeperProducts from "../components/storeKeeper/DashStoreKeeperProducts";
@@ -89,6 +90,10 @@ export default function Dashboard() {
 
       {tab === "dash" && currentUser.role === "Director" && (
         <DirectorDashboardHome />
+      )}
+
+      {tab === "dash" && currentUser.role === "Accountant" && (
+        <AccountantDashboardHome />
       )}
 
       {/* pos */}
