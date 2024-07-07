@@ -448,7 +448,7 @@ function deleteUser(req, res, next) {
       if (error instanceof models.Sequelize.ForeignKeyConstraintError) {
         return res.status(400).json({
           success: false,
-          message: "User cannot be deleted because of foreign key constraint",
+          message: "This user cannot be deleted because they are involved in other activities.",
         });
       }
       return res.status(500).json({
