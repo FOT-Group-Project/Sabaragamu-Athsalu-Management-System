@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import DashSidebar from "../components/DashSidebar";
-import DashProfile from "../components/DashProfile";
-import DashUsers from "../components/DashUsers";
-import DashShops from "../components/DashShops";
-import DashStores from "../components/DashStores";
-import DashProducts from "../components/DashProducts";
-import DashboardComp from "../components/DashboardComp";
-import DashPOS from "../components/seller/DashPOS";
-import SellerDashboardHome from "../components/seller/SellerDashboardHome";
-import DashSellerProducts from "../components/seller/DashSellerProducts";
-import DashSellerInvetory from "../components/seller/DashSellerInvetory";
-import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import DashDamageProduct from "../components/DashDamageProduct";
+import DashProducts from "../components/DashProducts";
+import DashProfile from "../components/DashProfile";
 import DashSaleHistory from "../components/DashSaleHistory";
+import DashShops from "../components/DashShops";
+import DashSidebar from "../components/DashSidebar";
+import DashStores from "../components/DashStores";
+import DashUsers from "../components/DashUsers";
+import DashboardComp from "../components/DashboardComp";
+import DashCustomerReturnItem from "../components/seller/DashCustomerReturnItem";
+import DashPOS from "../components/seller/DashPOS";
+import DashSellerInvetory from "../components/seller/DashSellerInvetory";
+import DashSellerProducts from "../components/seller/DashSellerProducts";
+import DashSellerSendStock from "../components/seller/DashSellerSendStock";
+import SellerDashboardHome from "../components/seller/SellerDashboardHome";
 
 import DashSalesReport from "../components/DashSalesReport";
-
+import DashDirectorProducts from "../components/director/DashDirectorProducts";
+import DirectorDashboardHome from "../components/director/DirectorDashboardHome";
+import DashStoreKeeperProducts from "../components/storeKeeper/DashStoreKeeperProducts";
+import DashStoreKeeperSendStock from "../components/storeKeeper/DashStoreKeeperSendStock";
+import StoreKeeperDashboardHome from "../components/storeKeeper/StoreKeeperDashboardHome";
 
 export default function Dashboard() {
   const loaction = useLocation();
@@ -56,16 +61,36 @@ export default function Dashboard() {
         <DashSellerSendStock />
       )}
 
+      {tab === "sendstock" && currentUser.role === "StoreKeeper" && (
+        <DashStoreKeeperSendStock />
+      )}
+
       {/* products */}
       {tab === "products" && currentUser.role === "Admin" && <DashProducts />}
       {tab === "products" && currentUser.role === "Seller" && (
         <DashSellerProducts />
       )}
+      {tab === "products" && currentUser.role === "StoreKeeper" && (
+        <DashStoreKeeperProducts />
+      )}
+
+      {tab === "products" && currentUser.role === "Director" && (
+        <DashDirectorProducts />
+      )}
+
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (
         <SellerDashboardHome />
       )}
+      {tab === "dash" && currentUser.role === "StoreKeeper" && (
+        <StoreKeeperDashboardHome />
+      )}
+
+      {tab === "dash" && currentUser.role === "Director" && (
+        <DirectorDashboardHome />
+      )}
+
       {/* pos */}
       {tab === "pos" && <DashPOS />}
       {/* salesReport */}
@@ -73,6 +98,11 @@ export default function Dashboard() {
 
       {/*Sale Histor*/}
       {tab === "saleHistory" && <DashSaleHistory />}
+
+      {/*Return Items */}
+      {tab === "returnItems" && currentUser.role === "Seller" && (
+        <DashCustomerReturnItem />
+      )}
     </div>
   );
 }
