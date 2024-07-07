@@ -651,7 +651,11 @@ export default function DashPOS() {
             </motion.div>
           </Modal>
 
-          <Modal show={showModal2} onClose={() => setShowModal2(false)}>
+          <Modal
+            show={showModal2}
+            onClose={() => setShowModal2(false)}
+            size="3xl"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -666,7 +670,7 @@ export default function DashPOS() {
                       <Alert color="failure">{createUserError}</Alert>
                     )}
                     <div className="flex gap-5 mb-4">
-                      <div className="w-full flex gap-8">
+                      <div className="w-full flex gap-10">
                         {showModal2 ? (
                           <>
                             <div className="">
@@ -782,7 +786,95 @@ export default function DashPOS() {
                                   </div>
                                 </>
                               ) : (
-                                <></>
+                                <div className="flex w-full justify-between">
+                                  <div>
+                                    <p className="text-sm mt-4">
+                                      Select already existing customer or add
+                                      new customer
+                                    </p>
+
+                                    <div className="mt-4 flex gap-4">
+                                      <Select
+                                        value={selectedCustomer}
+                                        onChange={handleCustomerChange}
+                                      >
+                                        <option value="">
+                                          Select a customer
+                                        </option>
+                                        {customers.map((customer) => (
+                                          <>
+                                            {customer.role === "Customer" ? (
+                                              <>
+                                                {customer.id !== 7 ? (
+                                                  <>
+                                                    <option
+                                                      key={customer.id}
+                                                      value={customer.id}
+                                                    >
+                                                      {customer.firstname +
+                                                        " " +
+                                                        customer.lastname}
+                                                    </option>
+                                                  </>
+                                                ) : (
+                                                  <></>
+                                                )}
+                                              </>
+                                            ) : (
+                                              <></>
+                                            )}
+                                          </>
+                                        ))}
+                                      </Select>
+
+                                      <Button color="blue" className="">
+                                        <MdAdd className="h-4 w-4 mr-2" />
+                                        Add Customer
+                                      </Button>
+                                    </div>
+
+                                    {selectedCustomer > 0 ? (
+                                      <>
+                                        <hr className="md-2 mt-10" />
+                                        <h1 className="text-lg text-gray-700 mt-5">
+                                          <b>Totale Price</b>
+                                        </h1>
+                                        <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                          <p>
+                                            <b>Sub Total :</b>
+                                          </p>
+                                          <p>Rs. {calculateSubtotal()}</p>
+                                        </div>
+
+                                        {discountPercentage > 0 && (
+                                          <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                            <p>
+                                              <b>Discounte Price : </b>
+                                            </p>
+                                            <p>
+                                              Rs.{" "}
+                                              {(
+                                                calculateTotalPrice() -
+                                                calculateSubtotal()
+                                              ).toFixed(2)}
+                                            </p>
+                                          </div>
+                                        )}
+
+                                        <div className="mr-2 ml-2 flex justify-between">
+                                          <p>
+                                            <b>Paybale Amount :</b>
+                                          </p>
+                                          <p>
+                                            <b className=" text-red-600 text-xl">
+                                              Rs. {calculateTotalPrice()}
+                                            </b>
+                                          </p>
+                                        </div>
+                                      </>
+                                    ) : null}
+                                  </div>
+                                </div>
                               )}
                             </div>
                           </>
@@ -806,7 +898,7 @@ export default function DashPOS() {
                         ) : (
                           "Confirm Order"
                         )}
-                        <HiPaperAirplane className="ml-2 h-4 w-4 rotate-90" />
+                        <HiCheckCircle className="ml-2 h-4 w-4 " />
                       </Button>
                       <Button
                         size="sm"
