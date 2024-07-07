@@ -11,5 +11,5 @@ router.delete('/deleteStoredamageItem/:id',verifyToken ,damageproductControllers
 router.get('/getstoritem',verifyToken, damageproductControllers. getstoritem);
 router.post('sumbmitStoredamageItem',verifyToken, damageproductControllers.submitAddItemForm);
 router.post('/addStoredamageItem',verifyToken, damageproductControllers.addDamageProduct);
-
+router.get('/getProductId',verifyToken, damageproductControllers.getProductId);
 module.exports = router;
