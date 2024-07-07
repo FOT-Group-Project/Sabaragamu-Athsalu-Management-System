@@ -67,6 +67,7 @@ export default function DashPOS() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(false);
   const [selectedValue, setSelectedValue] = useState("cash");
+  const [orderDetails, setOrderDetails] = useState({});
 
   // Handler to update the selected value
   const handleChange = (event) => {
@@ -219,10 +220,49 @@ export default function DashPOS() {
   };
 
   const handelBuyItems = () => {
-    
-  
+    if (selectedValue == "cash") {
+      orderDetails.type = "cash";
+      orderDetails.customerId = 7;
+      orderDetails.dueAmount = 0;
+    }
+    if (selectedValue == "credit") {
+      orderDetails.type = "credit";
+      orderDetails.customerId = selectedCustomer;
+    }
+
+    selectedProducts.forEach((product) => {
+      orderDetails.itemId = product.id;
+      orderDetails.shopId = currentUser.id;
+      orderDetails.buyDateTime = new Date().toLocaleString();
+      orderDetails.unitPrice = product.item.itemPrice;
+      orderDetails.quantity = product.quantity;
+
+      try {
+        setCreateLoding(true);
+
+        const res = fetch(`/api/shop-item/buyitems`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderDetails),
+        });
+
+        res.then((res) => {
+          if (res.ok) {
+            setCreateLoding(false);
+            setShowModal2(false);
+            setSelectedProducts([]);
+            setSelectedCustomer([]);
+            Toast.success("Order placed successfully!");
+          }
+        });
+      } catch (error) {
+        console.log(error.message);
+      }
+    });
   };
-  
+
   return (
     <div className="p-3 w-full">
       <AnimatePresence>
