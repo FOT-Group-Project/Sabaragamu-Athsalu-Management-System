@@ -121,23 +121,10 @@ export default function fetchdamageitems() {
 
 
 
-  //fetch product data from product table
+  //get data product data from product table
+  
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("/api/stordamageproduct/getProductId");
-      const data = await response.json();
-      setProducts(data.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
-  useEffect(() => {
-    if (currentUser.role === "StoreKeeper") {
-      fetchProducts();
-    }
-  }, []);
 
 
   //affter sending the data to the database table refresh the page
