@@ -31,6 +31,8 @@ export default function DashCustomerReturnItem() {
   const [billDetailsMap, setBillDetailsMap] = useState({});
   const [selectedReturnItems, setSelectedReturnItems] = useState([]);
   const [returnCounts, setReturnCounts] = useState({});
+  const [returnReasons, setReturnReasons] = useState({});
+  const [returnAlert, setReturnAlert] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -50,6 +52,9 @@ export default function DashCustomerReturnItem() {
     setSelectedBillId(selectedOption);
     setSelectedReturnItems([]);
     setReturnCounts({});
+    const billId = selectedOption.value;
+    const buyDateTime = billDetailsMap[billId][0].buyDateTime;
+    setReturnAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
   };
 
   // Handle return item selection for a specific dropdown index
@@ -67,9 +72,30 @@ export default function DashCustomerReturnItem() {
     console.log(returnCounts);
   };
 
+  // Handle return reason change
+  const handleReturnReasonChange = (reason, index) => {
+    setReturnReasons((prevReasons) => ({
+      ...prevReasons,
+      [index]: reason,
+    }));
+  };
+
+  // Helper function to check if the return is within 14 days
+  const isWithinReturnPeriod = (buyDate) => {
+    const buyDateTime = new Date(buyDate).getTime();
+    const currentDateTime = new Date().getTime();
+    const diffInDays = (currentDateTime - buyDateTime) / (1000 * 3600 * 24);
+    return diffInDays <= 14;
+  };
+
   // Handle add return
-  const handleaddReturn = async () => {
+  const handleAddReturn = async () => {
     try {
+      if (returnAlert) {
+        alert("Return period has exceeded 14 days. Item cannot be returned.");
+        return;
+      }
+
       // Validate data
       const returnItemsWithCounts = selectedReturnItems.map(
         (returnItem, index) => {
@@ -80,7 +106,7 @@ export default function DashCustomerReturnItem() {
             shopId: item.shopId,
             returnDateTime: new Date().toISOString(),
             buyDateTime: item.buyDateTime,
-            reason: "No reason specified",
+            reason: returnReasons[index] || "No reason specified",
             quantity: returnCounts || 0,
           };
         }
@@ -274,33 +300,37 @@ export default function DashCustomerReturnItem() {
   }, [searchQuery, returnDateTime, returnItems]);
 
   // Fetch return items based on user role
-  useEffect(() => {
-    if (currentUser.role === "Admin") {
-      fetchReturnItems();
-    } else if (currentUser.role === "Seller") {
-      const fetchShopId = async () => {
-        try {
-          const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
-          const data = await res.json();
-          if (res.ok) {
-            if (Array.isArray(data.shops) && data.shops.length > 0) {
-              const shopId = data.shops[0].id;
-              fetchReturnItemsbyShopId(shopId);
-              fetchSalesByShopId(shopId);
+  useEffect(
+    () => {
+      if (currentUser.role === "Admin") {
+        fetchReturnItems();
+      } else if (currentUser.role === "Seller") {
+        const fetchShopId = async () => {
+          try {
+            const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+            const data = await res.json();
+            if (res.ok) {
+              if (Array.isArray(data.shops) && data.shops.length > 0) {
+                const shopId = data.shops[0].id;
+                fetchReturnItemsbyShopId(shopId);
+                fetchSalesByShopId(shopId);
+              } else {
+                console.error("No shops found for the current user.");
+              }
             } else {
-              console.error("No shops found for the current user.");
+              console.error("API response error:", data);
             }
-          } else {
-            console.error("API response error:", data);
+          } catch (error) {
+            console.error("Error fetching shop ID:", error);
           }
-        } catch (error) {
-          console.error("Error fetching shop ID:", error);
-        }
-      };
+        };
 
-      fetchShopId();
-    }
-  }, [currentUser], [returnItems]);
+        fetchShopId();
+      }
+    },
+    [currentUser],
+    [returnItems]
+  );
 
   //console.log(returnCounts);
 
@@ -368,7 +398,7 @@ export default function DashCustomerReturnItem() {
                 <TableHeadCell>Customer Name</TableHeadCell>
                 <TableHeadCell>Product Name</TableHeadCell>
                 <TableHeadCell>Quantity</TableHeadCell>
-                <TableHeadCell>Unit Price</TableHeadCell>
+                <TableHeadCell>Sold Price</TableHeadCell>
                 <TableHeadCell>Buy Date Time</TableHeadCell>
                 <TableHeadCell>Return Date Time</TableHeadCell>
                 <TableHeadCell>Reason</TableHeadCell>
@@ -577,17 +607,42 @@ export default function DashCustomerReturnItem() {
                                   isSearchable
                                 />
                               </div>
-                              <div className="w-1/2 pl-2">
+                              <div className="w-2/3 pl-2">
+                                <Label
+                                  htmlFor={`returnReasonInput-${index}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Reason
+                                </Label>
+                                <TextInput
+                                  id={`returnReasonInput-${index}`}
+                                  type="text"
+                                  value={returnReasons[index] || ""}
+                                  onChange={(e) =>
+                                    handleReturnReasonChange(
+                                      e.target.value,
+                                      index
+                                    )
+                                  }
+                                  placeholder="Enter reason"
+                                  className="w-full h-10"
+                                />
+                              </div>
+                              <div className="w-1/3 pl-2">
                                 <Label
                                   htmlFor={`returnCountInput-${index}`}
                                   className="block mb-2 text-sm font-medium text-gray-700"
                                 >
-                                  Return Count
+                                  Count
                                 </Label>
                                 <TextInput
                                   id={`returnCountInput-${index}`}
                                   type="number"
-                                  //value={returnCounts[selectedItem] || ""}
+                                  min="1"
+                                  max={
+                                    billDetailsMap[selectedBillId.value][index]
+                                      .quantity
+                                  }
                                   onChange={(e) =>
                                     handleReturnCountChange(e.target.value)
                                   }
@@ -613,10 +668,10 @@ export default function DashCustomerReturnItem() {
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
                     <Button
-                      className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
-                      onClick={handleaddReturn}
+                      className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                      onClick={handleAddReturn}
                     >
-                      Add Returns
+                      Submit Return
                     </Button>
                   </div>
                 </div>
