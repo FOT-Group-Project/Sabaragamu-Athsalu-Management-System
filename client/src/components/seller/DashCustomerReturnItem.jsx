@@ -552,24 +552,19 @@ export default function DashCustomerReturnItem() {
                               </div>
                               <div className="w-1/2 pl-2">
                                 <Label
-                                  htmlFor={`returnCount-${selectedItem}`}
+                                  htmlFor={`returnCountInput-${index}`}
                                   className="block mb-2 text-sm font-medium text-gray-700"
                                 >
                                   Return Count
                                 </Label>
                                 <TextInput
-                                  id={`returnCount-${selectedItem}`}
+                                  id={`returnCountInput-${index}`}
                                   type="number"
                                   value={returnCounts[selectedItem] || ""}
                                   onChange={(e) =>
-                                    handleReturnCountChange(
-                                      selectedItem,
-                                      e.target.value,
-                                      console.log(selectedItem, e.target.value)
-                                    )
+                                    handleReturnCountChange(selectedItem, e.target.value)
                                   }
-                                  placeholder="Enter return count"
-                                  className="w-full"
+                                  className="w-full h-10"
                                 />
                               </div>
                             </div>
