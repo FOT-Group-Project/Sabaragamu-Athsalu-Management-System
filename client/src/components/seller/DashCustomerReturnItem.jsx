@@ -73,6 +73,7 @@ export default function DashCustomerReturnItem() {
   const handleaddReturn = async () => {
     try {
       // Validate data
+      const returnDateTime = new Date();
       const returnItemsWithCounts = selectedReturnItems.map(
         (returnItem, index) => {
           const item = billDetailsMap[selectedBillId.value][index];
@@ -88,20 +89,41 @@ export default function DashCustomerReturnItem() {
         }
       );
 
-      const res = await fetch(`/api/customerreturnitem/addcustomerreturnitems`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(returnItemsWithCounts),
-      });
+      const res = await fetch(
+        `/api/customerreturnitem/addcustomerreturnitems`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(returnItemsWithCounts),
+        }
+      );
 
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
+        //alert(data.message);
         setIsModalOpen(false);
-        fetchReturnItems(); // Refresh the return items
+        const fetchShopId = async () => {
+          try {
+            const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+            const data = await res.json();
+            if (res.ok) {
+              if (Array.isArray(data.shops) && data.shops.length > 0) {
+                const shopId = data.shops[0].id;
+                fetchReturnItemsbyShopId(shopId);
+                fetchSalesByShopId(shopId);
+              } else {
+                console.error("No shops found for the current user.");
+              }
+            } else {
+              console.error("API response error:", data);
+            }
+          } catch (error) {
+            console.error("Error fetching shop ID:", error);
+          }
+        }; // Refresh the return items
       } else {
         alert(data.message);
       }
@@ -122,7 +144,6 @@ export default function DashCustomerReturnItem() {
       );
     }
   };
-
 
   // Fetch return items
   const fetchReturnItems = async () => {
@@ -411,7 +432,11 @@ export default function DashCustomerReturnItem() {
                         label: billId,
                       }))}
                       value={selectedBillId}
-                      onChange={handleBillSelection}
+                      onChange={(selectedOption) => {
+                        setSelectedBillId(selectedOption);
+                        setSelectedReturnItems([]);
+                        setReturnCounts({});
+                      }}
                       isClearable
                       isSearchable
                       placeholder="Search and select a Bill ID"
@@ -474,8 +499,9 @@ export default function DashCustomerReturnItem() {
                                           {item.unitPrice.toFixed(2)}
                                         </td>
                                         <td className="text-right">
-                                          {item.unitPrice *
-                                            item.quantity.toFixed(2)}
+                                          {(
+                                            item.unitPrice * item.quantity
+                                          ).toFixed(2)}
                                         </td>
                                       </tr>
                                     )
@@ -549,22 +575,31 @@ export default function DashCustomerReturnItem() {
                               <div className="w-1/2 pl-2">
                                 <Label
                                   htmlFor={`returnCount-${selectedItem}`}
+                                  value={`Return Count ${index + 1}`}
                                   className="block mb-2 text-sm font-medium text-gray-700"
                                 >
                                   Return Count
                                 </Label>
                                 <TextInput
-                                  id={`returnCount-${selectedItem}`}
+                                  id={`returnCount${index}`}
                                   type="number"
+                                  min="0"
+                                  max={
+                                    selectedItem
+                                      ? billDetailsMap[
+                                          selectedBillId.value
+                                        ].find(
+                                          (item) => item.itemId === selectedItem
+                                        ).quantity
+                                      : 0
+                                  }
                                   value={returnCounts[selectedItem] || ""}
                                   onChange={(e) =>
                                     handleReturnCountChange(
                                       selectedItem,
-                                      e.target.value
+                                      parseInt(e.target.value)
                                     )
                                   }
-                                  placeholder="Enter return count"
-                                  className="w-full"
                                 />
                               </div>
                             </div>
@@ -588,6 +623,10 @@ export default function DashCustomerReturnItem() {
                     <Button
                       className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
                       onClick={handleaddReturn}
+                      disabled={
+                        selectedReturnItems.length === 0 ||
+                        selectedReturnItems.includes(null)
+                      }
                     >
                       Add Returns
                     </Button>
