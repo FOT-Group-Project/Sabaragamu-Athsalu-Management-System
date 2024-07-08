@@ -127,6 +127,7 @@ export default function fetchdamageitems() {
       const response = await fetch("/api/stordamageproduct/getproduct");
       const data = await response.json();
       setProducts(data.data);
+    } catch (error) {
   
 
 
