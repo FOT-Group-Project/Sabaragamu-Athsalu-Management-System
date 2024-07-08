@@ -71,8 +71,17 @@ export default function DashCustomerReturnItem() {
 
   // Add another dropdown for return item selection
   const addAnotherReturnItem = () => {
-    setSelectedReturnItems((prevItems) => [...prevItems, null]);
+    if (
+      selectedReturnItems.length < billDetailsMap[selectedBillId.value].length
+    ) {
+      setSelectedReturnItems([...selectedReturnItems, null]);
+    } else {
+      alert(
+        "You cannot add more return items than the available items in the bill."
+      );
+    }
   };
+
 
   // Fetch return items
   const fetchReturnItems = async () => {
@@ -440,11 +449,14 @@ export default function DashCustomerReturnItem() {
                                     <td className="text-right font-bold text-gray-700"></td>
                                     <td className="text-right font-bold text-gray-700">
                                       Rs.
-                                      {billDetailsMap[selectedBillId.value].reduce(
-                                        (total, item) =>
-                                          total + item.unitPrice * item.quantity,
-                                        0
-                                      ).toFixed(2)}
+                                      {billDetailsMap[selectedBillId.value]
+                                        .reduce(
+                                          (total, item) =>
+                                            total +
+                                            item.unitPrice * item.quantity,
+                                          0
+                                        )
+                                        .toFixed(2)}
                                     </td>
                                   </tr>
                                 </tfoot>
@@ -491,7 +503,6 @@ export default function DashCustomerReturnItem() {
                                   }
                                   isClearable
                                   isSearchable
-                                  //placeholder="Search and select an item"
                                 />
                               </div>
                               <div className="w-1/2 pl-2">
@@ -521,6 +532,10 @@ export default function DashCustomerReturnItem() {
                             color="blue"
                             onClick={addAnotherReturnItem}
                             className="mr-2 mt-2"
+                            disabled={
+                              selectedReturnItems.length >=
+                              billDetailsMap[selectedBillId.value].length
+                            }
                           >
                             Add Another Return Item
                           </Button>
@@ -530,13 +545,13 @@ export default function DashCustomerReturnItem() {
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
                     <Button
-                      color="blue"
+                      className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
                       onClick={() => {
                         console.log("Selected Bill ID:", selectedBillId);
                         setIsModalOpen(false);
                       }}
                     >
-                      Save Changes
+                      Add Returns
                     </Button>
                   </div>
                 </div>
