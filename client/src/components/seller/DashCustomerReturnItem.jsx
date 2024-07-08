@@ -537,7 +537,7 @@ export default function DashCustomerReturnItem() {
                               billDetailsMap[selectedBillId.value].length
                             }
                           >
-                            Add Another Return Item
+                            Add Item for Return
                           </Button>
                         </div>
                       </div>
