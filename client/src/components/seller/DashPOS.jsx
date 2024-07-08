@@ -68,6 +68,7 @@ export default function DashPOS() {
   const [createLoding, setCreateLoding] = useState(false);
   const [selectedValue, setSelectedValue] = useState("cash");
   const [orderDetails, setOrderDetails] = useState({});
+  const [advancePayment, setAdvancePayment] = useState(0);
 
   // Handler to update the selected value
   const handleChange = (event) => {
@@ -188,6 +189,12 @@ export default function DashPOS() {
     const discountedPrice = totalPrice - discountAmount;
 
     return discountedPrice;
+  };
+
+  const calculateDueAmount = () => {
+    const totalPrice = calculateTotalPrice();
+    const dueAmount = totalPrice - advancePayment;
+    return dueAmount;
   };
 
   // Function to calculate the subtotal
@@ -866,7 +873,7 @@ export default function DashPOS() {
                                             <b>Paybale Amount :</b>
                                           </p>
                                           <p>
-                                            <b className=" text-red-600 text-xl">
+                                            <b className=" text-gray-600 text-xl">
                                               Rs. {calculateTotalPrice()}
                                             </b>
                                           </p>
@@ -877,16 +884,26 @@ export default function DashPOS() {
                                           </p>
                                           <TextInput
                                             type="number"
-                                            value={discountPercentage}
+                                            value={advancePayment}
                                             onChange={(e) =>
-                                              setDiscountPercentage(
+                                              setAdvancePayment(
                                                 Math.max(0, e.target.value)
                                               )
                                             }
-                                            placeholder="Enter discount percentage"
+                                            placeholder="Enter Advance Amount"
                                             className=" w-20 h-8 mb-3"
                                             size="sm"
                                           />
+                                        </div>
+                                        <div className="mr-2 ml-2 flex justify-between">
+                                          <p>
+                                            <b>Due Amount :</b>
+                                          </p>
+                                          <p>
+                                            <b className=" text-red-600 text-xl">
+                                              Rs. {calculateDueAmount()}
+                                            </b>
+                                          </p>
                                         </div>
                                       </>
                                     ) : null}
@@ -904,8 +921,9 @@ export default function DashPOS() {
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
-                        disabled={createLoding}
+                        disabled={(createLoding || selectedCustomer.length <= 0 || selectedValue == "credit" && advancePayment <= 0 ) && selectedValue != "cash"}
                         onClick={handelBuyItems}
+
                       >
                         {createLoding ? (
                           <>
