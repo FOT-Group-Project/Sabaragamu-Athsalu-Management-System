@@ -122,6 +122,9 @@ export default function fetchdamageitems() {
 
 
   //get data product data from product table
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getproduct");
   
 
 
