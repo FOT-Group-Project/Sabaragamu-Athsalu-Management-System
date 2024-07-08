@@ -78,7 +78,7 @@ export default function DashCustomerReturnItem() {
             customerId: item.customerId,
             itemId: item.itemId,
             shopId: item.shopId,
-            returnDateTime: returnDateTime,
+            returnDateTime: new Date().toISOString(),
             buyDateTime: item.buyDateTime,
             reason: "No reason specified",
             quantity: returnCounts || 0,
