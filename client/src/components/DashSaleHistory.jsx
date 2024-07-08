@@ -410,7 +410,10 @@ export default function DashSellerInvetory() {
   }
 
   useEffect(() => {
-    if (currentUser.role === "Admin") {
+    if (
+      currentUser.role === "Accountant" ||
+      currentUser.role === "Admin"
+    ) {
       fetchSales();
     } else if (currentUser.role === "Seller") {
       //get user's shopId from shop table
