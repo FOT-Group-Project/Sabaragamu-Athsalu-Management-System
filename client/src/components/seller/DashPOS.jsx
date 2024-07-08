@@ -52,16 +52,6 @@ import {
 import { MdAdd, MdRemove } from "react-icons/md";
 import { GiConfirmed } from "react-icons/gi";
 
-import { CiViewList } from "react-icons/ci";
-import { FiPrinter } from "react-icons/fi";
-import { PiExportBold } from "react-icons/pi";
-import Logolight from "../../assets/logolight.png";
-// import Logodark from "../assets/logodark.png";
-import { IoMdClose } from "react-icons/io";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-
-
 export default function DashPOS() {
   const { currentUser } = useSelector((state) => state.user);
 
@@ -83,15 +73,6 @@ export default function DashPOS() {
   const [selectedValue, setSelectedValue] = useState("cash");
   const [orderDetails, setOrderDetails] = useState({});
   const [advancePayment, setAdvancePayment] = useState(0);
-
-    const [sales, setSales] = useState([]);
-    const [selectedBill, setSelectedBill] = useState(null);
-    const [selectBillPrint, setSelectBillPrint] = useState(null);
-    const [selectedBillExport, setSelectedBillExport] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const theme = useSelector((state) => state.theme.theme);
-    const [salesDate, setSalesDate] = useState(null);
-    const [filteredSales, setFilteredSales] = useState([]);
 
   // Handler to update the selected value
   const handleChange = (event) => {
@@ -715,7 +696,12 @@ export default function DashPOS() {
                     Your order has been placed successfully!
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button color="blue" onClick={null}>
+                    <Button
+                      color="blue"
+                      onClick={() => {
+                        printBill();
+                      }}
+                    >
                       Print Bill
                     </Button>
                     <Button color="gray" onClick={() => setShowModal4(false)}>
