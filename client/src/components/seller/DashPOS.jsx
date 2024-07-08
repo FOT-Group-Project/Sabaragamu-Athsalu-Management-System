@@ -176,6 +176,8 @@ export default function DashPOS() {
     );
   };
 
+  const handelRemoveCustomer = (customerId) => {};
+
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     selectedProducts.forEach((product) => {
@@ -235,6 +237,7 @@ export default function DashPOS() {
     if (selectedValue == "credit") {
       orderDetails.type = "Credit";
       orderDetails.customerId = selectedCustomer;
+      orderDetails.dueAmount = calculateDueAmount();
     }
 
     selectedProducts.forEach((product) => {
@@ -834,10 +837,23 @@ export default function DashPOS() {
                                         ))}
                                       </Select>
 
-                                      <Button color="blue" className="">
-                                        <MdAdd className="h-4 w-4 mr-2" />
-                                        Add Customer
-                                      </Button>
+                                      {selectedCustomer <= 0 ? (
+                                        <Button color="blue" className="">
+                                          <MdAdd className="h-4 w-4 mr-2" />
+                                          Add Customer
+                                        </Button>
+                                      ) : (
+                                        <Button
+                                          color="red"
+                                          className=""
+                                          onClick={handelRemoveCustomer(
+                                            customers.id
+                                          )}
+                                        >
+                                          <MdAdd className="h-4 w-4 mr-2" />
+                                          Remove Customer
+                                        </Button>
+                                      )}
                                     </div>
 
                                     {selectedCustomer > 0 ? (
@@ -921,9 +937,14 @@ export default function DashPOS() {
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
-                        disabled={(createLoding || selectedCustomer.length <= 0 || selectedValue == "credit" && advancePayment <= 0 ) && selectedValue != "cash"}
+                        disabled={
+                          (createLoding ||
+                            selectedCustomer.length <= 0 ||
+                            (selectedValue == "credit" &&
+                              advancePayment <= 0)) &&
+                          selectedValue != "cash"
+                        }
                         onClick={handelBuyItems}
-
                       >
                         {createLoding ? (
                           <>
