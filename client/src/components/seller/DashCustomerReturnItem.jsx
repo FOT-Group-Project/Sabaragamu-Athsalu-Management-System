@@ -16,14 +16,19 @@ import {
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
+import Select from "react-select"; 
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
+  const [sales, setSales] = useState([]);
   const [returnItems, setReturnItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredReturnItems, setFilteredReturnItems] = useState([]);
   const [returnDateTime, setReturnDateTime] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBillId, setSelectedBillId] = useState("");
+  const [billIds, setBillIds] = useState([]);
+
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -49,6 +54,53 @@ export default function DashCustomerReturnItem() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  // Fetch sales by shop ID
+  const fetchSalesByShopId = async (shopId) => {
+    try {
+      const res = await fetch(`api/sales-report/getsales/${shopId}`);
+      const data = await res.json();
+      if (res.ok) {
+        // Group sales by customerId, shopId, and buyDateTime
+        const groupedSales = groupSales(data.sales);
+        const generatedBillIds = groupedSales.map(generateBillId);
+        setSales(groupedSales);
+        setBillIds(generatedBillIds);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Function to group sales by customerId, shopId, and buyDateTime
+  const groupSales = (sales) => {
+    const groupedSales = {};
+    sales.forEach((sale) => {
+      const key = `${sale.customerId}-${sale.shopId}-${sale.buyDateTime}`;
+      if (!groupedSales[key]) {
+        groupedSales[key] = [sale];
+      } else {
+        groupedSales[key].push(sale);
+      }
+    });
+    return Object.values(groupedSales);
+  };
+
+  // Function to generate bill ID
+  const generateBillId = (bill) => {
+    const { customerId, shopId, buyDateTime } = bill[0];
+    const formattedDate = new Date(buyDateTime)
+      .toLocaleDateString()
+      .replace(/\//g, "-");
+    const formattedTime = new Date(buyDateTime)
+      .toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(/:/g, "");
+    return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
 
   // Fetch return items by shop ID
@@ -122,6 +174,7 @@ export default function DashCustomerReturnItem() {
             if (Array.isArray(data.shops) && data.shops.length > 0) {
               const shopId = data.shops[0].id;
               fetchReturnItemsbyShopId(shopId);
+              fetchSalesByShopId(shopId);
             } else {
               console.error("No shops found for the current user.");
             }
@@ -251,6 +304,40 @@ export default function DashCustomerReturnItem() {
                         ×
                       </span>
                     </button>
+                  </div>
+                  <div className="p-6 flex-auto">
+                    <Label
+                      htmlFor="billIdDropdown"
+                      className="block mb-2 text-sm font-medium text-gray-700"
+                    >
+                      Select Bill ID
+                    </Label>
+                    <Select
+                      id="billIdDropdown"
+                      options={billIds.map((billId) => ({
+                        value: billId,
+                        label: billId,
+                      }))}
+                      value={selectedBillId}
+                      onChange={(selectedOption) =>
+                        setSelectedBillId(selectedOption)
+                      }
+                      isClearable
+                      isSearchable
+                      placeholder="Search and select a Bill ID"
+                    />
+                  </div>
+                  <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
+                    <Button
+                      color="blue"
+                      onClick={() => {
+                        // Handle adding return item logic here using selectedBillId
+                        console.log("Selected Bill ID:", selectedBillId);
+                        setIsModalOpen(false);
+                      }}
+                    >
+                      Save Changes
+                    </Button>
                   </div>
                 </div>
               </div>
