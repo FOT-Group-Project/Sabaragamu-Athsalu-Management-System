@@ -28,7 +28,7 @@ export default function DashCustomerReturnItem() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBillId, setSelectedBillId] = useState("");
   const [billIds, setBillIds] = useState([]);
-
+  const [billDetailsMap, setBillDetailsMap] = useState({});
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -41,6 +41,11 @@ export default function DashCustomerReturnItem() {
   // Handle date input change
   const handleDateChange = (e) => {
     setReturnDateTime(e.target.value);
+  };
+
+  // Handle bill selection
+  const handleBillSelection = (selectedOption) => {
+    setSelectedBillId(selectedOption);
   };
 
   // Fetch return items
@@ -65,8 +70,10 @@ export default function DashCustomerReturnItem() {
         // Group sales by customerId, shopId, and buyDateTime
         const groupedSales = groupSales(data.sales);
         const generatedBillIds = groupedSales.map(generateBillId);
+        const billDetailsMap = generateBillDetailsMap(groupedSales);
         setSales(groupedSales);
         setBillIds(generatedBillIds);
+        setBillDetailsMap(billDetailsMap);
       }
     } catch (error) {
       console.log(error.message);
@@ -102,6 +109,15 @@ export default function DashCustomerReturnItem() {
       .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
+
+   const generateBillDetailsMap = (groupedSales) => {
+     const billDetailsMap = {};
+     groupedSales.forEach((bill) => {
+       const billId = generateBillId(bill);
+       billDetailsMap[billId] = bill;
+     });
+     return billDetailsMap;
+   };
 
   // Fetch return items by shop ID
   const fetchReturnItemsbyShopId = async (shopId) => {
@@ -319,19 +335,45 @@ export default function DashCustomerReturnItem() {
                         label: billId,
                       }))}
                       value={selectedBillId}
-                      onChange={(selectedOption) =>
-                        setSelectedBillId(selectedOption)
-                      }
+                      onChange={handleBillSelection}
                       isClearable
                       isSearchable
                       placeholder="Search and select a Bill ID"
                     />
+                    {selectedBillId && billDetailsMap[selectedBillId.value] && (
+                      <div className="mt-4">
+                        <h3 className="text-lg font-semibold mb-2">
+                          Bill Details
+                        </h3>
+                        <Table>
+                          <TableHead>
+                            <TableHeadCell>Product Name</TableHeadCell>
+                            <TableHeadCell>Quantity</TableHeadCell>
+                            <TableHeadCell>Unit Price</TableHeadCell>
+                            <TableHeadCell>Total Price</TableHeadCell>
+                          </TableHead>
+                          <TableBody>
+                            {billDetailsMap[selectedBillId.value].map(
+                              (item) => (
+                                <TableRow key={item.id}>
+                                  <TableCell>{item.Product.itemName}</TableCell>
+                                  <TableCell>{item.quantity}</TableCell>
+                                  <TableCell>{item.unitPrice}</TableCell>
+                                  <TableCell>
+                                    {item.unitPrice * item.quantity}
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
                     <Button
                       color="blue"
                       onClick={() => {
-                        // Handle adding return item logic here using selectedBillId
                         console.log("Selected Bill ID:", selectedBillId);
                         setIsModalOpen(false);
                       }}
