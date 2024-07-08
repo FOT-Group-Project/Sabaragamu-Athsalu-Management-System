@@ -69,6 +69,47 @@ export default function DashCustomerReturnItem() {
     }));
   };
 
+  // Handle add return
+  const handleaddReturn = async () => {
+    try {
+      // Validate data
+      const returnItemsWithCounts = selectedReturnItems.map(
+        (returnItem, index) => {
+          const item = billDetailsMap[selectedBillId.value][index];
+          return {
+            customerId: item.customerId,
+            itemId: item.itemId,
+            shopId: item.shopId,
+            returnDateTime: returnDateTime,
+            buyDateTime: item.buyDateTime,
+            reason: "No reason specified",
+            quantity: returnCounts[item.itemId] || 0,
+          };
+        }
+      );
+
+      const res = await fetch(`/api/customerreturnitem/addcustomerreturnitems`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(returnItemsWithCounts),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+        setIsModalOpen(false);
+        fetchReturnItems(); // Refresh the return items
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error adding return items:", error);
+    }
+  };
+
   // Add another dropdown for return item selection
   const addAnotherReturnItem = () => {
     if (
@@ -546,10 +587,7 @@ export default function DashCustomerReturnItem() {
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
                     <Button
                       className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
-                      onClick={() => {
-                        console.log("Selected Bill ID:", selectedBillId);
-                        setIsModalOpen(false);
-                      }}
+                      onClick={handleaddReturn}
                     >
                       Add Returns
                     </Button>
