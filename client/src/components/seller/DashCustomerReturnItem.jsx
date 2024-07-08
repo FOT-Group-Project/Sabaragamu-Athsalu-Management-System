@@ -16,7 +16,7 @@ import {
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
-import Select from "react-select"; 
+import Select from "react-select";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
@@ -29,6 +29,8 @@ export default function DashCustomerReturnItem() {
   const [selectedBillId, setSelectedBillId] = useState("");
   const [billIds, setBillIds] = useState([]);
   const [billDetailsMap, setBillDetailsMap] = useState({});
+  const [selectedReturnItems, setSelectedReturnItems] = useState([]);
+  const [returnCounts, setReturnCounts] = useState({});
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -46,6 +48,30 @@ export default function DashCustomerReturnItem() {
   // Handle bill selection
   const handleBillSelection = (selectedOption) => {
     setSelectedBillId(selectedOption);
+    setSelectedReturnItems([]);
+    setReturnCounts({});
+  };
+
+  // Handle return item selection for a specific dropdown index
+  const handleReturnItemSelection = (selectedOption, index) => {
+    setSelectedReturnItems((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[index] = selectedOption ? selectedOption.value : null;
+      return newItems;
+    });
+  };
+
+  // Handle return count change
+  const handleReturnCountChange = (itemId, count) => {
+    setReturnCounts((prevCounts) => ({
+      ...prevCounts,
+      [itemId]: count,
+    }));
+  };
+
+  // Add another dropdown for return item selection
+  const addAnotherReturnItem = () => {
+    setSelectedReturnItems((prevItems) => [...prevItems, null]);
   };
 
   // Fetch return items
@@ -110,14 +136,14 @@ export default function DashCustomerReturnItem() {
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
 
-   const generateBillDetailsMap = (groupedSales) => {
-     const billDetailsMap = {};
-     groupedSales.forEach((bill) => {
-       const billId = generateBillId(bill);
-       billDetailsMap[billId] = bill;
-     });
-     return billDetailsMap;
-   };
+  const generateBillDetailsMap = (groupedSales) => {
+    const billDetailsMap = {};
+    groupedSales.forEach((bill) => {
+      const billId = generateBillId(bill);
+      billDetailsMap[billId] = bill;
+    });
+    return billDetailsMap;
+  };
 
   // Fetch return items by shop ID
   const fetchReturnItemsbyShopId = async (shopId) => {
@@ -308,7 +334,7 @@ export default function DashCustomerReturnItem() {
 
           <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-              <div className="relative w-full max-w-lg mx-auto my-6">
+              <div className="relative w-full max-w-5xl mx-auto my-6">
                 <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
                   <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
                     <h3 className="text-lg font-semibold">Add Return Item</h3>
@@ -326,7 +352,7 @@ export default function DashCustomerReturnItem() {
                       htmlFor="billIdDropdown"
                       className="block mb-2 text-sm font-medium text-gray-700"
                     >
-                      Select Bill ID
+                      Select Bill Invoice Number
                     </Label>
                     <Select
                       id="billIdDropdown"
@@ -341,109 +367,164 @@ export default function DashCustomerReturnItem() {
                       placeholder="Search and select a Bill ID"
                     />
                     {selectedBillId && billDetailsMap[selectedBillId.value] && (
-                      <div className="mt-4">
-                        <h3 className="text-lg font-semibold mb-2">
-                          Bill Details
-                        </h3>
-                        <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
-                          {/* <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
-                            <div className="ml-4">
-                              <h1 className="text-xl font-bold">Invoice</h1>
-                              <div>
-                                INV# :{" "}
-                                {billDetailsMap[selectedBillId.value]
-                                  ? generateBillId(
-                                      billDetailsMap[selectedBillId.value]
-                                    )
-                                  : ""}
-                              </div>
-                            </div>
-                          </div> */}
-                          <div className="relative p-6 flex-auto">
-                            <div className="mb-8">
-                              <div className="flex items-center">
-                                {" "}
-                                {/* Using flexbox for inline display */}
-                                <h2 className="text-lg font-bold mb-2">
-                                  Bill To:
-                                </h2>
-                                <div className="text-gray-700 mb-2 ml-2">
-                                  {" "}
-                                  {/* ml-2 for margin-left */}
-                                  {billDetailsMap[selectedBillId.value] &&
-                                    `${
+                      <div className="mt-4 flex">
+                        {/* Bill Details Section */}
+                        <div className="w-1/2 pr-4">
+                          <h3 className="text-lg font-semibold mb-2">
+                            Bill Details
+                          </h3>
+                          <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                            <div className="relative p-6 flex-auto">
+                              <div className="mb-8">
+                                <div className="flex items-center">
+                                  <h2 className="text-lg font-bold mb-2">
+                                    Bill To:
+                                  </h2>
+                                  <div className="text-gray-700 mb-2 ml-2">
+                                    {
                                       billDetailsMap[selectedBillId.value][0]
                                         .Customer.firstname
-                                    } ${
+                                    }{" "}
+                                    {
                                       billDetailsMap[selectedBillId.value][0]
                                         .Customer.lastname
-                                    }`}
+                                    }
+                                  </div>
                                 </div>
+                                <hr className="mb-2" />
                               </div>
-                              <hr className="mb-2" />
+                              <table className="w-full mb-8">
+                                <thead>
+                                  <tr>
+                                    <th className="text-left font-bold text-gray-700">
+                                      Description
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Quantity
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Unit Price
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Total Price
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {billDetailsMap[selectedBillId.value].map(
+                                    (item) => (
+                                      <tr key={item.id}>
+                                        <td className="text-left">
+                                          {item.Product.itemName}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.quantity}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.unitPrice.toFixed(2)}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.unitPrice *
+                                            item.quantity.toFixed(2)}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                                <tfoot>
+                                  <tr>
+                                    <td className="text-left font-bold text-gray-700">
+                                      Total
+                                    </td>
+                                    <td className="text-right font-bold text-gray-700"></td>
+                                    <td className="text-right font-bold text-gray-700"></td>
+                                    <td className="text-right font-bold text-gray-700">
+                                      Rs.
+                                      {billDetailsMap[selectedBillId.value].reduce(
+                                        (total, item) =>
+                                          total + item.unitPrice * item.quantity,
+                                        0
+                                      ).toFixed(2)}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </table>
                             </div>
-                            <table className="w-full mb-8">
-                              <thead>
-                                <tr>
-                                  <th className="text-left font-bold text-gray-700">
-                                    Description
-                                  </th>
-                                  <th className="text-right font-bold text-gray-700">
-                                    Quantity
-                                  </th>
-                                  <th className="text-right font-bold text-gray-700">
-                                    Unit Price
-                                  </th>
-                                  <th className="text-right font-bold text-gray-700">
-                                    Total Price
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {billDetailsMap[selectedBillId.value].map(
-                                  (item) => (
-                                    <tr key={item.id}>
-                                      <td className="text-left">
-                                        {item.Product.itemName}
-                                      </td>
-                                      <td className="text-right">
-                                        {item.quantity}
-                                      </td>
-                                      <td className="text-right">
-                                        {item.unitPrice}
-                                      </td>
-                                      <td className="text-right">
-                                        {item.unitPrice * item.quantity}
-                                      </td>
-                                    </tr>
-                                  )
-                                )}
-                              </tbody>
-                            </table>
                           </div>
                         </div>
-                        {/* <Table>
-                          <TableHead>
-                            <TableHeadCell>Product Name</TableHeadCell>
-                            <TableHeadCell>Quantity</TableHeadCell>
-                            <TableHeadCell>Unit Price</TableHeadCell>
-                            <TableHeadCell>Total Price</TableHeadCell>
-                          </TableHead>
-                          <TableBody>
-                            {billDetailsMap[selectedBillId.value].map(
-                              (item) => (
-                                <TableRow key={item.id}>
-                                  <TableCell>{item.Product.itemName}</TableCell>
-                                  <TableCell>{item.quantity}</TableCell>
-                                  <TableCell>{item.unitPrice}</TableCell>
-                                  <TableCell>
-                                    {item.unitPrice * item.quantity}
-                                  </TableCell>
-                                </TableRow>
-                              )
-                            )}
-                          </TableBody>
-                        </Table> */}
+                        {/* Return Items Section */}
+                        <div className="w-1/2 pl-4">
+                          {selectedReturnItems.map((selectedItem, index) => (
+                            <div key={index} className="mb-4 flex">
+                              <div className="w-1/2 pr-2">
+                                <Label
+                                  htmlFor={`returnItemDropdown-${index}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Select Return Item
+                                </Label>
+                                <Select
+                                  id={`returnItemDropdown-${index}`}
+                                  options={billDetailsMap[selectedBillId.value]
+                                    .filter(
+                                      (item) =>
+                                        !selectedReturnItems.includes(item.id)
+                                    )
+                                    .map((item) => ({
+                                      value: item.id,
+                                      label: item.Product.itemName,
+                                    }))}
+                                  value={
+                                    selectedItem
+                                      ? {
+                                          value: selectedItem,
+                                          label: billDetailsMap[
+                                            selectedBillId.value
+                                          ].find(
+                                            (item) => item.id === selectedItem
+                                          )?.Product.itemName,
+                                        }
+                                      : null
+                                  }
+                                  onChange={(option) =>
+                                    handleReturnItemSelection(option, index)
+                                  }
+                                  isClearable
+                                  isSearchable
+                                  placeholder="Search and select an item"
+                                />
+                              </div>
+                              <div className="w-1/2 pl-2">
+                                <Label
+                                  htmlFor={`returnCount-${selectedItem}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Return Count
+                                </Label>
+                                <TextInput
+                                  id={`returnCount-${selectedItem}`}
+                                  type="number"
+                                  value={returnCounts[selectedItem] || ""}
+                                  onChange={(e) =>
+                                    handleReturnCountChange(
+                                      selectedItem,
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Enter return count"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <Button
+                            color="blue"
+                            onClick={addAnotherReturnItem}
+                            className="mr-2 mt-2"
+                          >
+                            Add Another Return Item
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
