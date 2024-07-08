@@ -35,7 +35,8 @@ export default function DashCustomerReturnItem() {
   const [returnCounts, setReturnCounts] = useState({});
   const [returnReasons, setReturnReasons] = useState({});
   const [returnAlert, setReturnAlert] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
+  const [show14DayAlert, setShow14DayAlert] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -57,7 +58,7 @@ export default function DashCustomerReturnItem() {
     setReturnCounts({});
     const billId = selectedOption.value;
     const buyDateTime = billDetailsMap[billId][0].buyDateTime;
-    setShowAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
+    setShow14DayAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
   };
 
   // Handle return item selection for a specific dropdown index
@@ -94,11 +95,6 @@ export default function DashCustomerReturnItem() {
   // Handle add return
   const handleAddReturn = async () => {
     try {
-      if (returnAlert) {
-        alert("Return period has exceeded 14 days. Item cannot be returned.");
-        return;
-      }
-
       // Validate data
       const returnItemsWithCounts = selectedReturnItems.map(
         (returnItem, index) => {
@@ -129,8 +125,11 @@ export default function DashCustomerReturnItem() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
-        setIsModalOpen(false);
+        //alert(data.message);
+        setShowError(false);
+        setShow14DayAlert(false);
+        setReturnAlert(true);
+        // setIsModalOpen(false);
         const fetchShopId = async () => {
           try {
             const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
@@ -153,7 +152,8 @@ export default function DashCustomerReturnItem() {
 
         fetchShopId();
       } else {
-        alert(data.message);
+        //alert(data.message);
+        setShowError(true);
       }
     } catch (error) {
       console.error("Error adding return items:", error);
@@ -449,13 +449,21 @@ export default function DashCustomerReturnItem() {
                       className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                       onClick={() => setIsModalOpen(false)}
                     >
-                      <span className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      <span
+                        className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none"
+                        onClick={() => {
+                          setIsModalOpen(false);
+                          setSelectedBillId("");
+                          setShow14DayAlert(false);
+                          setReturnAlert(false);
+                        }}
+                      >
                         ×
                       </span>
                     </button>
                   </div>
                   {/* Alert Component */}
-                  {showAlert && (
+                  {show14DayAlert && (
                     <Alert
                       className="mb-3"
                       color="failure"
@@ -466,6 +474,30 @@ export default function DashCustomerReturnItem() {
                       days.
                     </Alert>
                   )}
+                  {/*Success Alert*/}
+                  {returnAlert && (
+                    <Alert
+                      className="mb-3"
+                      color="success"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Success alert!</span> Item
+                      returned successfully.
+                    </Alert>
+                  )}
+
+                  {/*Error Alert*/}
+                  {showError && (
+                    <Alert
+                      className="mb-3"
+                      color="failure"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Error alert!</span> Error
+                      adding return items.
+                    </Alert>
+                  )}
+                  {/* Modal Content */}
                   <div className="p-6 flex-auto">
                     <Label
                       htmlFor="billIdDropdown"
@@ -701,7 +733,7 @@ export default function DashCustomerReturnItem() {
                         Object.values(returnCounts).some(
                           (count) => count === 0
                         ) ||
-                        showAlert == true
+                        show14DayAlert == true
                       }
                     >
                       Submit Return
