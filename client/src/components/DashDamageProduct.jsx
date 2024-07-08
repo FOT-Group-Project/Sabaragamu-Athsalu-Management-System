@@ -128,6 +128,7 @@ export default function fetchdamageitems() {
       const data = await response.json();
       setProducts(data.data);
     } catch (error) {
+      console.error("Error:", error);
   
 
 
