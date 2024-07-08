@@ -176,8 +176,6 @@ export default function DashPOS() {
     );
   };
 
-  const handelRemoveCustomer = (customerId) => {};
-
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     selectedProducts.forEach((product) => {
@@ -194,9 +192,8 @@ export default function DashPOS() {
   };
 
   const calculateDueAmount = () => {
-    const totalPrice = calculateTotalPrice();
-    const dueAmount = totalPrice - advancePayment;
-    return dueAmount;
+    const dueAmount = calculateTotalPrice() - advancePayment;
+    return dueAmount > 0 ? dueAmount : 0;
   };
 
   // Function to calculate the subtotal
@@ -226,6 +223,11 @@ export default function DashPOS() {
     setSelectedCustomer([]);
     handleClearCart();
     setShowModal1(false);
+  };
+
+  const handelRemoveCustomer = () => {
+    setSelectedCustomer([]);
+    setAdvancePayment(0);
   };
 
   const handelBuyItems = () => {
@@ -850,9 +852,7 @@ export default function DashPOS() {
                                         <Button
                                           color="red"
                                           className=""
-                                          onClick={handelRemoveCustomer(
-                                            customers.id
-                                          )}
+                                          onClick={handelRemoveCustomer}
                                         >
                                           <MdAdd className="h-4 w-4 mr-2" />
                                           Remove Customer
