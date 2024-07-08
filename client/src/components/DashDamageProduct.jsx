@@ -134,6 +134,10 @@ export default function fetchdamageitems() {
 
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
+      fetchProducts();
+    }
+  }, []);
+  
   
 
 
