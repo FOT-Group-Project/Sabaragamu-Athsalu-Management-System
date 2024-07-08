@@ -574,32 +574,19 @@ export default function DashCustomerReturnItem() {
                               </div>
                               <div className="w-1/2 pl-2">
                                 <Label
-                                  htmlFor={`returnCount-${selectedItem}`}
-                                  value={`Return Count ${index + 1}`}
+                                  htmlFor={`returnCountInput-${index}`}
                                   className="block mb-2 text-sm font-medium text-gray-700"
                                 >
-                                  Return Count
+                                  Return Quantity
                                 </Label>
                                 <TextInput
-                                  id={`returnCount${index}`}
+                                  id={`returnCountInput-${index}`}
                                   type="number"
-                                  min="0"
-                                  max={
-                                    selectedItem
-                                      ? billDetailsMap[
-                                          selectedBillId.value
-                                        ].find(
-                                          (item) => item.itemId === selectedItem
-                                        ).quantity
-                                      : 0
-                                  }
                                   value={returnCounts[selectedItem] || ""}
                                   onChange={(e) =>
-                                    handleReturnCountChange(
-                                      selectedItem,
-                                      parseInt(e.target.value)
-                                    )
+                                    handleReturnCountChange(selectedItem, e.target.value)
                                   }
+                                  placeholder="Enter return quantity"
                                 />
                               </div>
                             </div>
