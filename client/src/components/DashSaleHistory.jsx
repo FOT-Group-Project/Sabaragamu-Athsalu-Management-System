@@ -53,6 +53,8 @@ export default function DashSellerInvetory() {
     setSalesDate(e.target.value);
   };
 
+
+  //fetch sales
   const fetchSales = async () => {
     try {
       const res = await fetch("api/sales-report/getsales");
