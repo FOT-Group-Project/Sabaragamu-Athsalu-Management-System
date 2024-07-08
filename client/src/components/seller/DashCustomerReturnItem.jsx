@@ -88,13 +88,16 @@ export default function DashCustomerReturnItem() {
         }
       );
 
-      const res = await fetch(`/api/customerreturnitem/addcustomerreturnitems`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(returnItemsWithCounts),
-      });
+      const res = await fetch(
+        `/api/customerreturnitem/addcustomerreturnitems`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(returnItemsWithCounts),
+        }
+      );
 
       const data = await res.json();
 
@@ -122,7 +125,6 @@ export default function DashCustomerReturnItem() {
       );
     }
   };
-
 
   // Fetch return items
   const fetchReturnItems = async () => {
@@ -281,6 +283,8 @@ export default function DashCustomerReturnItem() {
       fetchShopId();
     }
   }, [currentUser]);
+
+  //console.log(returnCounts);
 
   return (
     <div className="p-3 w-full">
@@ -560,7 +564,8 @@ export default function DashCustomerReturnItem() {
                                   onChange={(e) =>
                                     handleReturnCountChange(
                                       selectedItem,
-                                      e.target.value
+                                      e.target.value,
+                                      console.log(selectedItem, e.target.value)
                                     )
                                   }
                                   placeholder="Enter return count"
