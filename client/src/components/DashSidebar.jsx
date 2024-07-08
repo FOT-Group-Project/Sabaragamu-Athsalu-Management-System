@@ -76,6 +76,19 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
 
+            <Link to="/dashboard?tab=profile">
+              <Sidebar.Item
+                className="mt-2 mb-2"
+                active={tab === "profile"}
+                icon={HiUser}
+                label={currentUser.role}
+                labelColor="dark"
+                as="div"
+              >
+                Profile
+              </Sidebar.Item>
+            </Link>
+
             {currentUser.role === "Seller" && (
               <>
                 <Link to="/dashboard?tab=pos">
@@ -90,18 +103,6 @@ export default function DashSidebar() {
                   </Sidebar.Item>
                 </Link>
 
-                <Link to="/dashboard?tab=invetory">
-                  <Sidebar.Item
-                    className="mt-2 mb-2"
-                    active={tab === "pos"}
-                    icon={HiClipboardList}
-                    labelColor="dark"
-                    as="div"
-                  >
-                    Invetory
-                  </Sidebar.Item>
-                </Link>
-
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
@@ -113,33 +114,30 @@ export default function DashSidebar() {
                     Send Stock
                   </Sidebar.Item>
                 </Link>
+
+                <Link to="/dashboard?tab=returnItems">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={MdAssignmentReturn}
+                    active={tab === "returnItems"}
+                  >
+                    Return Items
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=saleHistory">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                    Sales History
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=salesReport">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                    Sales Report
+                  </Sidebar.Item>
+                </Link>
               </>
             )}
-
-            {currentUser.role === "Seller" && (
-              <Link to="/dashboard?tab=returnItems">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={MdAssignmentReturn}
-                  active={tab === "returnItems"}
-                >
-                  Return Items
-                </Sidebar.Item>
-              </Link>
-            )}
-
-            <Link to="/dashboard?tab=profile">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                active={tab === "profile"}
-                icon={HiUser}
-                label={currentUser.role}
-                labelColor="dark"
-                as="div"
-              >
-                Profile
-              </Sidebar.Item>
-            </Link>
 
             {currentUser.role === "Admin" && (
               <Link to="/dashboard?tab=users">
@@ -188,30 +186,18 @@ export default function DashSidebar() {
               </Link>
             )}
 
-            <Link to="/dashboard?tab=saleHistory">
-              <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
-                Sales History
-              </Sidebar.Item>
-            </Link>
-
-            <Link to="/dashboard?tab=salesReport">
-              <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
-                Sales Report
-              </Sidebar.Item>
-            </Link>
-
             {currentUser.role === "StoreKeeper" && (
               <>
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
-                    icon={RiFileDamageFill}
+                    icon={HiSortAscending}
                     active={tab === "sendstock"}
                   >
                     Send Stock
                   </Sidebar.Item>
                 </Link>
-                
+
                 <Link to="/dashboard?tab=damageproducts">
                   <Sidebar.Item
                     className="mt-2 mb-2"
