@@ -174,16 +174,46 @@ export default function DashSidebar() {
               </Link>
             )}
 
+            {currentUser.role === "Director" && (
+              <>
+                <Link to="/dashboard?tab=saleHistory">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                    Sales History
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=salesReport">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                    Sales Report
+                  </Sidebar.Item>
+                </Link>
+              </>
+            )}
+
             {currentUser.role === "Admin" && (
-              <Link to="/dashboard?tab=stores">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={HiBuildingStorefront}
-                  active={tab === "stores"}
-                >
-                  Stores
-                </Sidebar.Item>
-              </Link>
+              <>
+                <Link to="/dashboard?tab=stores">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiBuildingStorefront}
+                    active={tab === "stores"}
+                  >
+                    Stores
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=saleHistory">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                    Sales History
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=salesReport">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                    Sales Report
+                  </Sidebar.Item>
+                </Link>
+              </>
             )}
 
             {currentUser.role === "StoreKeeper" && (
