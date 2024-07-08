@@ -10,7 +10,7 @@ import {
   TextInput,
   Button,
   Breadcrumb,
-  Datepicker
+  Datepicker,
 } from "flowbite-react";
 import { useSelector } from "react-redux";
 import * as XLSX from "xlsx";
@@ -18,7 +18,6 @@ import { saveAs } from "file-saver";
 import { Label, Select } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
-
 
 export default function DashSalesReport() {
   const { currentUser } = useSelector((state) => state.user);
@@ -137,25 +136,25 @@ export default function DashSalesReport() {
     } catch (error) {
       console.log(error.message);
     }
-    };
+  };
 
   useEffect(() => {
-    if (currentUser.role === "Admin") {
+    if (currentUser.role === "Accountant" || currentUser.role === "Admin") {
       fetchSales();
-    }else if(currentUser.role === "Seller"){
-        //get user's shopId from shop table
-        const fetchShopId = async () => {
-            try {
-                const res = await fetch(`api/shop/getshop/${currentUser.id}`);
-                const data = await res.json();
-                if (res.ok) {
-                    fetchSalesByShopId(data.shops[0].id)
-                }
-            } catch (error) {
-                console.log(error.message);
-            }
+    } else if (currentUser.role === "Seller") {
+      //get user's shopId from shop table
+      const fetchShopId = async () => {
+        try {
+          const res = await fetch(`api/shop/getshop/${currentUser.id}`);
+          const data = await res.json();
+          if (res.ok) {
+            fetchSalesByShopId(data.shops[0].id);
+          }
+        } catch (error) {
+          console.log(error.message);
         }
-        fetchShopId();   
+      };
+      fetchShopId();
     }
   }, []);
 
@@ -229,7 +228,7 @@ export default function DashSalesReport() {
             </Link>
             <Breadcrumb.Item>Sales Report</Breadcrumb.Item>
           </Breadcrumb>
-          
+
           <div className="flex items-center justify-between">
             <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
               Sales Report
