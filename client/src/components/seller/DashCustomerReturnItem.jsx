@@ -491,7 +491,7 @@ export default function DashCustomerReturnItem() {
                                   }
                                   isClearable
                                   isSearchable
-                                  placeholder="Search and select an item"
+                                  //placeholder="Search and select an item"
                                 />
                               </div>
                               <div className="w-1/2 pl-2">
