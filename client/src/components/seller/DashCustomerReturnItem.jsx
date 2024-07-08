@@ -372,7 +372,7 @@ export default function DashCustomerReturnItem() {
                 <TableHeadCell>Buy Date Time</TableHeadCell>
                 <TableHeadCell>Return Date Time</TableHeadCell>
                 <TableHeadCell>Reason</TableHeadCell>
-                <TableHeadCell>Amount Paid</TableHeadCell>
+                <TableHeadCell>Amount Refunded</TableHeadCell>
               </TableHead>
               <TableBody>
                 {(isFilterActive ? filteredReturnItems : returnItems).map(
@@ -386,7 +386,7 @@ export default function DashCustomerReturnItem() {
                       </TableCell>
                       <TableCell>{sale.Product.itemName}</TableCell>
                       <TableCell>{sale.quantity}</TableCell>
-                      <TableCell>{sale.BuyItem.unitPrice}</TableCell>
+                      <TableCell>Rs. {sale.BuyItem.unitPrice}</TableCell>
                       <TableCell>
                         {new Date(sale.buyDateTime).toLocaleString()}
                       </TableCell>
@@ -395,7 +395,7 @@ export default function DashCustomerReturnItem() {
                       </TableCell>
                       <TableCell>{sale.reason}</TableCell>
                       <TableCell>
-                        {sale.BuyItem.unitPrice * sale.quantity}
+                        Rs. {sale.BuyItem.unitPrice * sale.quantity}
                       </TableCell>
                     </TableRow>
                   )
