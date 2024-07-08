@@ -636,11 +636,21 @@ export default function DashSellerInvetory() {
                         </Button>
                       </Button.Group>
                       <Button.Group>
-                        <Button color="gray">
+                        <Button
+                          color="gray"
+                          onClick={() => {
+                            setSelectedBillExport(selectedBill);
+                          }}
+                        >
                           <PiExportBold className="mr-3 h-4 w-4" />
                           Export
                         </Button>
-                        <Button color="gray">
+                        <Button
+                          color="gray"
+                          onClick={() => {
+                            setSelectBillPrint(selectedBill);
+                          }}
+                        >
                           <FiPrinter className="mr-3 h-4 w-4" />
                           Print
                         </Button>
