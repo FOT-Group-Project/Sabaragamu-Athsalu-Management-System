@@ -12,11 +12,13 @@ import {
   Breadcrumb,
   TextInput,
   Modal,
+  Alert,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
 import Select from "react-select";
+import { HiInformationCircle } from "react-icons/hi";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
@@ -33,6 +35,7 @@ export default function DashCustomerReturnItem() {
   const [returnCounts, setReturnCounts] = useState({});
   const [returnReasons, setReturnReasons] = useState({});
   const [returnAlert, setReturnAlert] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -54,7 +57,7 @@ export default function DashCustomerReturnItem() {
     setReturnCounts({});
     const billId = selectedOption.value;
     const buyDateTime = billDetailsMap[billId][0].buyDateTime;
-    setReturnAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
+    setShowAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
   };
 
   // Handle return item selection for a specific dropdown index
@@ -332,6 +335,8 @@ export default function DashCustomerReturnItem() {
     [returnItems]
   );
 
+  
+
   //console.log(returnCounts);
 
   return (
@@ -449,6 +454,18 @@ export default function DashCustomerReturnItem() {
                       </span>
                     </button>
                   </div>
+                  {/* Alert Component */}
+                  {showAlert && (
+                    <Alert
+                      className="mb-3"
+                      color="failure"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Info alert!</span> You can't
+                      return this item as the return period has exceeded 14
+                      days.
+                    </Alert>
+                  )}
                   <div className="p-6 flex-auto">
                     <Label
                       htmlFor="billIdDropdown"
@@ -492,15 +509,24 @@ export default function DashCustomerReturnItem() {
                                         .Customer.lastname
                                     }
                                   </div>
-                                  <h2 className="text-lg font-bold mb-2 ml-auto">
-                                    Date :
-                                  </h2>
-                                  <div className="text-gray-700 mb-2 ml-2">
-                                    {
-                                      billDetailsMap[selectedBillId.value][0]
-                                        .buyDateTime
-                                    }
-                                  </div>
+                                  <>
+                                    <h2 className="text-lg font-bold mb-2 ml-auto">
+                                      Date:
+                                    </h2>
+                                    <div className="text-gray-700 mb-2 ml-2">
+                                      {new Intl.DateTimeFormat("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                      }).format(
+                                        new Date(
+                                          billDetailsMap[
+                                            selectedBillId.value
+                                          ][0].buyDateTime
+                                        )
+                                      )}
+                                    </div>
+                                  </>
                                 </div>
                                 <hr className="mb-2" />
                               </div>
@@ -670,6 +696,13 @@ export default function DashCustomerReturnItem() {
                     <Button
                       className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
                       onClick={handleAddReturn}
+                      disabled={
+                        selectedReturnItems.length === 0 ||
+                        Object.values(returnCounts).some(
+                          (count) => count === 0
+                        ) ||
+                        showAlert == true
+                      }
                     >
                       Submit Return
                     </Button>
