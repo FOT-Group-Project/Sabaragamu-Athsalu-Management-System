@@ -37,6 +37,7 @@ export default function DashCustomerReturnItem() {
   const [returnAlert, setReturnAlert] = useState(false);
   const [show14DayAlert, setShow14DayAlert] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -129,6 +130,7 @@ export default function DashCustomerReturnItem() {
         setShowError(false);
         setShow14DayAlert(false);
         setReturnAlert(true);
+        setIsSubmitted(true);
         // setIsModalOpen(false);
         const fetchShopId = async () => {
           try {
@@ -335,8 +337,6 @@ export default function DashCustomerReturnItem() {
     [returnItems]
   );
 
-  
-
   //console.log(returnCounts);
 
   return (
@@ -456,6 +456,7 @@ export default function DashCustomerReturnItem() {
                           setSelectedBillId("");
                           setShow14DayAlert(false);
                           setReturnAlert(false);
+                          setShowError(false);
                         }}
                       >
                         ×
@@ -725,19 +726,36 @@ export default function DashCustomerReturnItem() {
                     )}
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-                    <Button
-                      className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
-                      onClick={handleAddReturn}
-                      disabled={
-                        selectedReturnItems.length === 0 ||
-                        Object.values(returnCounts).some(
-                          (count) => count === 0
-                        ) ||
-                        show14DayAlert == true
-                      }
-                    >
-                      Submit Return
-                    </Button>
+                    {!isSubmitted ? (
+                      <Button
+                        className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                        onClick={handleAddReturn}
+                        disabled={
+                          selectedReturnItems.length === 0 ||
+                          Object.values(returnCounts).some(
+                            (count) => count === 0
+                          ) ||
+                          show14DayAlert === true
+                        }
+                      >
+                        Submit Return
+                      </Button>
+                    ) : (
+                      <Button
+                        className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                        onClick={() => {
+                          // Handle close functionality here
+                          setIsModalOpen(false);
+                          setSelectedBillId("");
+                          setShow14DayAlert(false);
+                          setReturnAlert(false);
+                          setShowError(false);
+                          setIsSubmitted(false);
+                        }}
+                      >
+                        Close
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
