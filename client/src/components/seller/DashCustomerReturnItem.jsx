@@ -102,7 +102,27 @@ export default function DashCustomerReturnItem() {
       if (res.ok) {
         alert(data.message);
         setIsModalOpen(false);
-        fetchReturnItems(); // Refresh the return items
+        const fetchShopId = async () => {
+          try {
+            const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+            const data = await res.json();
+            if (res.ok) {
+              if (Array.isArray(data.shops) && data.shops.length > 0) {
+                const shopId = data.shops[0].id;
+                fetchReturnItemsbyShopId(shopId);
+                fetchSalesByShopId(shopId);
+              } else {
+                console.error("No shops found for the current user.");
+              }
+            } else {
+              console.error("API response error:", data);
+            }
+          } catch (error) {
+            console.error("Error fetching shop ID:", error);
+          }
+        };
+
+        fetchShopId();
       } else {
         alert(data.message);
       }
@@ -280,7 +300,7 @@ export default function DashCustomerReturnItem() {
 
       fetchShopId();
     }
-  }, [currentUser]);
+  }, [currentUser], [returnItems]);
 
   //console.log(returnCounts);
 
