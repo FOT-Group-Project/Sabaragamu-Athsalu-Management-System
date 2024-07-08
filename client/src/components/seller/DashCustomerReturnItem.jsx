@@ -102,7 +102,7 @@ export default function DashCustomerReturnItem() {
       if (res.ok) {
         alert(data.message);
         setIsModalOpen(false);
-        fetchReturnItems(); // Refresh the return items
+        fetchReturnItemsbyShopId(shopId); // Refresh the return items
       } else {
         alert(data.message);
       }
