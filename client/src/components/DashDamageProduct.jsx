@@ -129,6 +129,7 @@ export default function fetchdamageitems() {
       setProducts(data.data);
     } catch (error) {
       console.error("Error:", error);
+    }
   
 
 
