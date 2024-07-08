@@ -130,6 +130,10 @@ export default function fetchdamageitems() {
     } catch (error) {
       console.error("Error:", error);
     }
+  };
+
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
   
 
 
