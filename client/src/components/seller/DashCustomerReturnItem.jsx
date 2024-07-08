@@ -11,6 +11,7 @@ import {
   Button,
   Breadcrumb,
   TextInput,
+  Modal,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -22,6 +23,7 @@ export default function DashCustomerReturnItem() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredReturnItems, setFilteredReturnItems] = useState([]);
   const [returnDateTime, setReturnDateTime] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -185,6 +187,7 @@ export default function DashCustomerReturnItem() {
             <div className="flex justify-end">
               <Button
                 // style={{ backgroundColor: "red" }}
+                onClick={() => setIsModalOpen(true)}
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
               >
                 Add Retuns
@@ -233,6 +236,26 @@ export default function DashCustomerReturnItem() {
               </TableBody>
             </Table>
           </div>
+
+          <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+              <div className="relative w-full max-w-lg mx-auto my-6">
+                <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                  <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
+                    <h3 className="text-lg font-semibold">Add Return Item</h3>
+                    <button
+                      className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      <span className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        ×
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
         </motion.div>
       </AnimatePresence>
     </div>
