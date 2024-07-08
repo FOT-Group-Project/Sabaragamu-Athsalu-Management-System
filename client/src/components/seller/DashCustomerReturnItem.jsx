@@ -11,17 +11,26 @@ import {
   Button,
   Breadcrumb,
   TextInput,
+  Modal,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
+import Select from "react-select";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
+  const [sales, setSales] = useState([]);
   const [returnItems, setReturnItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredReturnItems, setFilteredReturnItems] = useState([]);
   const [returnDateTime, setReturnDateTime] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBillId, setSelectedBillId] = useState("");
+  const [billIds, setBillIds] = useState([]);
+  const [billDetailsMap, setBillDetailsMap] = useState({});
+  const [selectedReturnItems, setSelectedReturnItems] = useState([]);
+  const [returnCounts, setReturnCounts] = useState({});
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -36,6 +45,85 @@ export default function DashCustomerReturnItem() {
     setReturnDateTime(e.target.value);
   };
 
+  // Handle bill selection
+  const handleBillSelection = (selectedOption) => {
+    setSelectedBillId(selectedOption);
+    setSelectedReturnItems([]);
+    setReturnCounts({});
+  };
+
+  // Handle return item selection for a specific dropdown index
+  const handleReturnItemSelection = (selectedOption, index) => {
+    setSelectedReturnItems((prevItems) => {
+      const newItems = [...prevItems];
+      newItems[index] = selectedOption ? selectedOption.value : null;
+      return newItems;
+    });
+  };
+
+  // Handle return count change
+  const handleReturnCountChange = (itemId, count) => {
+    setReturnCounts((prevCounts) => ({
+      ...prevCounts,
+      [itemId]: count,
+    }));
+  };
+
+  // Handle add return
+  const handleaddReturn = async () => {
+    try {
+      // Validate data
+      const returnItemsWithCounts = selectedReturnItems.map(
+        (returnItem, index) => {
+          const item = billDetailsMap[selectedBillId.value][index];
+          return {
+            customerId: item.customerId,
+            itemId: item.itemId,
+            shopId: item.shopId,
+            returnDateTime: returnDateTime,
+            buyDateTime: item.buyDateTime,
+            reason: "No reason specified",
+            quantity: returnCounts[item.itemId] || 0,
+          };
+        }
+      );
+
+      const res = await fetch(`/api/customerreturnitem/addcustomerreturnitems`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(returnItemsWithCounts),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+        setIsModalOpen(false);
+        fetchReturnItems(); // Refresh the return items
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error adding return items:", error);
+    }
+  };
+
+  // Add another dropdown for return item selection
+  const addAnotherReturnItem = () => {
+    if (
+      selectedReturnItems.length < billDetailsMap[selectedBillId.value].length
+    ) {
+      setSelectedReturnItems([...selectedReturnItems, null]);
+    } else {
+      alert(
+        "You cannot add more return items than the available items in the bill."
+      );
+    }
+  };
+
+
   // Fetch return items
   const fetchReturnItems = async () => {
     try {
@@ -47,6 +135,64 @@ export default function DashCustomerReturnItem() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  // Fetch sales by shop ID
+  const fetchSalesByShopId = async (shopId) => {
+    try {
+      const res = await fetch(`api/sales-report/getsales/${shopId}`);
+      const data = await res.json();
+      if (res.ok) {
+        // Group sales by customerId, shopId, and buyDateTime
+        const groupedSales = groupSales(data.sales);
+        const generatedBillIds = groupedSales.map(generateBillId);
+        const billDetailsMap = generateBillDetailsMap(groupedSales);
+        setSales(groupedSales);
+        setBillIds(generatedBillIds);
+        setBillDetailsMap(billDetailsMap);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Function to group sales by customerId, shopId, and buyDateTime
+  const groupSales = (sales) => {
+    const groupedSales = {};
+    sales.forEach((sale) => {
+      const key = `${sale.customerId}-${sale.shopId}-${sale.buyDateTime}`;
+      if (!groupedSales[key]) {
+        groupedSales[key] = [sale];
+      } else {
+        groupedSales[key].push(sale);
+      }
+    });
+    return Object.values(groupedSales);
+  };
+
+  // Function to generate bill ID
+  const generateBillId = (bill) => {
+    const { customerId, shopId, buyDateTime } = bill[0];
+    const formattedDate = new Date(buyDateTime)
+      .toLocaleDateString()
+      .replace(/\//g, "-");
+    const formattedTime = new Date(buyDateTime)
+      .toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(/:/g, "");
+    return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
+  };
+
+  const generateBillDetailsMap = (groupedSales) => {
+    const billDetailsMap = {};
+    groupedSales.forEach((bill) => {
+      const billId = generateBillId(bill);
+      billDetailsMap[billId] = bill;
+    });
+    return billDetailsMap;
   };
 
   // Fetch return items by shop ID
@@ -120,6 +266,7 @@ export default function DashCustomerReturnItem() {
             if (Array.isArray(data.shops) && data.shops.length > 0) {
               const shopId = data.shops[0].id;
               fetchReturnItemsbyShopId(shopId);
+              fetchSalesByShopId(shopId);
             } else {
               console.error("No shops found for the current user.");
             }
@@ -185,6 +332,7 @@ export default function DashCustomerReturnItem() {
             <div className="flex justify-end">
               <Button
                 // style={{ backgroundColor: "red" }}
+                onClick={() => setIsModalOpen(true)}
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
               >
                 Add Retuns
@@ -233,6 +381,221 @@ export default function DashCustomerReturnItem() {
               </TableBody>
             </Table>
           </div>
+
+          <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+              <div className="relative w-full max-w-5xl mx-auto my-6">
+                <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                  <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
+                    <h3 className="text-lg font-semibold">Add Return Item</h3>
+                    <button
+                      className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      <span className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none">
+                        ×
+                      </span>
+                    </button>
+                  </div>
+                  <div className="p-6 flex-auto">
+                    <Label
+                      htmlFor="billIdDropdown"
+                      className="block mb-2 text-sm font-medium text-gray-700"
+                    >
+                      Select Bill Invoice Number
+                    </Label>
+                    <Select
+                      id="billIdDropdown"
+                      options={billIds.map((billId) => ({
+                        value: billId,
+                        label: billId,
+                      }))}
+                      value={selectedBillId}
+                      onChange={handleBillSelection}
+                      isClearable
+                      isSearchable
+                      placeholder="Search and select a Bill ID"
+                    />
+                    {selectedBillId && billDetailsMap[selectedBillId.value] && (
+                      <div className="mt-4 flex">
+                        {/* Bill Details Section */}
+                        <div className="w-1/2 pr-4">
+                          <h3 className="text-lg font-semibold mb-2">
+                            Bill Details
+                          </h3>
+                          <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                            <div className="relative p-6 flex-auto">
+                              <div className="mb-8">
+                                <div className="flex items-center">
+                                  <h2 className="text-lg font-bold mb-2">
+                                    Bill To:
+                                  </h2>
+                                  <div className="text-gray-700 mb-2 ml-2">
+                                    {
+                                      billDetailsMap[selectedBillId.value][0]
+                                        .Customer.firstname
+                                    }{" "}
+                                    {
+                                      billDetailsMap[selectedBillId.value][0]
+                                        .Customer.lastname
+                                    }
+                                  </div>
+                                </div>
+                                <hr className="mb-2" />
+                              </div>
+                              <table className="w-full mb-8">
+                                <thead>
+                                  <tr>
+                                    <th className="text-left font-bold text-gray-700">
+                                      Description
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Quantity
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Unit Price
+                                    </th>
+                                    <th className="text-right font-bold text-gray-700">
+                                      Total Price
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {billDetailsMap[selectedBillId.value].map(
+                                    (item) => (
+                                      <tr key={item.id}>
+                                        <td className="text-left">
+                                          {item.Product.itemName}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.quantity}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.unitPrice.toFixed(2)}
+                                        </td>
+                                        <td className="text-right">
+                                          {item.unitPrice *
+                                            item.quantity.toFixed(2)}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                                <tfoot>
+                                  <tr>
+                                    <td className="text-left font-bold text-gray-700">
+                                      Total
+                                    </td>
+                                    <td className="text-right font-bold text-gray-700"></td>
+                                    <td className="text-right font-bold text-gray-700"></td>
+                                    <td className="text-right font-bold text-gray-700">
+                                      Rs.
+                                      {billDetailsMap[selectedBillId.value]
+                                        .reduce(
+                                          (total, item) =>
+                                            total +
+                                            item.unitPrice * item.quantity,
+                                          0
+                                        )
+                                        .toFixed(2)}
+                                    </td>
+                                  </tr>
+                                </tfoot>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Return Items Section */}
+                        <div className="w-1/2 pl-4">
+                          {selectedReturnItems.map((selectedItem, index) => (
+                            <div key={index} className="mb-4 flex">
+                              <div className="w-1/2 pr-2">
+                                <Label
+                                  htmlFor={`returnItemDropdown-${index}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Select Return Item
+                                </Label>
+                                <Select
+                                  id={`returnItemDropdown-${index}`}
+                                  options={billDetailsMap[selectedBillId.value]
+                                    .filter(
+                                      (item) =>
+                                        !selectedReturnItems.includes(item.id)
+                                    )
+                                    .map((item) => ({
+                                      value: item.id,
+                                      label: item.Product.itemName,
+                                    }))}
+                                  value={
+                                    selectedItem
+                                      ? {
+                                          value: selectedItem,
+                                          label: billDetailsMap[
+                                            selectedBillId.value
+                                          ].find(
+                                            (item) => item.id === selectedItem
+                                          )?.Product.itemName,
+                                        }
+                                      : null
+                                  }
+                                  onChange={(option) =>
+                                    handleReturnItemSelection(option, index)
+                                  }
+                                  isClearable
+                                  isSearchable
+                                />
+                              </div>
+                              <div className="w-1/2 pl-2">
+                                <Label
+                                  htmlFor={`returnCount-${selectedItem}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Return Count
+                                </Label>
+                                <TextInput
+                                  id={`returnCount-${selectedItem}`}
+                                  type="number"
+                                  value={returnCounts[selectedItem] || ""}
+                                  onChange={(e) =>
+                                    handleReturnCountChange(
+                                      selectedItem,
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Enter return count"
+                                  className="w-full"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <Button
+                            color="blue"
+                            onClick={addAnotherReturnItem}
+                            className="mr-2 mt-2"
+                            disabled={
+                              selectedReturnItems.length >=
+                              billDetailsMap[selectedBillId.value].length
+                            }
+                          >
+                            Add Item for Return
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
+                    <Button
+                      className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                      onClick={handleaddReturn}
+                    >
+                      Add Returns
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
         </motion.div>
       </AnimatePresence>
     </div>
