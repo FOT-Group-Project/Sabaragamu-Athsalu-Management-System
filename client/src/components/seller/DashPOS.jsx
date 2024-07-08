@@ -835,7 +835,7 @@ export default function DashPOS() {
 
                                     {selectedCustomer > 0 ? (
                                       <>
-                                        <hr className="md-2 mt-10" />
+                                        <hr className="md-2 mt-5" />
                                         <h1 className="text-lg text-gray-700 mt-5">
                                           <b>Totale Price</b>
                                         </h1>
@@ -870,6 +870,23 @@ export default function DashPOS() {
                                               Rs. {calculateTotalPrice()}
                                             </b>
                                           </p>
+                                        </div>
+                                        <div className="mr-2 ml-2 mb-3 mt-3 flex justify-between">
+                                          <p>
+                                            <b>Advance Amount :</b>
+                                          </p>
+                                          <TextInput
+                                            type="number"
+                                            value={discountPercentage}
+                                            onChange={(e) =>
+                                              setDiscountPercentage(
+                                                Math.max(0, e.target.value)
+                                              )
+                                            }
+                                            placeholder="Enter discount percentage"
+                                            className=" w-20 h-8 mb-3"
+                                            size="sm"
+                                          />
                                         </div>
                                       </>
                                     ) : null}
