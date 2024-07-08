@@ -49,6 +49,7 @@ import {
   HiPaperAirplane,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
+import { GiConfirmed } from "react-icons/gi";
 
 export default function DashPOS() {
   const { currentUser } = useSelector((state) => state.user);
@@ -60,6 +61,8 @@ export default function DashPOS() {
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -281,6 +284,8 @@ export default function DashPOS() {
     setSelectedValue("cash");
     setAdvancePayment(0);
     setDiscountPercentage(0);
+    setShowModal3(false);
+    setShowModal4(true);
   };
 
   return (
@@ -636,6 +641,71 @@ export default function DashPOS() {
           </Modal>
 
           <Modal
+            show={showModal3}
+            onClose={() => setShowModal3(false)}
+            popup
+            size="md"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header />
+              <Modal.Body>
+                <div className="text-center">
+                  <GiConfirmed className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                    Are you sure you want to complete the order?
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    <Button color="blue" onClick={handelBuyItems}>
+                      Yes, I'm sure
+                    </Button>
+                    <Button color="gray" onClick={() => setShowModal3(false)}>
+                      No, cancel
+                    </Button>
+                  </div>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal
+            show={showModal4}
+            onClose={() => setShowModal4(false)}
+            popup
+            size="xl"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header />
+              <Modal.Body>
+                <div className="text-center">
+                  <GiConfirmed className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                    Your order has been placed successfully!
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    
+                    <Button color="blue" onClick={handelBuyItems}>
+                      Print Bill
+                    </Button>
+                    <Button color="gray" onClick={() => setShowModal4(false)}>
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal
             show={showModal1}
             onClose={() => setShowModal1(false)}
             popup
@@ -948,7 +1018,7 @@ export default function DashPOS() {
                               advancePayment <= 0)) &&
                           selectedValue != "cash"
                         }
-                        onClick={handelBuyItems}
+                        onClick={() => setShowModal3(true)}
                       >
                         {createLoding ? (
                           <>
