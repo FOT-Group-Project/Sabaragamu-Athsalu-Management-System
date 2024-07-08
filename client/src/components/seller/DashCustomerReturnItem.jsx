@@ -406,7 +406,7 @@ export default function DashCustomerReturnItem() {
 
           <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-              <div className="relative w-full max-w-5xl mx-auto my-6">
+              <div className="relative w-full max-w-6xl mx-auto my-6">
                 <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
                   <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
                     <h3 className="text-lg font-semibold">Add Return Item</h3>
@@ -460,6 +460,15 @@ export default function DashCustomerReturnItem() {
                                     {
                                       billDetailsMap[selectedBillId.value][0]
                                         .Customer.lastname
+                                    }
+                                  </div>
+                                  <h2 className="text-lg font-bold mb-2 ml-auto">
+                                    Date :
+                                  </h2>
+                                  <div className="text-gray-700 mb-2 ml-2">
+                                    {
+                                      billDetailsMap[selectedBillId.value][0]
+                                        .buyDateTime
                                     }
                                   </div>
                                 </div>
@@ -580,7 +589,7 @@ export default function DashCustomerReturnItem() {
                                   type="number"
                                   //value={returnCounts[selectedItem] || ""}
                                   onChange={(e) =>
-                                    handleReturnCountChange( e.target.value)
+                                    handleReturnCountChange(e.target.value)
                                   }
                                   className="w-full h-10"
                                 />
