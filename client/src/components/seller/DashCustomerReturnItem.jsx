@@ -62,11 +62,9 @@ export default function DashCustomerReturnItem() {
   };
 
   // Handle return count change
-  const handleReturnCountChange = (itemId, count) => {
-    setReturnCounts((prevCounts) => ({
-      ...prevCounts,
-      [itemId]: count,
-    }));
+  const handleReturnCountChange = (count) => {
+    setReturnCounts(parseInt(count));
+    console.log(returnCounts);
   };
 
   // Handle add return
@@ -83,7 +81,7 @@ export default function DashCustomerReturnItem() {
             returnDateTime: returnDateTime,
             buyDateTime: item.buyDateTime,
             reason: "No reason specified",
-            quantity: returnCounts[item.itemId] || 0,
+            quantity: returnCounts || 0,
           };
         }
       );
@@ -560,9 +558,9 @@ export default function DashCustomerReturnItem() {
                                 <TextInput
                                   id={`returnCountInput-${index}`}
                                   type="number"
-                                  value={returnCounts[selectedItem] || ""}
+                                  //value={returnCounts[selectedItem] || ""}
                                   onChange={(e) =>
-                                    handleReturnCountChange(selectedItem, e.target.value)
+                                    handleReturnCountChange( e.target.value)
                                   }
                                   className="w-full h-10"
                                 />
