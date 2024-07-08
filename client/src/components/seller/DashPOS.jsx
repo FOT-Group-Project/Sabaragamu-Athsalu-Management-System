@@ -275,6 +275,10 @@ export default function DashPOS() {
     });
 
     fetchProducts();
+
+    setSelectedValue("cash");
+    setAdvancePayment(0);
+    setDiscountPercentage(0);
   };
 
   return (
