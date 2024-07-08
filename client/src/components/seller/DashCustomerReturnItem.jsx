@@ -19,6 +19,8 @@ import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
 import Select from "react-select";
 import { HiInformationCircle } from "react-icons/hi";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
@@ -337,6 +339,32 @@ export default function DashCustomerReturnItem() {
     [returnItems]
   );
 
+  // Export to Excel
+  const exportToExcel = () => { 
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const exportItems = filteredReturnItems.map((item) => ({
+      "Customer Name": `${item.Customer.firstname} ${item.Customer.lastname}`,
+      "Product Name": item.Product.itemName,
+      "Quantity": item.quantity,
+      "Sold Price": item.BuyItem.unitPrice,
+      "Buy Date Time": new Date(item.buyDateTime).toLocaleString(),
+      "Return Date Time": new Date(item.returnDateTime).toLocaleString(),
+      "Reason": item.reason,
+      "Amount Refunded": item.BuyItem.unitPrice * item.quantity,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportItems);
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+    //get current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().replace(/[-T:\.Z]/g, "");
+    const fileName = `ReturnItems_${formattedDate}${fileExtension}`;
+    saveAs(new Blob([excelBuffer], {type: fileType}), fileName + fileExtension);
+  };
+
   //console.log(returnCounts);
 
   return (
@@ -362,7 +390,7 @@ export default function DashCustomerReturnItem() {
               Return Items : Report
             </h1>
 
-            <Button color="blue" className="h-10  ml-2">
+            <Button color="blue" onClick={exportToExcel} className="h-10  ml-2">
               Export to Excel
             </Button>
           </div>
