@@ -345,7 +345,84 @@ export default function DashCustomerReturnItem() {
                         <h3 className="text-lg font-semibold mb-2">
                           Bill Details
                         </h3>
-                        <Table>
+                        <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
+                          {/* <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
+                            <div className="ml-4">
+                              <h1 className="text-xl font-bold">Invoice</h1>
+                              <div>
+                                INV# :{" "}
+                                {billDetailsMap[selectedBillId.value]
+                                  ? generateBillId(
+                                      billDetailsMap[selectedBillId.value]
+                                    )
+                                  : ""}
+                              </div>
+                            </div>
+                          </div> */}
+                          <div className="relative p-6 flex-auto">
+                            <div className="mb-8">
+                              <div className="flex items-center">
+                                {" "}
+                                {/* Using flexbox for inline display */}
+                                <h2 className="text-lg font-bold mb-2">
+                                  Bill To:
+                                </h2>
+                                <div className="text-gray-700 mb-2 ml-2">
+                                  {" "}
+                                  {/* ml-2 for margin-left */}
+                                  {billDetailsMap[selectedBillId.value] &&
+                                    `${
+                                      billDetailsMap[selectedBillId.value][0]
+                                        .Customer.firstname
+                                    } ${
+                                      billDetailsMap[selectedBillId.value][0]
+                                        .Customer.lastname
+                                    }`}
+                                </div>
+                              </div>
+                              <hr className="mb-2" />
+                            </div>
+                            <table className="w-full mb-8">
+                              <thead>
+                                <tr>
+                                  <th className="text-left font-bold text-gray-700">
+                                    Description
+                                  </th>
+                                  <th className="text-right font-bold text-gray-700">
+                                    Quantity
+                                  </th>
+                                  <th className="text-right font-bold text-gray-700">
+                                    Unit Price
+                                  </th>
+                                  <th className="text-right font-bold text-gray-700">
+                                    Total Price
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {billDetailsMap[selectedBillId.value].map(
+                                  (item) => (
+                                    <tr key={item.id}>
+                                      <td className="text-left">
+                                        {item.Product.itemName}
+                                      </td>
+                                      <td className="text-right">
+                                        {item.quantity}
+                                      </td>
+                                      <td className="text-right">
+                                        {item.unitPrice}
+                                      </td>
+                                      <td className="text-right">
+                                        {item.unitPrice * item.quantity}
+                                      </td>
+                                    </tr>
+                                  )
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        {/* <Table>
                           <TableHead>
                             <TableHeadCell>Product Name</TableHeadCell>
                             <TableHeadCell>Quantity</TableHeadCell>
@@ -366,7 +443,7 @@ export default function DashCustomerReturnItem() {
                               )
                             )}
                           </TableBody>
-                        </Table>
+                        </Table> */}
                       </div>
                     )}
                   </div>
