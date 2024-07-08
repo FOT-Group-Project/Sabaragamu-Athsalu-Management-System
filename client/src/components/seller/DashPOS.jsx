@@ -84,7 +84,14 @@ export default function DashPOS() {
   const [orderDetails, setOrderDetails] = useState({});
   const [advancePayment, setAdvancePayment] = useState(0);
 
-  
+    const [sales, setSales] = useState([]);
+    const [selectedBill, setSelectedBill] = useState(null);
+    const [selectBillPrint, setSelectBillPrint] = useState(null);
+    const [selectedBillExport, setSelectedBillExport] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const theme = useSelector((state) => state.theme.theme);
+    const [salesDate, setSalesDate] = useState(null);
+    const [filteredSales, setFilteredSales] = useState([]);
 
   // Handler to update the selected value
   const handleChange = (event) => {
