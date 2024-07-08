@@ -25,6 +25,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import Confirm from "../../assets/coms.gif";
 import {
   getDownloadURL,
   getStorage,
@@ -687,12 +688,14 @@ export default function DashPOS() {
               <Modal.Header />
               <Modal.Body>
                 <div className="text-center">
-                  <GiConfirmed className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
-                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                  <div className="flex justify-center mb-4">
+                    <img src={Confirm} className="h-20" alt="Flowbite Logo" />
+                  </div>
+
+                  <h3 className="mb-5 text-lg text-gray-600 dark:text-gray-400">
                     Your order has been placed successfully!
                   </h3>
                   <div className="flex justify-center gap-4">
-                    
                     <Button color="blue" onClick={handelBuyItems}>
                       Print Bill
                     </Button>
