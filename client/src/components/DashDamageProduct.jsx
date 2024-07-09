@@ -229,12 +229,7 @@ const fetchProducts = async () => {
           </div>
 
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
+           
               <Modal.Header>Add Dmage Items</Modal.Header>
               <Modal.Body>
                 <div className="space-y-6">
