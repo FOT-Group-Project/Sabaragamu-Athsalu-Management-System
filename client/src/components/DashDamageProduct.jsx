@@ -93,6 +93,19 @@ export default function fetchdamageitems() {
   };
 
 
+  const fetchStores = async () => {
+    try {
+      const storeRes = await fetch(`/api/store/getstores`);
+      const storeData = await storeRes.json();
+
+      if (storeRes.ok) {
+        setStores(storeData.stores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   //sed data to afer click submit buttern the storekeeperdamageitem table
   const handleSubmit = async (e) => {
     e.preventDefault();
