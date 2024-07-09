@@ -43,8 +43,8 @@ export default function DashCustomerReturnItem() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
-  
+  const itemsPerPage = 6;
+
   const totalPages = Math.ceil(returnItems.length / itemsPerPage);
 
   const onPageChange = (page) => setCurrentPage(page);
@@ -53,7 +53,6 @@ export default function DashCustomerReturnItem() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -167,12 +166,43 @@ export default function DashCustomerReturnItem() {
             console.error("Error fetching shop ID:", error);
           }
         };
-
+        handleAddReturnToBuyItemTable();
         fetchShopId();
       } else {
         //alert(data.message);
         setShowError(true);
       }
+    } catch (error) {
+      console.error("Error adding return items:", error);
+    }
+  };
+
+  //handle add return to byitemtable
+  const handleAddReturnToBuyItemTable = async () => {
+    try {
+      const returnItemsWithCounts = selectedReturnItems.map(
+        (returnItem, index) => {
+          const item = billDetailsMap[selectedBillId.value][index];
+          return {
+            customerId: item.customerId,
+            itemId: item.itemId,
+            shopId: item.shopId,
+            buyDateTime: item.buyDateTime,
+            unitPrice: item.unitPrice,
+            type: "Cash",
+            quantity: -1 * returnCounts || 0,
+            dueAmount: 0,
+          };
+        }
+      );
+
+      const res = await fetch(`/api/sales-report/addsales`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(returnItemsWithCounts),
+      });
     } catch (error) {
       console.error("Error adding return items:", error);
     }
@@ -345,11 +375,14 @@ export default function DashCustomerReturnItem() {
     }
   }, [searchQuery, returnDateTime, returnItems]);
 
-
   // Fetch return items based on user role
   useEffect(
     () => {
-      if (currentUser.role === "Admin" || currentUser.role === "Accountant" || currentUser.role === "Director") {
+      if (
+        currentUser.role === "Admin" ||
+        currentUser.role === "Accountant" ||
+        currentUser.role === "Director"
+      ) {
         fetchReturnItems();
         fetchSales();
       } else if (currentUser.role === "Seller") {
@@ -467,7 +500,8 @@ export default function DashCustomerReturnItem() {
                 style={{
                   display:
                     currentUser.role === "Accountant" ||
-                    currentUser.role === "Director"
+                    currentUser.role === "Director" ||
+                    currentUser.role === "Admin"
                       ? "none"
                       : "inline-block",
                 }}
@@ -732,15 +766,29 @@ export default function DashCustomerReturnItem() {
                                 </Label>
                                 <Select
                                   id={`returnItemDropdown-${index}`}
-                                  options={billDetailsMap[selectedBillId.value]
-                                    .filter(
-                                      (item) =>
-                                        !selectedReturnItems.includes(item.id)
-                                    )
-                                    .map((item) => ({
+                                  options={[
+                                    ...new Set(
+                                      billDetailsMap[selectedBillId.value]
+                                        .filter(
+                                          (item) =>
+                                            !selectedReturnItems.includes(
+                                              item.id
+                                            )
+                                        )
+                                        .map((item) => item.Product.itemName)
+                                    ),
+                                  ].map((itemName) => {
+                                    const item = billDetailsMap[
+                                      selectedBillId.value
+                                    ].find(
+                                      (detail) =>
+                                        detail.Product.itemName === itemName
+                                    );
+                                    return {
                                       value: item.id,
-                                      label: item.Product.itemName,
-                                    }))}
+                                      label: itemName,
+                                    };
+                                  })}
                                   value={
                                     selectedItem
                                       ? {
@@ -760,6 +808,7 @@ export default function DashCustomerReturnItem() {
                                   isSearchable
                                 />
                               </div>
+
                               <div className="w-2/3 pl-2">
                                 <Label
                                   htmlFor={`returnReasonInput-${index}`}
@@ -810,7 +859,13 @@ export default function DashCustomerReturnItem() {
                             className="mr-2 mt-2"
                             disabled={
                               selectedReturnItems.length >=
-                              billDetailsMap[selectedBillId.value].length
+                              [
+                                ...new Set(
+                                  billDetailsMap[selectedBillId.value].map(
+                                    (item) => item.Product.itemName
+                                  )
+                                ),
+                              ].length
                             }
                           >
                             Add Item for Return
