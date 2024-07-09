@@ -35,6 +35,10 @@ import {
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import Logolight from "../../assets/logolight.png";
+
 
 import {
   HiOutlineExclamationCircle,
@@ -74,6 +78,7 @@ export default function DashPOS() {
   const [selectedValue, setSelectedValue] = useState("cash");
   const [orderDetails, setOrderDetails] = useState({});
   const [advancePayment, setAdvancePayment] = useState(0);
+  const [selectBillPrint, setSelectBillPrint] = useState(false);
 
   const [formData, setFormData] = useState({});
 
@@ -276,16 +281,18 @@ export default function DashPOS() {
           if (res.ok) {
             setCreateLoding(false);
             setShowModal2(false);
-            setSelectedProducts([]);
-            setSelectedCustomer([]);
+            // setSelectedProducts([]);
+            // setSelectedCustomer([]);
             Toast.success("Order placed successfully!");
-            fetchProducts();
+            //fetchProducts();
           }
         });
       } catch (error) {
         console.log(error.message);
       }
       fetchProducts();
+
+      setOrderDetails(orderDetails);
     });
 
     fetchProducts();
@@ -330,6 +337,167 @@ export default function DashPOS() {
       setCreateLoding(false);
     }
   };
+
+  const printBill = async () => {
+    // Define a custom page size for a 58mm wide paper
+    const doc = new jsPDF({
+      unit: "mm",
+      format: [58, 100], // Width: 58mm, Height: 100mm
+    });
+
+    // Add Logo - Adjust the size and position for narrow paper
+    doc.addImage(Logolight, "PNG", 5, 5, 20, 5);
+
+    const date = new Date();
+
+    // Invoice title and details
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Invoice", 55, 7, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text(`Date: ${date.toLocaleDateString()}`, 55, 10.5, {
+      align: "right",
+    });
+
+    doc.text(`INV#: ${generateBillId()}`, 55, 14, {
+      align: "right",
+    });
+
+    // Bill to section
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Bill To:", 5, 25);
+    doc.setFont("helvetica", "normal");
+
+    try {
+      // Fetch customer details by customer id
+      const res = await fetch(`/api/user/getuser/${orderDetails.customerId}`);
+      if (res.ok) {
+        const data = await res.json();
+        doc.text(`${data.user.firstname} ${data.user.lastname}`, 5, 30);
+        doc.text(data.user.phone, 5, 35);
+        doc.text(data.user.email, 5, 40);
+      } else {
+        console.log("Failed to fetch user details");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    // Add a horizontal line separator
+    doc.setDrawColor(0, 0, 0); // black color
+    doc.line(5, 45, 55, 45); // horizontal line (x1, y1, x2, y2)
+
+    // Add table with sales details
+    const tableOptions = {
+      startY: 47, // Adjust startY to align the table properly with preceding content
+      head: [["Description", "Qty", "Unit", "Total"]],
+      body: selectedProducts.map((product) => [
+        product.item.itemName,
+        product.quantity,
+        `Rs.${product.item.itemPrice}`,
+        `Rs${product.quantity * product.item.itemPrice}`,
+      ]),
+      theme: "striped",
+      headStyles: { fillColor: [60, 141, 188] },
+      styles: { cellPadding: 1, fontSize: 5 }, // Smaller font and padding for narrow paper
+      columnStyles: {
+        0: { cellWidth: 15 }, // Description column width
+        1: { cellWidth: 8 }, // Quantity column width
+        2: { cellWidth: 15 }, // Unit Price column width
+        3: { cellWidth: 15 }, // Total Price column width
+      },
+      tableWidth: "auto", // Align content to the left by not wrapping it to fit the entire width
+      margin: { left: 3 }, // Set the left margin to 3 units
+    };
+
+    doc.autoTable(tableOptions);
+
+    // Calculate and add total amount
+    const totalY = doc.lastAutoTable.finalY + 5;
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total", 5, totalY);
+    doc.text(
+      `Rs.${(calculateTotalPrice().toFixed(2))}`,
+      55,
+      totalY,
+      { align: "right" }
+    );
+    doc.setFont("helvetica", "normal");
+
+    // Add a horizontal line separator above the footer
+    doc.line(5, totalY + 3, 55, totalY + 3);
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "italic");
+
+    // Calculate the page width
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Get the text width in the current font and size
+    const text = "Thank you for your business!";
+    const textWidth = doc.getTextWidth(text);
+
+    // Calculate the x position for centered text
+    const xCenter = (pageWidth - textWidth) / 2;
+
+    // Add the centered text at the calculated position
+    doc.text(text, xCenter, totalY + 8);
+
+    // Generate the PDF as a Blob
+    const pdfBlob = doc.output("blob");
+
+    // Create a URL for the Blob
+    const url = URL.createObjectURL(pdfBlob);
+
+    // Open the URL in a new window/tab
+    const printWindow = window.open(url);
+
+    // If successfully opened the new window/tab, call print
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    } else {
+      console.warn(
+        "Unable to open the print window. Please check your browser settings."
+      );
+    }
+    // setSelectBillPrint(false);
+    // setSelectedProducts([]);
+    // setSelectedCustomer([]);
+    // setOrderDetails({});
+    // fetchProducts();
+  };
+
+  // Function to generate bill ID
+  const generateBillId = () => {
+    const customerId = orderDetails.customerId;
+    const shopId = orderDetails.shopId;
+    const buyDateTime = orderDetails.buyDateTime;
+    
+    const formattedDate = new Date(buyDateTime)
+      .toLocaleDateString()
+      .replace(/\//g, "-");
+    const formattedTime = new Date(buyDateTime)
+      .toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(/:/g, "");
+    return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
+  };
+
+  // Effect to handle printing after selecting a bill
+  useEffect(() => {
+    if (selectBillPrint) {
+      printBill();
+    }
+  }, [selectBillPrint]);
 
   return (
     <div className="p-3 w-full">
@@ -838,7 +1006,13 @@ export default function DashPOS() {
 
           <Modal
             show={showModal4}
-            onClose={() => setShowModal4(false)}
+            onClose={() => {
+              setShowModal4(false);
+              setSelectBillPrint(false);
+              setSelectedProducts([]);
+              setSelectedCustomer([]);
+              fetchProducts();
+            }}
             popup
             size="xl"
           >
@@ -862,12 +1036,21 @@ export default function DashPOS() {
                     <Button
                       color="blue"
                       onClick={() => {
-                        printBill();
+                        setSelectBillPrint(true);
                       }}
                     >
                       Print Bill
                     </Button>
-                    <Button color="gray" onClick={() => setShowModal4(false)}>
+                    <Button
+                      color="gray"
+                      onClick={() => {
+                        setShowModal4(false);
+                        setSelectBillPrint(false);
+                        setSelectedProducts([]);
+                        setSelectedCustomer([]);
+                        fetchProducts();
+                      }}
+                    >
                       Close
                     </Button>
                   </div>

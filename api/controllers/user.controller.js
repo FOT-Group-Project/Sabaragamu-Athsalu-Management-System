@@ -1,6 +1,7 @@
 const models = require("../models");
 const bcrypt = require("bcrypt");
 const errorHandler = require("../utils/error");
+const { get } = require("../routes/user.route");
 
 function getUsers(req, res) {
 
@@ -457,8 +458,34 @@ function deleteUser(req, res, next) {
     });
 }
 
+//get user by id
+function getUser(req, res) {
+  models.User.findByPk(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: "User retrieved successfully",
+        user: user,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: error,
+      });
+    });
+}
+
 module.exports = {
   getUsers: getUsers,
+  getUser: getUser,
   save: save,
   createUser: createUser,
   updateUser: updateUser,
