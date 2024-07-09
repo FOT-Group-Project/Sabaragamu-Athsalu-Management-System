@@ -353,7 +353,7 @@ export default function DashProfile() {
                   required
                   shadow
                   defaultValue={currentUser.role}
-                  disabled={imageFileUploading}
+                  disabled={imageFileUploading || true}
                 >
                   <option value="SelectRole">Select Role</option>
                   <option value="Admin">Admin</option>
