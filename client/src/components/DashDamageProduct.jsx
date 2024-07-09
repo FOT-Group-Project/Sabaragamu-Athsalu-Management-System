@@ -106,37 +106,7 @@ export default function fetchdamageitems() {
     }
   };
 
-  //sed data to afer click submit buttern the storekeeperdamageitem table
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCreateLoding(true);
-    try {
-      const res = await fetch("/api/stordamageproduct/addStoredamageItem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCreateUserError(data.message);
-        setCreateLoding(false);
-
-        return;
-      }
-
-      if (res.ok) {
-        setCreateUserError(null);
-        setCreateLoding(false);
-        setOpenModal(false);
-        fetchStores();
-      }
-    } catch (error) {
-      // setCreateUserError("Something went wrong");
-      setCreateLoding(false);
-    }
-  };
+ 
 
 
   const fetchProducts = async () => {
@@ -165,6 +135,10 @@ export default function fetchdamageitems() {
   }, [currentUser.id]);
 
 
+
+
+
+
   //fetch storitem data from storeitem table
 
   const fetchStoreItems = async () => {
@@ -191,6 +165,40 @@ export default function fetchdamageitems() {
       setStoreItems(data.data);
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/stordamageproduct/addStoredamageItem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModal(false);
+        fetchStores();
+        fetchStoredamageItems();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
     }
   };
 
