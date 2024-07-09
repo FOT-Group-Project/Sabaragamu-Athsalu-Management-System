@@ -29,8 +29,7 @@ export default function DashboardComp() {
   const [totalCreditSales, setTotalCreditSales] = useState(0);
   const [totalCreditSalesLastMonth, setTotalCreditSalesLastMonth] = useState(0);
   const [chart, setChart] = useState(null);
-  //const [shops, setShops] = useState([]);
-  const [shops, setShops] = useState([]); //stores
+  const [shops, setShops] = useState([]); //shops
 
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
@@ -273,22 +272,22 @@ export default function DashboardComp() {
   }, []);
 
   //fetch shops
-  const fetchShops = async () => {
-    try {
-      const res = await fetch(`/api/shop/getshops`);
-      const data = await res.json();
-      if (res.ok) {
-        setShops(data.shops);
-        if (data.store.length < 9) {
-          setShowMore(false);
+  // Fetch shops once when the component mounts
+  useEffect(() => {
+    const fetchShops = async () => {
+      try {
+        const res = await fetch(`/api/shop/getshops`);
+        const data = await res.json();
+        if (res.ok) {
+          setShops(data.shops);
         }
+      } catch (error) {
+        console.log(error.message);
       }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+    };
 
-  fetchShops();
+    fetchShops();
+  }, []);
 
   // fetch sales, users and products
   useEffect(() => {
