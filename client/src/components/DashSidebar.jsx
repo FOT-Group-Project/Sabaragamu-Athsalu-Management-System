@@ -103,16 +103,6 @@ export default function DashSidebar() {
                   </Sidebar.Item>
                 </Link>
 
-                <Link to="/dashboard?tab=products">
-                  <Sidebar.Item
-                    className="mt-2 mb-2"
-                    icon={HiShoppingBag}
-                    active={tab === "products"}
-                  >
-                    Products
-                  </Sidebar.Item>
-                </Link>
-
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
@@ -122,6 +112,16 @@ export default function DashSidebar() {
                     as="div"
                   >
                     Send Stock
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
                   </Sidebar.Item>
                 </Link>
 
