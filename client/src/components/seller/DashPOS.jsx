@@ -64,6 +64,7 @@ export default function DashPOS() {
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
+  const [openModalEdit, setOpenModalEdit] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -74,9 +75,16 @@ export default function DashPOS() {
   const [orderDetails, setOrderDetails] = useState({});
   const [advancePayment, setAdvancePayment] = useState(0);
 
+  const [formData, setFormData] = useState({});
+
   // Handler to update the selected value
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
+  };
+
+  const handleChange1 = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    console.log(formData);
   };
 
   // Function to handle search query change
@@ -287,6 +295,40 @@ export default function DashPOS() {
     setDiscountPercentage(0);
     setShowModal3(false);
     setShowModal4(true);
+  };
+
+  const handleSubmit = async (e) => {
+    setFormData({ ...formData, role: "Customer" });
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/user/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModalEdit(false);
+        setShowModal2(false);
+        setShowModal2(true);
+        fetchCustomers();
+        fetchUsers();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
   };
 
   return (
@@ -609,6 +651,127 @@ export default function DashPOS() {
             </div>
           </div>
 
+          <Modal show={openModalEdit} onClose={() => setOpenModalEdit(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header>Add New Customer</Modal.Header>
+              <Modal.Body>
+                <div className="space-y-6">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col flex-grow gap-4"
+                  >
+                    {createUserError && (
+                      <Alert color="failure">{createUserError}</Alert>
+                    )}
+                    <div className="flex gap-2 justify-between">
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="User name" />
+                        </div>
+                        <TextInput
+                          id="username"
+                          type="text"
+                          placeholder="@username"
+                          required
+                          shadow
+                          onChange={handleChange1}
+                          value={formData.username}
+                        />
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="First name" />
+                        </div>
+                        <TextInput
+                          id="firstname"
+                          type="text"
+                          placeholder="First name"
+                          required
+                          shadow
+                          onChange={handleChange1}
+                          value={formData.firstname}
+                        />
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Last Name" />
+                        </div>
+                        <TextInput
+                          id="lastname"
+                          type="text"
+                          placeholder="Last name"
+                          required
+                          shadow
+                          onChange={handleChange1}
+                          value={formData.lastname}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-6">
+                      <div>
+                        <div className="mb-2 block">
+                          <Label htmlFor="email2" value="Phone number" />
+                        </div>
+                        <TextInput
+                          id="phone"
+                          type="text"
+                          placeholder="+94 xx xxx xxxx"
+                          required
+                          shadow
+                          onChange={handleChange1}
+                          value={formData.phone}
+                        />
+                      </div>
+                      <div>
+                        <div className="mb-2 block">
+                          <Label htmlFor="email2" value="Email address" />
+                        </div>
+                        <TextInput
+                          id="email"
+                          type="email"
+                          placeholder="name@gmail.com"
+                          required
+                          shadow
+                          onChange={handleChange1}
+                          value={formData.email}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        color="blue"
+                        type="submit"
+                        disabled={createLoding}
+                      >
+                        {createLoding ? (
+                          <>
+                            <Spinner size="sm" />
+                            <span className="pl-3">Loading...</span>
+                          </>
+                        ) : (
+                          "Add Customer"
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="gray"
+                        onClick={() => setOpenModalEdit(false)}
+                      >
+                        Decline
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
           <Modal
             show={showModal}
             onClose={() => setShowModal(false)}
@@ -922,7 +1085,11 @@ export default function DashPOS() {
                                       </Select>
 
                                       {selectedCustomer <= 0 ? (
-                                        <Button color="blue" className="">
+                                        <Button
+                                          color="blue"
+                                          className=""
+                                          onClick={() => setOpenModalEdit(true)}
+                                        >
                                           <MdAdd className="h-4 w-4 mr-2" />
                                           Add Customer
                                         </Button>

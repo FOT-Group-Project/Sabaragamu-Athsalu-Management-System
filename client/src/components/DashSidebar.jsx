@@ -19,6 +19,7 @@ import { RiFileDamageFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signoutSuccess } from "../redux/user/userSlice";
+import { BsFillHouseAddFill } from "react-icons/bs";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -106,12 +107,22 @@ export default function DashSidebar() {
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
-                    active={tab === "pos"}
+                    active={tab === "sendstock"}
                     icon={HiSortAscending}
                     labelColor="dark"
                     as="div"
                   >
                     Send Stock
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
                   </Sidebar.Item>
                 </Link>
 
@@ -126,13 +137,21 @@ export default function DashSidebar() {
                 </Link>
 
                 <Link to="/dashboard?tab=saleHistory">
-                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiClipboardList}
+                    active={tab === "saleHistory"}
+                  >
                     Sales History
                   </Sidebar.Item>
                 </Link>
 
                 <Link to="/dashboard?tab=salesReport">
-                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiTable}
+                    active={tab === "salesReport"}
+                  >
                     Sales Report
                   </Sidebar.Item>
                 </Link>
@@ -177,6 +196,36 @@ export default function DashSidebar() {
 
             {currentUser.role === "Director" && (
               <>
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=shops">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={IoMdHome}
+                    active={tab === "shops"}
+                  >
+                    Shops
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=stores">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiBuildingStorefront}
+                    active={tab === "stores"}
+                  >
+                    Stores
+                  </Sidebar.Item>
+                </Link>
+
                 <Link to="/dashboard?tab=saleHistory">
                   <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
                     Sales History
@@ -186,6 +235,16 @@ export default function DashSidebar() {
                 <Link to="/dashboard?tab=salesReport">
                   <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
                     Sales Report
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=returnItems">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={MdAssignmentReturn}
+                    active={tab === "returnItems"}
+                  >
+                    Return Items
                   </Sidebar.Item>
                 </Link>
               </>
@@ -259,7 +318,17 @@ export default function DashSidebar() {
                     Products
                   </Sidebar.Item>
                 </Link>
-                
+
+                <Link to="/dashboard?tab=storeproducts">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={BsFillHouseAddFill}
+                    active={tab === "storeproducts"}
+                  >
+                  Store Products
+                  </Sidebar.Item>
+                </Link>
+
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"

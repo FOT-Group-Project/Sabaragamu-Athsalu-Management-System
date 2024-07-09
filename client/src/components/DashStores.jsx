@@ -156,7 +156,7 @@ export default function DashStores() {
   };
 
   useEffect(() => {
-    if (currentUser.role == "Admin") {
+    if (currentUser.role == "Admin" || currentUser.role == "Director") {
       fetchStores();
       fetchStoreKeeper();
       fetchStoreKeeperManageStore();
@@ -279,6 +279,10 @@ export default function DashStores() {
               color="blue"
               size="sm"
               onClick={() => setOpenModal(true)}
+              style={{
+                display:
+                  currentUser.role === "Director" ? "none" : "inline-block",
+              }}
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Stores
@@ -288,13 +292,20 @@ export default function DashStores() {
               color="blue"
               size="sm"
               onClick={() => setOpenModalAssignStoreKeeper(true)}
+              style={{
+                display:
+                  currentUser.role === "Director" ? "none" : "inline-block",
+              }}
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Assign Store Keeper
             </Button>
           </div>
 
-          <Modal show={openModalAssignStoreKeeper} onClose={() => setOpenModalAssignStoreKeeper(false)}>
+          <Modal
+            show={openModalAssignStoreKeeper}
+            onClose={() => setOpenModalAssignStoreKeeper(false)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -329,7 +340,6 @@ export default function DashStores() {
                             </option>
                           ))}
                         </Select>
-
                       </div>
                       <div>
                         <div className="mb-2 block">
@@ -391,7 +401,6 @@ export default function DashStores() {
             </motion.div>
           </Modal>
 
-
           <Modal show={openModal} onClose={() => setOpenModal(false)}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -449,8 +458,6 @@ export default function DashStores() {
                           onChange={handleChange}
                         />
                       </div>
-                      
-
                     </div>
 
                     <div className="flex gap-2 justify-end">
@@ -542,8 +549,6 @@ export default function DashStores() {
                           value={formData.phone}
                         />
                       </div>
-                      
-
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
@@ -574,9 +579,8 @@ export default function DashStores() {
             </motion.div>
           </Modal>
 
-          
-
-          {currentUser.role == "Admin" && currentData.length > 0 ? (
+          {currentUser.role == "Admin" ||
+          (currentUser.role == "Director" && currentData.length > 0) ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -591,7 +595,6 @@ export default function DashStores() {
                   </TableHeadCell>
                 </TableHead>
                 {currentData.map((store) => (
-                  
                   <Table.Body className="divide-y" key={store.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>ST:{store.id}</TableCell>
@@ -608,6 +611,12 @@ export default function DashStores() {
                               setFormData(store);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Director"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <FaUserEdit className="mr-3 h-4 w-4" />
                             Edit
@@ -618,6 +627,12 @@ export default function DashStores() {
                               setStoreIdToDelete(store.id);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Director"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <MdDeleteForever className="mr-3 h-4 w-4" />
                             Delete

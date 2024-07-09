@@ -132,7 +132,7 @@ export default function DashStoreKeeperProducts() {
       const data = await res.json();
       if (!res.ok) {
         setCreateUserError(data.message);
-        setCreateLoding(false);
+        setCrefateLoding(false);
         return;
       }
 

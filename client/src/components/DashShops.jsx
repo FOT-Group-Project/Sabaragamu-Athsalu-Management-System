@@ -99,7 +99,7 @@ export default function DashShops() {
   };
 
   useEffect(() => {
-    if (currentUser.role == "Admin") {
+    if (currentUser.role == "Admin" || currentUser.role == "Director") {
       fetchShops();
       fetchSellers();
     }
@@ -215,6 +215,10 @@ export default function DashShops() {
               color="blue"
               size="sm"
               onClick={() => setOpenModal(true)}
+              style={{
+                display:
+                  currentUser.role === "Director" ? "none" : "inline-block",
+              }}
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Shops
@@ -436,7 +440,8 @@ export default function DashShops() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && currentData.length > 0 ? (
+          {currentUser.role == "Admin" ||
+          (currentUser.role == "Director" && currentData.length > 0) ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -469,6 +474,12 @@ export default function DashShops() {
                               setFormData(shop);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Director"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <FaUserEdit className="mr-3 h-4 w-4" />
                             Edit
@@ -479,6 +490,12 @@ export default function DashShops() {
                               setShopIdToDelete(shop.id);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Director"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <MdDeleteForever className="mr-3 h-4 w-4" />
                             Delete

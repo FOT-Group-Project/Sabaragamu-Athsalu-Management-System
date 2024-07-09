@@ -328,7 +328,7 @@ export default function DashCustomerReturnItem() {
   // Fetch return items based on user role
   useEffect(
     () => {
-      if (currentUser.role === "Admin" || currentUser.role === "Accountant") {
+      if (currentUser.role === "Admin" || currentUser.role === "Accountant" || currentUser.role === "Director") {
         fetchReturnItems();
         fetchSales();
       } else if (currentUser.role === "Seller") {
@@ -445,7 +445,7 @@ export default function DashCustomerReturnItem() {
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
                 style={{
                   display:
-                    currentUser.role === "Accountant" ? "none" : "inline-block",
+                    currentUser.role === "Accountant" || currentUser.role==="Director" ? "none" : "inline-block",
                 }}
               >
                 Add Retuns
