@@ -240,6 +240,7 @@ export default function DashCustomerReturnItem() {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit",
+        second: "2-digit",
       })
       .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;

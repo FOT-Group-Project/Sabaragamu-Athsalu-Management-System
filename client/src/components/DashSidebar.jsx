@@ -304,6 +304,16 @@ export default function DashSidebar() {
                     Sales Report
                   </Sidebar.Item>
                 </Link>
+
+                <Link to="/dashboard?tab=returnItems">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={MdAssignmentReturn}
+                    active={tab === "returnItems"}
+                  >
+                    Return Items
+                  </Sidebar.Item>
+                </Link>
               </>
             )}
 
@@ -325,7 +335,7 @@ export default function DashSidebar() {
                     icon={BsFillHouseAddFill}
                     active={tab === "storeproducts"}
                   >
-                  Store Products
+                    Store Products
                   </Sidebar.Item>
                 </Link>
 
