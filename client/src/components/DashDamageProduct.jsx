@@ -242,19 +242,29 @@ export default function fetchdamageitems() {
                           shadow
                           onChange={handleChange}
                         />
+
+                        
                       </div>
                       <div>
                         <div className="mb-2 block">
-                          <Label value="quantity" />
+                          <Label value="Item name" />
                         </div>
-                        <TextInput
-                          id="quantity"
-                          type="number"
-                          placeholder="2"
+                      
+                      <TextInput
+                          id="itemId"
+                          type="text"
+                          placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
-                        />
+                        >
+                        
+                        </TextInput>
+                      
+
+
+
+
                       </div>
                       <div>
                         <div className="mb-2 block">
@@ -277,28 +287,19 @@ export default function fetchdamageitems() {
                       </div>
                       <div>
                         <div className="mb-2 block">
-                          <Label value="ItemId" />
+                          <Label value="quantity" />
                         </div>
-                      
-                      
-                        <Select
-
-                          id="itemId"
-                          type="text"
-                          placeholder="2536f"
+                        <TextInput
+                          id="quantity"
+                          type="number"
+                          placeholder="2"
                           required
                           shadow
                           onChange={handleChange}
-                        >
-                          {products.map((product) => (
-                            <option key={product.id} value={product.id}>
-                              {product.itemId}
-                            </option>
-                          ))}
-                        </Select>
-
-
+                        />
                       </div>
+                     
+                     
                     </div>
 
                     <div className="flex gap-2 justify-end">
@@ -453,7 +454,7 @@ export default function fetchdamageitems() {
                 <TableHead>
                   <TableHeadCell> ID</TableHeadCell>
                   <TableHeadCell>Date</TableHeadCell>
-                  <TableHeadCell>itemId </TableHeadCell>
+                  <TableHeadCell>item name </TableHeadCell>
                   <TableHeadCell>storeId </TableHeadCell>
                   <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>
