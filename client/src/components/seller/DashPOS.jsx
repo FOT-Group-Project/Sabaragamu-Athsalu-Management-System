@@ -25,6 +25,7 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
+import Confirm from "../../assets/coms.gif";
 import {
   getDownloadURL,
   getStorage,
@@ -49,6 +50,7 @@ import {
   HiPaperAirplane,
 } from "react-icons/hi";
 import { MdAdd, MdRemove } from "react-icons/md";
+import { GiConfirmed } from "react-icons/gi";
 
 export default function DashPOS() {
   const { currentUser } = useSelector((state) => state.user);
@@ -60,6 +62,8 @@ export default function DashPOS() {
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
+  const [showModal4, setShowModal4] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -68,6 +72,7 @@ export default function DashPOS() {
   const [createLoding, setCreateLoding] = useState(false);
   const [selectedValue, setSelectedValue] = useState("cash");
   const [orderDetails, setOrderDetails] = useState({});
+  const [advancePayment, setAdvancePayment] = useState(0);
 
   // Handler to update the selected value
   const handleChange = (event) => {
@@ -190,6 +195,11 @@ export default function DashPOS() {
     return discountedPrice;
   };
 
+  const calculateDueAmount = () => {
+    const dueAmount = calculateTotalPrice() - advancePayment;
+    return dueAmount > 0 ? dueAmount : 0;
+  };
+
   // Function to calculate the subtotal
   const calculateSubtotal = () => {
     let subtotal = 0;
@@ -219,6 +229,11 @@ export default function DashPOS() {
     setShowModal1(false);
   };
 
+  const handelRemoveCustomer = () => {
+    setSelectedCustomer([]);
+    setAdvancePayment(0);
+  };
+
   const handelBuyItems = () => {
     if (selectedValue == "cash") {
       orderDetails.type = "Cash";
@@ -228,6 +243,7 @@ export default function DashPOS() {
     if (selectedValue == "credit") {
       orderDetails.type = "Credit";
       orderDetails.customerId = selectedCustomer;
+      orderDetails.dueAmount = calculateDueAmount();
     }
 
     selectedProducts.forEach((product) => {
@@ -265,6 +281,12 @@ export default function DashPOS() {
     });
 
     fetchProducts();
+
+    setSelectedValue("cash");
+    setAdvancePayment(0);
+    setDiscountPercentage(0);
+    setShowModal3(false);
+    setShowModal4(true);
   };
 
   return (
@@ -620,6 +642,78 @@ export default function DashPOS() {
           </Modal>
 
           <Modal
+            show={showModal3}
+            onClose={() => setShowModal3(false)}
+            popup
+            size="md"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header />
+              <Modal.Body>
+                <div className="text-center">
+                  <GiConfirmed className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+                    Are you sure you want to complete the order?
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    <Button color="blue" onClick={handelBuyItems}>
+                      Yes, I'm sure
+                    </Button>
+                    <Button color="gray" onClick={() => setShowModal3(false)}>
+                      No, cancel
+                    </Button>
+                  </div>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal
+            show={showModal4}
+            onClose={() => setShowModal4(false)}
+            popup
+            size="xl"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Modal.Header />
+              <Modal.Body>
+                <div className="text-center">
+                  <div className="flex justify-center mb-4">
+                    <img src={Confirm} className="h-20" alt="Flowbite Logo" />
+                  </div>
+
+                  <h3 className="mb-5 text-lg text-gray-600 dark:text-gray-400">
+                    Your order has been placed successfully!
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    <Button
+                      color="blue"
+                      onClick={() => {
+                        printBill();
+                      }}
+                    >
+                      Print Bill
+                    </Button>
+                    <Button color="gray" onClick={() => setShowModal4(false)}>
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </Modal.Body>
+            </motion.div>
+          </Modal>
+
+          <Modal
             show={showModal1}
             onClose={() => setShowModal1(false)}
             popup
@@ -651,7 +745,11 @@ export default function DashPOS() {
             </motion.div>
           </Modal>
 
-          <Modal show={showModal2} onClose={() => setShowModal2(false)}>
+          <Modal
+            show={showModal2}
+            onClose={() => setShowModal2(false)}
+            size="3xl"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -666,7 +764,7 @@ export default function DashPOS() {
                       <Alert color="failure">{createUserError}</Alert>
                     )}
                     <div className="flex gap-5 mb-4">
-                      <div className="w-full flex gap-8">
+                      <div className="w-full flex gap-10">
                         {showModal2 ? (
                           <>
                             <div className="">
@@ -744,6 +842,7 @@ export default function DashPOS() {
 
                               {selectedValue == "cash" ? (
                                 <>
+                                  <hr className="md-2 mt-10" />
                                   <h1 className="text-lg text-gray-700 mt-5">
                                     <b>Totale Price</b>
                                   </h1>
@@ -781,7 +880,133 @@ export default function DashPOS() {
                                   </div>
                                 </>
                               ) : (
-                                <></>
+                                <div className="flex w-full justify-between">
+                                  <div>
+                                    <p className="text-sm mt-4">
+                                      Select already existing customer or add
+                                      new customer
+                                    </p>
+
+                                    <div className="mt-4 flex gap-4">
+                                      <Select
+                                        value={selectedCustomer}
+                                        onChange={handleCustomerChange}
+                                      >
+                                        <option value="">
+                                          Select a customer
+                                        </option>
+                                        {customers.map((customer) => (
+                                          <>
+                                            {customer.role === "Customer" ? (
+                                              <>
+                                                {customer.id !== 7 ? (
+                                                  <>
+                                                    <option
+                                                      key={customer.id}
+                                                      value={customer.id}
+                                                    >
+                                                      {customer.firstname +
+                                                        " " +
+                                                        customer.lastname}
+                                                    </option>
+                                                  </>
+                                                ) : (
+                                                  <></>
+                                                )}
+                                              </>
+                                            ) : (
+                                              <></>
+                                            )}
+                                          </>
+                                        ))}
+                                      </Select>
+
+                                      {selectedCustomer <= 0 ? (
+                                        <Button color="blue" className="">
+                                          <MdAdd className="h-4 w-4 mr-2" />
+                                          Add Customer
+                                        </Button>
+                                      ) : (
+                                        <Button
+                                          color="red"
+                                          className=""
+                                          onClick={handelRemoveCustomer}
+                                        >
+                                          <MdAdd className="h-4 w-4 mr-2" />
+                                          Remove Customer
+                                        </Button>
+                                      )}
+                                    </div>
+
+                                    {selectedCustomer > 0 ? (
+                                      <>
+                                        <hr className="md-2 mt-5" />
+                                        <h1 className="text-lg text-gray-700 mt-5">
+                                          <b>Totale Price</b>
+                                        </h1>
+                                        <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                          <p>
+                                            <b>Sub Total :</b>
+                                          </p>
+                                          <p>Rs. {calculateSubtotal()}</p>
+                                        </div>
+
+                                        {discountPercentage > 0 && (
+                                          <div className="mr-2 ml-2 mb-3 flex justify-between">
+                                            <p>
+                                              <b>Discounte Price : </b>
+                                            </p>
+                                            <p>
+                                              Rs.{" "}
+                                              {(
+                                                calculateTotalPrice() -
+                                                calculateSubtotal()
+                                              ).toFixed(2)}
+                                            </p>
+                                          </div>
+                                        )}
+
+                                        <div className="mr-2 ml-2 flex justify-between">
+                                          <p>
+                                            <b>Paybale Amount :</b>
+                                          </p>
+                                          <p>
+                                            <b className=" text-gray-600 text-xl">
+                                              Rs. {calculateTotalPrice()}
+                                            </b>
+                                          </p>
+                                        </div>
+                                        <div className="mr-2 ml-2 mb-3 mt-3 flex justify-between">
+                                          <p>
+                                            <b>Advance Amount :</b>
+                                          </p>
+                                          <TextInput
+                                            type="number"
+                                            value={advancePayment}
+                                            onChange={(e) =>
+                                              setAdvancePayment(
+                                                Math.max(0, e.target.value)
+                                              )
+                                            }
+                                            placeholder="Enter Advance Amount"
+                                            className=" w-20 h-8 mb-3"
+                                            size="sm"
+                                          />
+                                        </div>
+                                        <div className="mr-2 ml-2 flex justify-between">
+                                          <p>
+                                            <b>Due Amount :</b>
+                                          </p>
+                                          <p>
+                                            <b className=" text-red-600 text-xl">
+                                              Rs. {calculateDueAmount()}
+                                            </b>
+                                          </p>
+                                        </div>
+                                      </>
+                                    ) : null}
+                                  </div>
+                                </div>
                               )}
                             </div>
                           </>
@@ -794,8 +1019,14 @@ export default function DashPOS() {
                     <div className="flex gap-2 justify-end">
                       <Button
                         color="blue"
-                        disabled={createLoding}
-                        onClick={handelBuyItems}
+                        disabled={
+                          (createLoding ||
+                            selectedCustomer.length <= 0 ||
+                            (selectedValue == "credit" &&
+                              advancePayment <= 0)) &&
+                          selectedValue != "cash"
+                        }
+                        onClick={() => setShowModal3(true)}
                       >
                         {createLoding ? (
                           <>
@@ -805,7 +1036,7 @@ export default function DashPOS() {
                         ) : (
                           "Confirm Order"
                         )}
-                        <HiPaperAirplane className="ml-2 h-4 w-4 rotate-90" />
+                        <HiCheckCircle className="ml-2 h-4 w-4 " />
                       </Button>
                       <Button
                         size="sm"

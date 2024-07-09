@@ -187,6 +187,19 @@ function showReturnSalesByCustomerId(req, res) {
         as: "Shop",
         attributes: ["shopName"],
       },
+      {
+        model: models.CustomerBuyItem,
+        as: "BuyItem",
+        attributes: ["buyDateTime", "unitPrice"],
+        required: true, // Ensure it's a strict join
+        where: {
+          [Op.and]: [
+            { customerId: { [Op.col]: "CustomerReturnItem.customerId" } },
+            { shopId: { [Op.col]: "CustomerReturnItem.shopId" } },
+            { buyDateTime: { [Op.col]: "CustomerReturnItem.buyDateTime" } },
+          ],
+        },
+      },
     ],
   })
     .then((result) => {
@@ -225,6 +238,19 @@ function showReturnSalesByItemId(req, res) {
         as: "Shop",
         attributes: ["shopName"],
       },
+      {
+        model: models.CustomerBuyItem,
+        as: "BuyItem",
+        attributes: ["buyDateTime", "unitPrice"],
+        required: true, // Ensure it's a strict join
+        where: {
+          [Op.and]: [
+            { customerId: { [Op.col]: "CustomerReturnItem.customerId" } },
+            { shopId: { [Op.col]: "CustomerReturnItem.shopId" } },
+            { buyDateTime: { [Op.col]: "CustomerReturnItem.buyDateTime" } },
+          ],
+        },
+      },
     ],
   })
     .then((result) => {
@@ -261,6 +287,19 @@ function showReturnSales(req, res) {
         model: models.Shop,
         as: "Shop",
         attributes: ["shopName"],
+      },
+      {
+        model: models.CustomerBuyItem,
+        as: "BuyItem",
+        attributes: ["buyDateTime", "unitPrice"],
+        required: true, // Ensure it's a strict join
+        where: {
+          [Op.and]: [
+            { customerId: { [Op.col]: "CustomerReturnItem.customerId" } },
+            { shopId: { [Op.col]: "CustomerReturnItem.shopId" } },
+            { buyDateTime: { [Op.col]: "CustomerReturnItem.buyDateTime" } },
+          ],
+        },
       },
     ],
   })
