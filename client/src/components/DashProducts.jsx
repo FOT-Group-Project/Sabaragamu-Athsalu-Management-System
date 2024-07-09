@@ -45,6 +45,7 @@ export default function DashProducts() {
   // Pagiation
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
   const onPageChange = (page) => setCurrentPage(page);
@@ -195,7 +196,10 @@ export default function DashProducts() {
               onClick={() => setOpenModal(true)}
               style={{
                 display:
-                  currentUser.role === "Accountant" ? "none" : "inline-block",
+                  currentUser.role === "Accountant" ||
+                  currentUser.role === "Director"
+                    ? "none"
+                    : "inline-block",
               }}
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
@@ -473,7 +477,8 @@ export default function DashProducts() {
                             color="gray"
                             style={{
                               display:
-                                currentUser.role === "Accountant"
+                                currentUser.role === "Accountant" ||
+                                currentUser.role === "Director"
                                   ? "none"
                                   : "inline-block",
                             }}
@@ -489,7 +494,8 @@ export default function DashProducts() {
                             color="gray"
                             style={{
                               display:
-                                currentUser.role === "Accountant"
+                                currentUser.role === "Accountant" ||
+                                currentUser.role === "Director"
                                   ? "none"
                                   : "inline-block",
                             }}
