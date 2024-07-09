@@ -99,7 +99,7 @@ export default function DashShops() {
   };
 
   useEffect(() => {
-    if (currentUser.role == "Admin") {
+    if (currentUser.role == "Admin" || currentUser.role == "Director") {
       fetchShops();
       fetchSellers();
     }
@@ -436,7 +436,7 @@ export default function DashShops() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && currentData.length > 0 ? (
+          {currentUser.role == "Admin" || currentUser.role == "Director" && currentData.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>

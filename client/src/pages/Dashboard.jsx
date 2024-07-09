@@ -76,9 +76,9 @@ export default function Dashboard() {
         <DashStoreKeeperProducts />
       )}
 
-      {/* {tab === "products" && currentUser.role === "Director" && (
-        <DashDirectorProducts />
-      )} */}
+      {tab === "products" && currentUser.role === "Director" && (
+        <DashProducts />
+      )}
 
       {tab === "products" && currentUser.role === "Accountant" && (
         <DashProducts />
