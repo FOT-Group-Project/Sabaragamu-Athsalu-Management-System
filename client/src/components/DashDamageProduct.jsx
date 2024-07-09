@@ -374,13 +374,7 @@ export default function fetchdamageitems() {
                           " Add Dmage Items"
                         )}
                       </Button>
-                      <Button
-                        size="sm"
-                        color="gray"
-                        onClick={() => setOpenModal(false)}
-                      >
-                        Decline
-                      </Button>
+                    
                     </div>
                   </form>
                 </div>
@@ -507,7 +501,17 @@ export default function fetchdamageitems() {
 
           {currentUser.role === "StoreKeeper" && storeitems.length > 0 ? (
             <>
-            
+              <Table hoverable className="shadow-md w-full">
+                <TableHead>
+                  <TableHeadCell>Product Name</TableHeadCell>
+                  <TableHeadCell>SKU</TableHeadCell>
+
+                  <TableHeadCell>Quantity </TableHeadCell>
+                  <TableHeadCell>Date </TableHeadCell>
+                  <TableHeadCell>
+                    <span className="sr-only">Edit</span>
+                  </TableHeadCell>
+                </TableHead>
 
                 {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
