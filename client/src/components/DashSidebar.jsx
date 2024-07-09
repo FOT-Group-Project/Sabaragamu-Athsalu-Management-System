@@ -139,51 +139,42 @@ export default function DashSidebar() {
               </>
             )}
 
-            {currentUser.role === "Admin" && (
-              <Link to="/dashboard?tab=users">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={HiUsers}
-                  active={tab === "users"}
-                  as="div"
-                >
-                  Users
-                </Sidebar.Item>
-              </Link>
+            {currentUser.role === "Accountant" && (
+              <>
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=saleHistory">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                    Sales History
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=salesReport">
+                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                    Sales Report
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=returnItems">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={MdAssignmentReturn}
+                    active={tab === "returnItems"}
+                  >
+                    Return Items
+                  </Sidebar.Item>
+                </Link>
+              </>
             )}
 
-            <Link to="/dashboard?tab=products">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                icon={HiShoppingBag}
-                active={tab === "products"}
-              >
-                Products
-              </Sidebar.Item>
-            </Link>
-
-            {currentUser.role === "Admin" && (
-              <Link to="/dashboard?tab=shops">
-                <Sidebar.Item
-                  className="mt-2 mb-2"
-                  icon={IoMdHome}
-                  active={tab === "shops"}
-                >
-                  Shops
-                </Sidebar.Item>
-              </Link>
-            )}
-            <Link to="/dashboard?tab=saleHistory">
-              <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
-                Sales History
-              </Sidebar.Item>
-            </Link>
-
-            <Link to="/dashboard?tab=salesReport">
-              <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
-                Sales Report
-              </Sidebar.Item>
-            </Link>
             {currentUser.role === "Director" && (
               <>
                 <Link to="/dashboard?tab=saleHistory">
@@ -202,6 +193,37 @@ export default function DashSidebar() {
 
             {currentUser.role === "Admin" && (
               <>
+                <Link to="/dashboard?tab=users">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiUsers}
+                    active={tab === "users"}
+                    as="div"
+                  >
+                    Users
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=shops">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={IoMdHome}
+                    active={tab === "shops"}
+                  >
+                    Shops
+                  </Sidebar.Item>
+                </Link>
+
                 <Link to="/dashboard?tab=stores">
                   <Sidebar.Item
                     className="mt-2 mb-2"
@@ -228,6 +250,16 @@ export default function DashSidebar() {
 
             {currentUser.role === "StoreKeeper" && (
               <>
+                <Link to="/dashboard?tab=products">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiShoppingBag}
+                    active={tab === "products"}
+                  >
+                    Products
+                  </Sidebar.Item>
+                </Link>
+                
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
