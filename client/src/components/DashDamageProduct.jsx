@@ -582,6 +582,7 @@ export default function fetchdamageitems() {
                     <Button color="failure" onClick={handleDeleteUser}>
                       Yes, I'm sure
                     </Button>
+                    
                     <Button color="gray" onClick={() => setShowModal(false)}>
                       No, cancel
                     </Button>
