@@ -56,6 +56,80 @@ export default function fetchdamageitems() {
   const [storeitems, setStoreItems] = useState([]);
   const [StoredamageItem, setStoredamageItems] = useState([]);
 
+  const [products, setProducts] = useState([]);
+  const [storeProducts, setStoreProducts] = useState([]);
+  const [productIdToDelete, setproductIdToDelete] = useState("");
+  const [storeNames, setStoreNames] = useState([]);
+  const [itemNames, setItemNames] = useState([]);
+
+  const [stores, setStores] = useState([]);
+
+  const fetchStoreProducts = async () => {
+    try {
+      const storeRes = await fetch(
+        `/api/storekeepermanagestore/getstoresbystorekeeperid/${currentUser.id}`
+      );
+
+      const storeData = await storeRes.json();
+
+      if (storeRes.ok) {
+        const productsRes = await fetch(
+          `/api/store-item/getstoreitems/${storeData.stores[0].storeId}`
+        );
+
+        const productsData = await productsRes.json();
+
+        if (productsRes.ok) {
+          setProducts(productsData.storeItems);
+          if (productsData.storeItems.length < 9) {
+            setShowMore(false);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const fetchStores = async () => {
+    try {
+      const storeRes = await fetch(`/api/store/getstores`);
+      const storeData = await storeRes.json();
+
+      if (storeRes.ok) {
+        setStores(storeData.stores);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  //Fetch all products from products table
+  const fetchProducts = async () => {
+    try {
+      // Fetch all products using the API endpoint
+      const productsRes = await fetch(`/api/product/getallproducts`);
+      const productsData = await productsRes.json();
+      if (productsRes.ok) {
+        // Set the products state with the products array from the response
+        setStoreProducts(productsData.products);
+
+        if (productsData.products.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    //fetchCurrentUserStore();
+    fetchStoreProducts();
+    fetchProducts();
+    fetchStores();
+  }, [currentUser.id]);
+
   //sed data to afer click submit buttern the storekeeperdamageitem table
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +155,7 @@ export default function fetchdamageitems() {
         setCreateLoding(false);
         setOpenModal(false);
         fetchStores();
+        fetchStoredamageItems();
       }
     } catch (error) {
       // setCreateUserError("Something went wrong");
@@ -147,12 +222,16 @@ export default function fetchdamageitems() {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
+        setShowModal(false);
+        fetchStoredamageItems();
       } else {
         console.log(data.message);
       }
     } catch (error) {
       console.log(error.message);
     }
+    setShowModal(false);
+    fetchStoredamageItems();
   };
 
   return (
@@ -206,17 +285,42 @@ export default function fetchdamageitems() {
                     <div className="flex gap-2 mb-4">
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Date" />
+                          <Label value="Store Name" />
                         </div>
-                        <TextInput
-                          id="date"
-                          type="date"
-                          placeholder="2021-09-05"
+                        <Select
+                          id="storeId"
+                          onChange={handleChange}
                           required
                           shadow
-                          onChange={handleChange}
-                        />
+                        >
+                          <option value="">Select a store</option>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Product" />
+                        </div>
+                        <Select
+                          id="itemId"
+                          onChange={handleChange}
+                          required
+                          shadow
+                        >
+                          <option value="">Select a product</option>
+                          {storeProducts.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="quantity" />
@@ -230,37 +334,19 @@ export default function fetchdamageitems() {
                           onChange={handleChange}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
-                          <Label value="storeId" />
+                          <Label value="Date" />
                         </div>
                         <TextInput
-                          id="storeId"
-                          type="text"
-                          placeholder="2536f"
+                          id="date"
+                          type="date"
+                          placeholder="2021-09-05"
                           required
                           shadow
                           onChange={handleChange}
                         />
-                      </div>
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="ItemId" />
-                        </div>
-                        <Select
-                          id="itemId"
-                          type="text"
-                          placeholder="2536f"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        >
-                          {StoredamageItem.map((storeitem) => (
-                            <option key={storeitem.id} value={storeitem.id}>
-                              {storeitem.itemId}
-                            </option>
-                          ))}
-                        </Select>
                       </div>
                     </div>
 
@@ -416,8 +502,9 @@ export default function fetchdamageitems() {
                 <TableHead>
                   <TableHeadCell>Product Name</TableHeadCell>
                   <TableHeadCell>SKU</TableHeadCell>
-                  <TableHeadCell>Store Name</TableHeadCell>
-                  <TableHeadCell>quantity </TableHeadCell>
+
+                  <TableHeadCell>Quantity </TableHeadCell>
+                  <TableHeadCell>Date </TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -428,33 +515,24 @@ export default function fetchdamageitems() {
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>{shop.item.itemName}</TableCell>
                       <TableCell>{shop.item.sku}</TableCell>
-                      <TableCell>{shop.store.storeName}</TableCell>
+
                       <TableCell>{shop.quantity}</TableCell>
 
                       <TableCell>
-                        <Button.Group>
-                          <Button
-                            onClick={() => {
-                              setOpenModalEdit(true);
-                              setFormData(damageitems);
-                            }}
-                            color="gray"
-                          >
-                            <FaUserEdit className="mr-3 h-4 w-4" />
-                            Edit
-                          </Button>
+                        {new Date(shop.date).toLocaleDateString()}
+                      </TableCell>
 
-                          <Button
-                            onClick={() => {
-                              setShowModal(true);
-                              setStordamageIdToDelete(shop.id);
-                            }}
-                            color="gray"
-                          >
-                            <MdDeleteForever className="mr-3 h-4 w-4" />
-                            Delete
-                          </Button>
-                        </Button.Group>
+                      <TableCell>
+                        <Button
+                          onClick={() => {
+                            setShowModal(true);
+                            setStordamageIdToDelete(shop.id);
+                          }}
+                          color="red"
+                        >
+                          <MdDeleteForever className="mr-3 h-4 w-4" />
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   </Table.Body>
