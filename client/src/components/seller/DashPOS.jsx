@@ -39,7 +39,6 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import Logolight from "../../assets/logolight.png";
 
-
 import {
   HiOutlineExclamationCircle,
   HiPlusCircle,
@@ -261,7 +260,8 @@ export default function DashPOS() {
 
     selectedProducts.forEach((product) => {
       orderDetails.itemId = product.id;
-      orderDetails.shopId = currentUser.id;
+      orderDetails.shopId = product.shopId;
+      console.log(product.shopId);
       orderDetails.buyDateTime = new Date().toLocaleString();
       orderDetails.unitPrice = product.item.itemPrice;
       orderDetails.quantity = product.quantity;
@@ -419,12 +419,9 @@ export default function DashPOS() {
     doc.setFontSize(8);
     doc.setFont("helvetica", "bold");
     doc.text("Total", 5, totalY);
-    doc.text(
-      `Rs.${(calculateTotalPrice().toFixed(2))}`,
-      55,
-      totalY,
-      { align: "right" }
-    );
+    doc.text(`Rs.${calculateTotalPrice().toFixed(2)}`, 55, totalY, {
+      align: "right",
+    });
     doc.setFont("helvetica", "normal");
 
     // Add a horizontal line separator above the footer
@@ -478,7 +475,7 @@ export default function DashPOS() {
     const customerId = orderDetails.customerId;
     const shopId = orderDetails.shopId;
     const buyDateTime = orderDetails.buyDateTime;
-    
+
     const formattedDate = new Date(buyDateTime)
       .toLocaleDateString()
       .replace(/\//g, "-");
