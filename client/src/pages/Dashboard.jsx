@@ -135,6 +135,10 @@ export default function Dashboard() {
       {tab === "returnItems" && currentUser.role === "Director" && (
         <DashCustomerReturnItem />
       )}
+
+      {tab === "returnItems" && currentUser.role === "Admin" && (
+        <DashCustomerReturnItem />
+      )}
     </div>
   );
 }

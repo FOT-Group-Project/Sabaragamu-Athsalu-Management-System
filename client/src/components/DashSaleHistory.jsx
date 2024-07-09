@@ -374,11 +374,13 @@ export default function DashSellerInvetory() {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit",
+        second: "2-digit",
       })
       .replace(/:/g, "");
     return `BILL-${customerId}-${shopId}-${formattedDate}-${formattedTime}`;
   };
 
+  // Function to filter sales based on search query and date change
   const filterSales = () => {
     const filtered = sales.filter((bill) => {
       const customerName = bill[0].Customer
@@ -388,7 +390,8 @@ export default function DashSellerInvetory() {
       const buyDate = new Date(bill[0].buyDateTime).toLocaleDateString();
       const buyTime = new Date(bill[0].buyDateTime).toLocaleTimeString();
       const totalAmount = calculateTotalAmount(bill);
-      const searchValues = `${customerName} ${shopName} ${buyDate} ${buyTime} ${totalAmount}`;
+      const billId = generateBillId(bill);
+      const searchValues = `${customerName} ${shopName} ${buyDate} ${buyTime} ${totalAmount} ${billId}`;
 
       const matchesQuery = searchValues
         .toLowerCase()
