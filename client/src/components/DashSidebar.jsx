@@ -65,17 +65,19 @@ export default function DashSidebar() {
       >
         <Sidebar.Items>
           <Sidebar.ItemGroup>
-            <Link to="/dashboard?tab=dash">
-              <Sidebar.Item
-                className="mt-2 mb-2"
-                active={tab === "dash"}
-                icon={HiChartPie}
-                labelColor="dark"
-                as="div"
-              >
-                Dashboard
-              </Sidebar.Item>
-            </Link>
+            {currentUser.role != "StoreKeeper" && (
+              <Link to="/dashboard?tab=dash">
+                <Sidebar.Item
+                  className="mt-2 mb-2"
+                  active={tab === "dash"}
+                  icon={HiChartPie}
+                  labelColor="dark"
+                  as="div"
+                >
+                  Dashboard
+                </Sidebar.Item>
+              </Link>
+            )}
 
             <Link to="/dashboard?tab=profile">
               <Sidebar.Item
