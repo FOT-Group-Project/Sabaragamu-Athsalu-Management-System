@@ -328,7 +328,7 @@ export default function DashCustomerReturnItem() {
   // Fetch return items based on user role
   useEffect(
     () => {
-      if (currentUser.role === "Admin" || currentUser.role === "Accountant") {
+      if (currentUser.role === "Admin" || currentUser.role === "Accountant" || currentUser.role === "Director") {
         fetchReturnItems();
         fetchSales();
       } else if (currentUser.role === "Seller") {
