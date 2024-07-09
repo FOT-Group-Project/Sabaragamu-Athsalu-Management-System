@@ -55,7 +55,7 @@ export default function fetchdamageitems() {
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
 
-  const [products, setProducts] = useState([]);
+const [products, setProducts] = useState([]);
   const [StoredamageItem, setStoredamageItems] = useState([]);
 
   //sed data to afer click submit buttern the storekeeperdamageitem table
@@ -124,20 +124,33 @@ export default function fetchdamageitems() {
   //get data product data from product table
   const fetchProducts = async () => {
     try {
-      const response = await fetch("/api/stordamageproduct/getproduct");
+      const res = await fetch(`/api/product/getallproducts`);
+      const data = await res.json();
+      if (res.ok) {
+        setProducts(data.products);
+        if (data.product.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchProducts();
+  }, [products.id]);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getStoredamageItem");
       const data = await response.json();
-      setProducts(data.data);
+      setStoreKeepDamageItems(data.data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
-  useEffect(() => {
-    if (currentUser.role === "StoreKeeper") {
-      fetchProducts();
-    }
-  }, []);
-  
   
 
 
@@ -250,7 +263,8 @@ export default function fetchdamageitems() {
                           <Label value="Item name" />
                         </div>
                       
-                      <TextInput
+                 
+                        <Select
                           id="itemId"
                           type="text"
                           placeholder="2536f"
@@ -258,8 +272,15 @@ export default function fetchdamageitems() {
                           shadow
                           onChange={handleChange}
                         >
-                        
-                        </TextInput>
+                          {products.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemName}
+                            </option>
+                          ))}
+                        </Select>
+
+
+
                       
 
 
@@ -363,20 +384,27 @@ export default function fetchdamageitems() {
                           value={formData.date}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
-                          <Label value="quantity" />
+                          <Label value="item Name" />
                         </div>
-                        <TextInput
-                          id="quantitity"
-                          type="number"
-                          placeholder="10"
+                        <Select
+                          id="itemId"
+                          type="text"
+                          placeholder="2536f"
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.quantity}
-                        />
+                        >
+                          {products.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemName}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="Store id" />
@@ -398,26 +426,23 @@ export default function fetchdamageitems() {
                         </Select>
                       </div>
 
+
                       <div>
                         <div className="mb-2 block">
-                          <Label value="item Name" />
+                          <Label value="quantity" />
                         </div>
-                        <Select
-                          id="itemId"
-                          type="text"
-                          placeholder="2536f"
+                        <TextInput
+                          id="quantitity"
+                          type="number"
+                          placeholder="10"
                           required
                           shadow
                           onChange={handleChange}
-                          value={formData.itemId}
-                        >
-                          {StoredamageItem.map((storeitem) => (
-                            <option key={storeitem.id} value={storeitem.id}>
-                              {storeitem.itemId}
-                            </option>
-                          ))}
-                        </Select>
+                          value={formData.quantity}
+                        />
                       </div>
+                     
+                      
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
