@@ -82,6 +82,11 @@ export default function DashPOS() {
     setSelectedValue(event.target.value);
   };
 
+  const handleChange1 = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+    console.log(formData);
+  };
+
   // Function to handle search query change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -290,6 +295,40 @@ export default function DashPOS() {
     setDiscountPercentage(0);
     setShowModal3(false);
     setShowModal4(true);
+  };
+
+  const handleSubmit = async (e) => {
+    setFormData({ ...formData, role: "Customer" });
+    e.preventDefault();
+    setCreateLoding(true);
+    try {
+      const res = await fetch("/api/user/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCreateUserError(data.message);
+        setCreateLoding(false);
+        return;
+      }
+
+      if (res.ok) {
+        setCreateUserError(null);
+        setCreateLoding(false);
+        setOpenModalEdit(false);
+        setShowModal2(false);
+        setShowModal2(true);
+        fetchCustomers();
+        fetchUsers();
+      }
+    } catch (error) {
+      // setCreateUserError("Something went wrong");
+      setCreateLoding(false);
+    }
   };
 
   return (
@@ -623,7 +662,7 @@ export default function DashPOS() {
               <Modal.Body>
                 <div className="space-y-6">
                   <form
-                    onSubmit={null}
+                    onSubmit={handleSubmit}
                     className="flex flex-col flex-grow gap-4"
                   >
                     {createUserError && (
@@ -640,7 +679,7 @@ export default function DashPOS() {
                           placeholder="@username"
                           required
                           shadow
-                          onChange={handleChange}
+                          onChange={handleChange1}
                           value={formData.username}
                         />
                       </div>
@@ -654,7 +693,7 @@ export default function DashPOS() {
                           placeholder="First name"
                           required
                           shadow
-                          onChange={handleChange}
+                          onChange={handleChange1}
                           value={formData.firstname}
                         />
                       </div>
@@ -668,7 +707,7 @@ export default function DashPOS() {
                           placeholder="Last name"
                           required
                           shadow
-                          onChange={handleChange}
+                          onChange={handleChange1}
                           value={formData.lastname}
                         />
                       </div>
@@ -684,7 +723,7 @@ export default function DashPOS() {
                           placeholder="+94 xx xxx xxxx"
                           required
                           shadow
-                          onChange={handleChange}
+                          onChange={handleChange1}
                           value={formData.phone}
                         />
                       </div>
@@ -698,7 +737,7 @@ export default function DashPOS() {
                           placeholder="name@gmail.com"
                           required
                           shadow
-                          onChange={handleChange}
+                          onChange={handleChange1}
                           value={formData.email}
                         />
                       </div>
