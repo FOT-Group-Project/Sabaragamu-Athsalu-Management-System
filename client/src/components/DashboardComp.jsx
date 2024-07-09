@@ -29,9 +29,8 @@ export default function DashboardComp() {
   const [totalCreditSales, setTotalCreditSales] = useState(0);
   const [totalCreditSalesLastMonth, setTotalCreditSalesLastMonth] = useState(0);
   const [chart, setChart] = useState(null);
-  const [shops, setShops] = useState([]);
-
-  const [stores, setStores] = useState([]); //stores
+  //const [shops, setShops] = useState([]);
+  const [shops, setShops] = useState([]); //stores
 
   //calculate total sales amount
   const calculateTotalSalesAmount = () => {
@@ -273,13 +272,13 @@ export default function DashboardComp() {
     fetchSales();
   }, []);
 
-  //fetch stores
-  const fetchStores = async () => {
+  //fetch shops
+  const fetchShops = async () => {
     try {
-      const res = await fetch(`/api/store/getStores`);
+      const res = await fetch(`/api/shop/getshops`);
       const data = await res.json();
       if (res.ok) {
-        setStores(data.stores);
+        setShops(data.shops);
         if (data.store.length < 9) {
           setShowMore(false);
         }
@@ -288,7 +287,8 @@ export default function DashboardComp() {
       console.log(error.message);
     }
   };
-  fetchStores();
+
+  fetchShops();
 
   // fetch sales, users and products
   useEffect(() => {
@@ -333,11 +333,11 @@ export default function DashboardComp() {
   }, []);
 
   const handleChange = (e) => {
-    const storeId = e.target.value;
-    if (storeId) {
+    const shopId = e.target.value;
+    if (shopId) {
       const fetchSalesByShopId = async () => {
         try {
-          const res = await fetch(`/api/sales-report/getsales/${storeId}`);
+          const res = await fetch(`/api/sales-report/getsales/${shopId}`);
           const data = await res.json();
           if (res.ok) {
             setSales(data.sales);
@@ -384,14 +384,14 @@ export default function DashboardComp() {
             </h1>
 
             <select
-              id="storeId"
+              id="shopId"
               onChange={handleChange}
               className="block w-1/4 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-800 dark:text-gray-200"
             >
-              <option value="">Select Store</option>
-              {stores.map((store) => (
-                <option key={store.id} value={store.id}>
-                  {store.storeName}
+              <option value="">Select Shop</option>
+              {shops.map((shop) => (
+                <option key={shop.id} value={shop.id}>
+                  {shop.shopName}
                 </option>
               ))}
             </select>
