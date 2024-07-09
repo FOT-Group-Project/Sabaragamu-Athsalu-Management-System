@@ -2,11 +2,9 @@ const models = require("../models");
 const bcrypt = require("bcrypt");
 const errorHandler = require("../utils/error");
 
-function getUsers(req, res, next) {
-  const limit = parseInt(req.query.limit) || 9;
-  const startIndex = parseInt(req.query.startIndex) || 0;
+function getUsers(req, res) {
 
-  models.User.findAll({ limit: limit, startIndex: startIndex })
+  models.User.findAll()
     .then((users) => {
       res.status(200).json({
         success: true,

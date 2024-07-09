@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import {
+  Breadcrumb,
+  Button,
+  Label,
+  Modal,
+  Pagination,
   Table,
   TableBody,
   TableCell,
@@ -8,23 +11,20 @@ import {
   TableHeadCell,
   TableRow,
   TextInput,
-  Button,
-  Breadcrumb,
-  Datepicker,
-  Modal,
 } from "flowbite-react";
-import { useSelector } from "react-redux";
-import { Label, Select } from "flowbite-react";
-import { HiHome } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { CiViewList } from "react-icons/ci";
 import { FiPrinter } from "react-icons/fi";
+import { HiHome } from "react-icons/hi";
 import { PiExportBold } from "react-icons/pi";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import Logolight from "../assets/logolight.png";
 // import Logodark from "../assets/logodark.png";
-import { IoMdClose } from "react-icons/io";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { IoMdClose } from "react-icons/io";
 
 export default function DashSellerInvetory() {
   const { currentUser } = useSelector((state) => state.user);
@@ -41,6 +41,18 @@ export default function DashSellerInvetory() {
   const isFilterActive =
     searchQuery !== "" || salesDate !== null || salesDate !== "";
 
+  // Pagiation
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredSales.length / itemsPerPage);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  const currentData = filteredSales.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   // Function to handle search by query
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -52,7 +64,6 @@ export default function DashSellerInvetory() {
     // const date = dateString ? new Date(dateString) : null;
     setSalesDate(e.target.value);
   };
-
 
   //fetch sales
   const fetchSales = async () => {
@@ -393,7 +404,7 @@ export default function DashSellerInvetory() {
     setFilteredSales(filtered);
   };
 
-  const fetchSalesByShopId = async (shopId) => { 
+  const fetchSalesByShopId = async (shopId) => {
     try {
       const res = await fetch(`api/sales-report/getsales/${shopId}`);
       const data = await res.json();
@@ -406,8 +417,7 @@ export default function DashSellerInvetory() {
     } catch (error) {
       console.log(error.message);
     }
-  
-  }
+  };
 
   useEffect(() => {
     if (
@@ -636,11 +646,21 @@ export default function DashSellerInvetory() {
                         </Button>
                       </Button.Group>
                       <Button.Group>
-                        <Button color="gray">
+                        <Button
+                          color="gray"
+                          onClick={() => {
+                            setSelectedBillExport(selectedBill);
+                          }}
+                        >
                           <PiExportBold className="mr-3 h-4 w-4" />
                           Export
                         </Button>
-                        <Button color="gray">
+                        <Button
+                          color="gray"
+                          onClick={() => {
+                            setSelectBillPrint(selectedBill);
+                          }}
+                        >
                           <FiPrinter className="mr-3 h-4 w-4" />
                           Print
                         </Button>
@@ -653,85 +673,96 @@ export default function DashSellerInvetory() {
           </Modal>
 
           <div className="mt-4">
-            {filteredSales.length > 0 ? (
-              <Table hoverable className="shadow-md w-full">
-                <TableHead>
-                  <TableHeadCell>Bill ID</TableHeadCell>
-                  <TableHeadCell>Customer Name</TableHeadCell>
-                  <TableHeadCell>Shop Name</TableHeadCell>
-                  <TableHeadCell>Buy Date</TableHeadCell>
-                  <TableHeadCell>Buy Time</TableHeadCell>
-                  {/* <TableHeadCell>Item IDs</TableHeadCell> */}
-                  <TableHeadCell>Total Amount</TableHeadCell>
-                  <TableHeadCell></TableHeadCell>
-                </TableHead>
-                <TableBody>
-                  {filteredSales.map((bill, index) => (
-                    <TableRow
-                      key={index}
-                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                    >
-                      <TableCell>{generateBillId(bill)}</TableCell>
-                      <TableCell>
-                        {bill[0].Customer
-                          ? bill[0].Customer.firstname +
-                            " " +
-                            bill[0].Customer.lastname
-                          : "Unknown"}
-                      </TableCell>
-                      {bill[0].Shop ? (
-                        <TableCell>{bill[0].Shop.shopName}</TableCell>
-                      ) : (
-                        <TableCell>Unknown</TableCell>
-                      )}
-                      <TableCell>
-                        {new Date(bill[0].buyDateTime).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(bill[0].buyDateTime).toLocaleTimeString()}
-                      </TableCell>
-                      {/* <TableCell>
+            {currentData.length > 0 ? (
+              <>
+                <Table hoverable className="shadow-md w-full">
+                  <TableHead>
+                    <TableHeadCell>Bill ID</TableHeadCell>
+                    <TableHeadCell>Customer Name</TableHeadCell>
+                    <TableHeadCell>Shop Name</TableHeadCell>
+                    <TableHeadCell>Buy Date</TableHeadCell>
+                    <TableHeadCell>Buy Time</TableHeadCell>
+                    {/* <TableHeadCell>Item IDs</TableHeadCell> */}
+                    <TableHeadCell>Total Amount</TableHeadCell>
+                    <TableHeadCell></TableHeadCell>
+                  </TableHead>
+                  <TableBody>
+                    {currentData.map((bill, index) => (
+                      <TableRow
+                        key={index}
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                      >
+                        <TableCell>{generateBillId(bill)}</TableCell>
+                        <TableCell>
+                          {bill[0].Customer
+                            ? bill[0].Customer.firstname +
+                              " " +
+                              bill[0].Customer.lastname
+                            : "Unknown"}
+                        </TableCell>
+                        {bill[0].Shop ? (
+                          <TableCell>{bill[0].Shop.shopName}</TableCell>
+                        ) : (
+                          <TableCell>Unknown</TableCell>
+                        )}
+                        <TableCell>
+                          {new Date(bill[0].buyDateTime).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(bill[0].buyDateTime).toLocaleTimeString()}
+                        </TableCell>
+                        {/* <TableCell>
                         {bill.map((sale) => (
                           <span key={sale.id}>{sale.itemId}, </span>
                         ))}
                       </TableCell> */}
-                      <TableCell>Rs. {calculateTotalAmount(bill)}</TableCell>
-                      <TableCell>
-                        <Button.Group>
-                          <Button
-                            onClick={() => {
-                              setSelectedBill(bill);
-                              setIsModalOpen(true);
-                            }}
-                            color="gray"
-                          >
-                            <CiViewList className="mr-3 h-4 w-4" />
-                            View
-                          </Button>
-                          <Button
-                            color="gray"
-                            onClick={() => {
-                              setSelectedBillExport(bill);
-                            }}
-                          >
-                            <PiExportBold className="mr-3 h-4 w-4" />
-                            Export
-                          </Button>
-                          <Button
-                            color="gray"
-                            onClick={() => {
-                              setSelectBillPrint(bill);
-                            }}
-                          >
-                            <FiPrinter className="mr-3 h-4 w-4" />
-                            Print
-                          </Button>
-                        </Button.Group>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        <TableCell>Rs. {calculateTotalAmount(bill)}</TableCell>
+                        <TableCell>
+                          <Button.Group>
+                            <Button
+                              onClick={() => {
+                                setSelectedBill(bill);
+                                setIsModalOpen(true);
+                              }}
+                              color="gray"
+                            >
+                              <CiViewList className="mr-3 h-4 w-4" />
+                              View
+                            </Button>
+                            <Button
+                              color="gray"
+                              onClick={() => {
+                                setSelectedBillExport(bill);
+                              }}
+                            >
+                              <PiExportBold className="mr-3 h-4 w-4" />
+                              Export
+                            </Button>
+                            <Button
+                              color="gray"
+                              onClick={() => {
+                                setSelectBillPrint(bill);
+                              }}
+                            >
+                              <FiPrinter className="mr-3 h-4 w-4" />
+                              Print
+                            </Button>
+                          </Button.Group>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                <div className="flex overflow-x-auto sm:justify-center">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    showIcons
+                  />
+                </div>
+              </>
             ) : (
               <p>No sales found</p>
             )}

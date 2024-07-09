@@ -12,11 +12,15 @@ import {
   Breadcrumb,
   TextInput,
   Modal,
+  Alert,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { Label } from "flowbite-react";
 import Select from "react-select";
+import { HiInformationCircle } from "react-icons/hi";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function DashCustomerReturnItem() {
   const { currentUser } = useSelector((state) => state.user);
@@ -31,6 +35,11 @@ export default function DashCustomerReturnItem() {
   const [billDetailsMap, setBillDetailsMap] = useState({});
   const [selectedReturnItems, setSelectedReturnItems] = useState([]);
   const [returnCounts, setReturnCounts] = useState({});
+  const [returnReasons, setReturnReasons] = useState({});
+  const [returnAlert, setReturnAlert] = useState(false);
+  const [show14DayAlert, setShow14DayAlert] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -50,6 +59,9 @@ export default function DashCustomerReturnItem() {
     setSelectedBillId(selectedOption);
     setSelectedReturnItems([]);
     setReturnCounts({});
+    const billId = selectedOption.value;
+    const buyDateTime = billDetailsMap[billId][0].buyDateTime;
+    setShow14DayAlert(!isWithinReturnPeriod(buyDateTime)); // Update alert state based on date check
   };
 
   // Handle return item selection for a specific dropdown index
@@ -62,15 +74,29 @@ export default function DashCustomerReturnItem() {
   };
 
   // Handle return count change
-  const handleReturnCountChange = (itemId, count) => {
-    setReturnCounts((prevCounts) => ({
-      ...prevCounts,
-      [itemId]: count,
+  const handleReturnCountChange = (count) => {
+    setReturnCounts(parseInt(count));
+    console.log(returnCounts);
+  };
+
+  // Handle return reason change
+  const handleReturnReasonChange = (reason, index) => {
+    setReturnReasons((prevReasons) => ({
+      ...prevReasons,
+      [index]: reason,
     }));
   };
 
+  // Helper function to check if the return is within 14 days
+  const isWithinReturnPeriod = (buyDate) => {
+    const buyDateTime = new Date(buyDate).getTime();
+    const currentDateTime = new Date().getTime();
+    const diffInDays = (currentDateTime - buyDateTime) / (1000 * 3600 * 24);
+    return diffInDays <= 14;
+  };
+
   // Handle add return
-  const handleaddReturn = async () => {
+  const handleAddReturn = async () => {
     try {
       // Validate data
       const returnItemsWithCounts = selectedReturnItems.map(
@@ -80,30 +106,58 @@ export default function DashCustomerReturnItem() {
             customerId: item.customerId,
             itemId: item.itemId,
             shopId: item.shopId,
-            returnDateTime: returnDateTime,
+            returnDateTime: new Date().toISOString(),
             buyDateTime: item.buyDateTime,
-            reason: "No reason specified",
-            quantity: returnCounts[item.itemId] || 0,
+            reason: returnReasons[index] || "No reason specified",
+            quantity: returnCounts || 0,
           };
         }
       );
 
-      const res = await fetch(`/api/customerreturnitem/addcustomerreturnitems`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(returnItemsWithCounts),
-      });
+      const res = await fetch(
+        `/api/customerreturnitem/addcustomerreturnitems`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(returnItemsWithCounts),
+        }
+      );
 
       const data = await res.json();
 
       if (res.ok) {
-        alert(data.message);
-        setIsModalOpen(false);
-        fetchReturnItems(); // Refresh the return items
+        //alert(data.message);
+        setShowError(false);
+        setShow14DayAlert(false);
+        setReturnAlert(true);
+        setIsSubmitted(true);
+        // setIsModalOpen(false);
+        const fetchShopId = async () => {
+          try {
+            const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+            const data = await res.json();
+            if (res.ok) {
+              if (Array.isArray(data.shops) && data.shops.length > 0) {
+                const shopId = data.shops[0].id;
+                fetchReturnItemsbyShopId(shopId);
+                fetchSalesByShopId(shopId);
+              } else {
+                console.error("No shops found for the current user.");
+              }
+            } else {
+              console.error("API response error:", data);
+            }
+          } catch (error) {
+            console.error("Error fetching shop ID:", error);
+          }
+        };
+
+        fetchShopId();
       } else {
-        alert(data.message);
+        //alert(data.message);
+        setShowError(true);
       }
     } catch (error) {
       console.error("Error adding return items:", error);
@@ -123,17 +177,22 @@ export default function DashCustomerReturnItem() {
     }
   };
 
-
-  // Fetch return items
-  const fetchReturnItems = async () => {
+  // Fetch sales
+  const fetchSales = async () => {
     try {
-      const res = await fetch(`/api/customerreturnitem/getreturns`);
+      const res = await fetch("api/sales-report/getsales");
       const data = await res.json();
       if (res.ok) {
-        setReturnItems(data.sales);
+        // Group sales by customerId, shopId, and buyDateTime
+        const groupedSales = groupSales(data.sales);
+        const generatedBillIds = groupedSales.map(generateBillId);
+        const billDetailsMap = generateBillDetailsMap(groupedSales);
+        setSales(groupedSales);
+        setBillIds(generatedBillIds);
+        setBillDetailsMap(billDetailsMap);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error.message);
     }
   };
 
@@ -210,6 +269,19 @@ export default function DashCustomerReturnItem() {
     }
   };
 
+  // Fetch return items
+  const fetchReturnItems = async () => {
+    try {
+      const res = await fetch(`/api/customerreturnitem/getreturns`);
+      const data = await res.json();
+      if (res.ok) {
+        setReturnItems(data.sales);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Filter return items based on search query and return date
   useEffect(() => {
     if (isFilterActive) {
@@ -254,33 +326,70 @@ export default function DashCustomerReturnItem() {
   }, [searchQuery, returnDateTime, returnItems]);
 
   // Fetch return items based on user role
-  useEffect(() => {
-    if (currentUser.role === "Admin") {
-      fetchReturnItems();
-    } else if (currentUser.role === "Seller") {
-      const fetchShopId = async () => {
-        try {
-          const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
-          const data = await res.json();
-          if (res.ok) {
-            if (Array.isArray(data.shops) && data.shops.length > 0) {
-              const shopId = data.shops[0].id;
-              fetchReturnItemsbyShopId(shopId);
-              fetchSalesByShopId(shopId);
+  useEffect(
+    () => {
+      if (currentUser.role === "Admin" || currentUser.role === "Accountant") {
+        fetchReturnItems();
+        fetchSales();
+      } else if (currentUser.role === "Seller") {
+        const fetchShopId = async () => {
+          try {
+            const res = await fetch(`/api/shop/getshop/${currentUser.id}`);
+            const data = await res.json();
+            if (res.ok) {
+              if (Array.isArray(data.shops) && data.shops.length > 0) {
+                const shopId = data.shops[0].id;
+                fetchReturnItemsbyShopId(shopId);
+                fetchSalesByShopId(shopId);
+              } else {
+                console.error("No shops found for the current user.");
+              }
             } else {
-              console.error("No shops found for the current user.");
+              console.error("API response error:", data);
             }
-          } else {
-            console.error("API response error:", data);
+          } catch (error) {
+            console.error("Error fetching shop ID:", error);
           }
-        } catch (error) {
-          console.error("Error fetching shop ID:", error);
-        }
-      };
+        };
 
-      fetchShopId();
-    }
-  }, [currentUser]);
+        fetchShopId();
+      }
+    },
+    [currentUser],
+    [returnItems]
+  );
+
+  // Export to Excel
+  const exportToExcel = () => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const exportItems = filteredReturnItems.map((item) => ({
+      "Customer Name": `${item.Customer.firstname} ${item.Customer.lastname}`,
+      "Product Name": item.Product.itemName,
+      Quantity: item.quantity,
+      "Sold Price": item.BuyItem.unitPrice,
+      "Buy Date Time": new Date(item.buyDateTime).toLocaleString(),
+      "Return Date Time": new Date(item.returnDateTime).toLocaleString(),
+      Reason: item.reason,
+      "Amount Refunded": item.BuyItem.unitPrice * item.quantity,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportItems);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+    //get current date and time
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().replace(/[-T:\.Z]/g, "");
+    const fileName = `ReturnItems_${formattedDate}${fileExtension}`;
+    saveAs(
+      new Blob([excelBuffer], { type: fileType }),
+      fileName + fileExtension
+    );
+  };
+
+  //console.log(returnCounts);
 
   return (
     <div className="p-3 w-full">
@@ -305,7 +414,7 @@ export default function DashCustomerReturnItem() {
               Return Items : Report
             </h1>
 
-            <Button color="blue" className="h-10  ml-2">
+            <Button color="blue" onClick={exportToExcel} className="h-10  ml-2">
               Export to Excel
             </Button>
           </div>
@@ -334,6 +443,10 @@ export default function DashCustomerReturnItem() {
                 // style={{ backgroundColor: "red" }}
                 onClick={() => setIsModalOpen(true)}
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                style={{
+                  display:
+                    currentUser.role === "Accountant" ? "none" : "inline-block",
+                }}
               >
                 Add Retuns
               </Button>
@@ -346,11 +459,11 @@ export default function DashCustomerReturnItem() {
                 <TableHeadCell>Customer Name</TableHeadCell>
                 <TableHeadCell>Product Name</TableHeadCell>
                 <TableHeadCell>Quantity</TableHeadCell>
-                <TableHeadCell>Unit Price</TableHeadCell>
+                <TableHeadCell>Sold Price</TableHeadCell>
                 <TableHeadCell>Buy Date Time</TableHeadCell>
                 <TableHeadCell>Return Date Time</TableHeadCell>
                 <TableHeadCell>Reason</TableHeadCell>
-                <TableHeadCell>Amount Paid</TableHeadCell>
+                <TableHeadCell>Amount Refunded</TableHeadCell>
               </TableHead>
               <TableBody>
                 {(isFilterActive ? filteredReturnItems : returnItems).map(
@@ -364,7 +477,7 @@ export default function DashCustomerReturnItem() {
                       </TableCell>
                       <TableCell>{sale.Product.itemName}</TableCell>
                       <TableCell>{sale.quantity}</TableCell>
-                      <TableCell>{sale.BuyItem.unitPrice}</TableCell>
+                      <TableCell>Rs. {sale.BuyItem.unitPrice}</TableCell>
                       <TableCell>
                         {new Date(sale.buyDateTime).toLocaleString()}
                       </TableCell>
@@ -373,7 +486,7 @@ export default function DashCustomerReturnItem() {
                       </TableCell>
                       <TableCell>{sale.reason}</TableCell>
                       <TableCell>
-                        {sale.BuyItem.unitPrice * sale.quantity}
+                        Rs. {sale.BuyItem.unitPrice * sale.quantity}
                       </TableCell>
                     </TableRow>
                   )
@@ -384,7 +497,7 @@ export default function DashCustomerReturnItem() {
 
           <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-              <div className="relative w-full max-w-5xl mx-auto my-6">
+              <div className="relative w-full max-w-6xl mx-auto my-6">
                 <div className="relative flex flex-col w-full bg-white border rounded-lg shadow-lg outline-none focus:outline-none">
                   <div className="flex items-center justify-between p-5 border-b border-solid rounded-t border-gray-300">
                     <h3 className="text-lg font-semibold">Add Return Item</h3>
@@ -392,11 +505,56 @@ export default function DashCustomerReturnItem() {
                       className="p-1 ml-auto bg-transparent border-0 text-black float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
                       onClick={() => setIsModalOpen(false)}
                     >
-                      <span className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      <span
+                        className="text-black h-6 w-6 text-2xl block outline-none focus:outline-none"
+                        onClick={() => {
+                          setIsModalOpen(false);
+                          setSelectedBillId("");
+                          setShow14DayAlert(false);
+                          setReturnAlert(false);
+                          setShowError(false);
+                        }}
+                      >
                         ×
                       </span>
                     </button>
                   </div>
+                  {/* Alert Component */}
+                  {show14DayAlert && (
+                    <Alert
+                      className="mb-3"
+                      color="failure"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Info alert!</span> You can't
+                      return this item as the return period has exceeded 14
+                      days.
+                    </Alert>
+                  )}
+                  {/*Success Alert*/}
+                  {returnAlert && (
+                    <Alert
+                      className="mb-3"
+                      color="success"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Success alert!</span> Item
+                      returned successfully.
+                    </Alert>
+                  )}
+
+                  {/*Error Alert*/}
+                  {showError && (
+                    <Alert
+                      className="mb-3"
+                      color="failure"
+                      icon={HiInformationCircle}
+                    >
+                      <span className="font-medium">Error alert!</span> Error
+                      adding return items.
+                    </Alert>
+                  )}
+                  {/* Modal Content */}
                   <div className="p-6 flex-auto">
                     <Label
                       htmlFor="billIdDropdown"
@@ -440,6 +598,24 @@ export default function DashCustomerReturnItem() {
                                         .Customer.lastname
                                     }
                                   </div>
+                                  <>
+                                    <h2 className="text-lg font-bold mb-2 ml-auto">
+                                      Date:
+                                    </h2>
+                                    <div className="text-gray-700 mb-2 ml-2">
+                                      {new Intl.DateTimeFormat("en-US", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                      }).format(
+                                        new Date(
+                                          billDetailsMap[
+                                            selectedBillId.value
+                                          ][0].buyDateTime
+                                        )
+                                      )}
+                                    </div>
+                                  </>
                                 </div>
                                 <hr className="mb-2" />
                               </div>
@@ -546,25 +722,46 @@ export default function DashCustomerReturnItem() {
                                   isSearchable
                                 />
                               </div>
-                              <div className="w-1/2 pl-2">
+                              <div className="w-2/3 pl-2">
                                 <Label
-                                  htmlFor={`returnCount-${selectedItem}`}
+                                  htmlFor={`returnReasonInput-${index}`}
                                   className="block mb-2 text-sm font-medium text-gray-700"
                                 >
-                                  Return Count
+                                  Reason
                                 </Label>
                                 <TextInput
-                                  id={`returnCount-${selectedItem}`}
-                                  type="number"
-                                  value={returnCounts[selectedItem] || ""}
+                                  id={`returnReasonInput-${index}`}
+                                  type="text"
+                                  value={returnReasons[index] || ""}
                                   onChange={(e) =>
-                                    handleReturnCountChange(
-                                      selectedItem,
-                                      e.target.value
+                                    handleReturnReasonChange(
+                                      e.target.value,
+                                      index
                                     )
                                   }
-                                  placeholder="Enter return count"
-                                  className="w-full"
+                                  placeholder="Enter reason"
+                                  className="w-full h-10"
+                                />
+                              </div>
+                              <div className="w-1/3 pl-2">
+                                <Label
+                                  htmlFor={`returnCountInput-${index}`}
+                                  className="block mb-2 text-sm font-medium text-gray-700"
+                                >
+                                  Count
+                                </Label>
+                                <TextInput
+                                  id={`returnCountInput-${index}`}
+                                  type="number"
+                                  min="1"
+                                  max={
+                                    billDetailsMap[selectedBillId.value][index]
+                                      .quantity
+                                  }
+                                  onChange={(e) =>
+                                    handleReturnCountChange(e.target.value)
+                                  }
+                                  className="w-full h-10"
                                 />
                               </div>
                             </div>
@@ -585,12 +782,36 @@ export default function DashCustomerReturnItem() {
                     )}
                   </div>
                   <div className="flex items-center justify-end p-6 border-t border-solid border-gray-300 rounded-b">
-                    <Button
-                      className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
-                      onClick={handleaddReturn}
-                    >
-                      Add Returns
-                    </Button>
+                    {!isSubmitted ? (
+                      <Button
+                        className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                        onClick={handleAddReturn}
+                        disabled={
+                          selectedReturnItems.length === 0 ||
+                          Object.values(returnCounts).some(
+                            (count) => count === 0
+                          ) ||
+                          show14DayAlert === true
+                        }
+                      >
+                        Submit Return
+                      </Button>
+                    ) : (
+                      <Button
+                        className="h-10 w-36 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                        onClick={() => {
+                          // Handle close functionality here
+                          setIsModalOpen(false);
+                          setSelectedBillId("");
+                          setShow14DayAlert(false);
+                          setReturnAlert(false);
+                          setShowError(false);
+                          setIsSubmitted(false);
+                        }}
+                      >
+                        Close
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

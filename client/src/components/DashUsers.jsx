@@ -1,45 +1,44 @@
-import { React, useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeadCell,
-  TableRow,
-  Avatar,
-  Button,
-  Breadcrumb,
-  Modal,
-  Checkbox,
-  Label,
-  Alert,
-  TextInput,
-  Select,
-  Spinner,
-} from "flowbite-react";
-import { FaUserEdit } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
-import { HiHome } from "react-icons/hi";
-import { useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { app } from "../firebase";
+import {
+  Alert,
+  Avatar,
+  Breadcrumb,
+  Button,
+  Label,
+  Modal,
+  Pagination,
+  Select,
+  Spinner,
+  Table,
+  TableCell,
+  TableHead,
+  TableHeadCell,
+  TableRow,
+  TextInput,
+} from "flowbite-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { React, useEffect, useRef, useState } from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/add-pic.png";
+import { FaUserEdit } from "react-icons/fa";
 import {
-  HiOutlineExclamationCircle,
+  HiEye,
+  HiEyeOff,
+  HiHome,
   HiInformationCircle,
+  HiOutlineExclamationCircle,
   HiPlusCircle,
-  HiUserAdd,
 } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
-import { HiEye, HiEyeOff } from "react-icons/hi";
+import { MdDeleteForever } from "react-icons/md";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import Profile from "../assets/add-pic.png";
+import { app } from "../firebase";
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
   const [users, setUsers] = useState([]);
@@ -82,36 +81,51 @@ export default function DashUsers() {
     }
   };
 
+  // Pagiation
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  const currentData = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Pagination
+
   const fetchUsers = async () => {
     try {
       const res = await fetch(`/api/user/getusers`);
       const data = await res.json();
       if (res.ok) {
         setUsers(data.users);
-        if (data.users.length < 9) {
-          setShowMore(false);
-        }
+        // if (data.users.length < 9) {
+        //   setShowMore(false);
+        // }
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+  console.log(users);
 
-  const handleShowMore = async () => {
-    const startIndex = users.length;
-    try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUsers((prev) => [...prev, ...data.users]);
-        if (data.users.length < 9) {
-          setShowMore(false);
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const handleShowMore = async () => {
+  //   const startIndex = users.length;
+  //   try {
+  //     const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
+  //     const data = await res.json();
+  //     if (res.ok) {
+  //       setUsers((prev) => [...prev, ...data.users]);
+  //       if (data.users.length < 9) {
+  //         setShowMore(false);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   useEffect(
     () => {
@@ -259,7 +273,7 @@ export default function DashUsers() {
         method: "DELETE",
       });
       const data = await res.json();
-      if(res.status == 400) {
+      if (res.status == 400) {
         setShowModalDeletelock(true);
         setErrorMessage(data.message);
         setShowModal(false);
@@ -268,8 +282,7 @@ export default function DashUsers() {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
-      }
-      else {
+      } else {
         console.log(data.message);
       }
     } catch (error) {
@@ -452,35 +465,26 @@ export default function DashUsers() {
                         />
                       </div>
                       <div>
-                <Label htmlFor="password" value="Password" />
-                <div className="relative">
-                  <TextInput
-                    id="password"
-                    type={isPasswordVisible ? "text" : "password"} // Use visibility state to determine input type
-                    placeholder="**********"
-                    onChange={handleChange}
-                    required
-                    shadow
-                    disabled={imageFileUploading}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {isPasswordVisible ? <HiEyeOff /> : <HiEye />} 
-                  </button>
-                </div>
-              </div>
-
-
-
-             
-
-
-
-
-
+                        <Label htmlFor="password" value="Password" />
+                        <div className="relative">
+                          <TextInput
+                            id="password"
+                            type={isPasswordVisible ? "text" : "password"} // Use visibility state to determine input type
+                            placeholder="**********"
+                            onChange={handleChange}
+                            required
+                            shadow
+                            disabled={imageFileUploading}
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {isPasswordVisible ? <HiEyeOff /> : <HiEye />}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                     <div className="gap-2">
                       <div>
@@ -760,7 +764,7 @@ export default function DashUsers() {
             </Alert>
           )}
 
-          {currentUser.role == "Admin" && users.length > 0 ? (
+          {currentUser.role == "Admin" && currentData.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -773,7 +777,7 @@ export default function DashUsers() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {users.map((user) => (
+                {currentData.map((user) => (
                   <Table.Body className="divide-y" key={user.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white flex items-center">
@@ -818,6 +822,15 @@ export default function DashUsers() {
                   </Table.Body>
                 ))}
               </Table>
+              {/* Pagination */}
+              <div className="flex overflow-x-auto sm:justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                  showIcons
+                />
+              </div>
               {/* {showMore && (
             <button
               onClick={handleShowMore}
@@ -881,7 +894,10 @@ export default function DashUsers() {
                     {errorMessage}
                   </h3>
                   <div className="flex justify-center gap-4">
-                    <Button color="blue" onClick={() => setShowModalDeletelock(false)}>
+                    <Button
+                      color="blue"
+                      onClick={() => setShowModalDeletelock(false)}
+                    >
                       Okay
                     </Button>
                   </div>

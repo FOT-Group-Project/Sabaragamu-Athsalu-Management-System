@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { saveAs } from "file-saver";
 import {
+  Breadcrumb,
+  Button,
+  Pagination,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -8,16 +11,13 @@ import {
   TableHeadCell,
   TableRow,
   TextInput,
-  Button,
-  Breadcrumb,
-  Datepicker,
 } from "flowbite-react";
-import { useSelector } from "react-redux";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import { Label, Select } from "flowbite-react";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { HiHome } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import * as XLSX from "xlsx";
 
 export default function DashSalesReport() {
   const { currentUser } = useSelector((state) => state.user);
@@ -32,6 +32,20 @@ export default function DashSalesReport() {
 
   const isFilterActive =
     searchQuery !== "" || startDate !== null || endDate !== null;
+
+  // Pagiation
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredSales.length / itemsPerPage);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  const currentData = filteredSales.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Pagination
 
   // Handle sale type change
   const handleSaleTypeChange = (e) => {
@@ -301,34 +315,46 @@ export default function DashSalesReport() {
             </div>
           </div>
           <div className="mt-4">
-            {filteredSales.length > 0 ? (
-              <Table hoverable className="shadow-md w-full">
-                <TableHead>
-                  <TableHeadCell>Product ID</TableHeadCell>
-                  <TableHeadCell>Product Name</TableHeadCell>
-                  <TableHeadCell>Type</TableHeadCell>
-                  <TableHeadCell>Quantity</TableHeadCell>
-                  <TableHeadCell>Unit Price</TableHeadCell>
-                  <TableHeadCell>Amount Paid</TableHeadCell>
-                </TableHead>
-                <TableBody>
-                  {filteredSales.map((sale) => (
-                    <TableRow
-                      key={sale.id}
-                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                    >
-                      <TableCell>Item :{sale.itemId}</TableCell>
-                      <TableCell>{sale.productName}</TableCell>
-                      <TableCell>{sale.type}</TableCell>
-                      <TableCell>{sale.quantity}</TableCell>
-                      <TableCell>Rs. {sale.unitPrice}</TableCell>
-                      <TableCell>
-                        Rs. {sale.unitPrice * sale.quantity}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            {currentData.length > 0 ? (
+              <>
+                <Table hoverable className="shadow-md w-full">
+                  <TableHead>
+                    <TableHeadCell>Product ID</TableHeadCell>
+                    <TableHeadCell>Product Name</TableHeadCell>
+                    <TableHeadCell>Type</TableHeadCell>
+                    <TableHeadCell>Quantity</TableHeadCell>
+                    <TableHeadCell>Unit Price</TableHeadCell>
+                    <TableHeadCell>Amount Paid</TableHeadCell>
+                  </TableHead>
+                  <TableBody>
+                    {currentData.map((sale) => (
+                      <TableRow
+                        key={sale.id}
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                      >
+                        <TableCell>Item :{sale.itemId}</TableCell>
+                        <TableCell>{sale.productName}</TableCell>
+                        <TableCell>{sale.type}</TableCell>
+                        <TableCell>{sale.quantity}</TableCell>
+                        <TableCell>Rs. {sale.unitPrice}</TableCell>
+                        <TableCell>
+                          Rs. {sale.unitPrice * sale.quantity}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Pagination */}
+                <div className="flex overflow-x-auto sm:justify-center">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    showIcons
+                  />
+                </div>
+              </>
             ) : (
               <p>No sales match your search criteria!</p>
             )}
