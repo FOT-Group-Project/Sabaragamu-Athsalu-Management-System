@@ -197,7 +197,8 @@ export default function DashProducts() {
               style={{
                 display:
                   currentUser.role === "Accountant" ||
-                  currentUser.role === "Director"
+                    currentUser.role === "Director" ||
+                    currentUser.role === "StoreKeeper"
                     ? "none"
                     : "inline-block",
               }}
@@ -478,7 +479,8 @@ export default function DashProducts() {
                             style={{
                               display:
                                 currentUser.role === "Accountant" ||
-                                currentUser.role === "Director"
+                                  currentUser.role === "Director" ||
+                                  currentUser.role === "StoreKeeper"
                                   ? "none"
                                   : "inline-block",
                             }}
@@ -495,7 +497,8 @@ export default function DashProducts() {
                             style={{
                               display:
                                 currentUser.role === "Accountant" ||
-                                currentUser.role === "Director"
+                                  currentUser.role === "Director" ||
+                                  currentUser.role === "StoreKeeper"
                                   ? "none"
                                   : "inline-block",
                             }}

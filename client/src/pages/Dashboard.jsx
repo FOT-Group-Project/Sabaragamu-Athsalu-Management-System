@@ -72,9 +72,6 @@ export default function Dashboard() {
       {tab === "products" && currentUser.role === "Seller" && (
         <DashSellerProducts />
       )}
-      {tab === "products" && currentUser.role === "StoreKeeper" && (
-        <DashStoreKeeperProducts />
-      )}
 
       {tab === "products" && currentUser.role === "Director" && (
         <DashProducts />
@@ -82,6 +79,17 @@ export default function Dashboard() {
 
       {tab === "products" && currentUser.role === "Accountant" && (
         <DashProducts />
+      )}
+
+      {tab === "products" && currentUser.role === "StockQA" && <DashProducts />}
+      {tab === "products" && currentUser.role === "StoreKeeper" && (
+        <DashProducts />
+      )}
+
+      {/* add store products */}
+
+      {tab === "storeproducts" && currentUser.role === "StoreKeeper" && (
+        <DashStoreKeeperProducts />
       )}
 
       {/* dash */}
