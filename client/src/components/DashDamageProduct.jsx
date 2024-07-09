@@ -455,7 +455,26 @@ export default function fetchdamageitems() {
                         </Select>
                       </div>
 
-                    
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="item Name" />
+                        </div>
+                        <Select
+                          id="itemId"
+                          type="text"
+                          placeholder="2536f"
+                          required
+                          shadow
+                          onChange={handleChange}
+                          value={formData.itemId}
+                        >
+                          {StoredamageItem.map((storeitem) => (
+                            <option key={storeitem.id} value={storeitem.id}>
+                              {storeitem.itemId}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
                     </div>
                     <div className="flex gap-2 justify-end">
                       <Button
