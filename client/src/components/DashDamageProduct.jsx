@@ -266,7 +266,21 @@ const fetchProducts = async () => {
                         </div>
                       
                  
-                      
+                        <Select
+                          id="itemId"
+                          type="text"
+                          placeholder="2536f"
+                          required
+                          shadow
+                          onChange={handleChange}
+                        >
+                          {products.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemName}
+                            </option>
+                          ))}
+                        </Select>
+
                       </div>
                       <div>
                         <div className="mb-2 block">
