@@ -334,14 +334,7 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="quantity" />
                         </div>
-                        <TextInput
-                          id="quantity"
-                          type="number"
-                          placeholder="2"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        />
+                       
                       </div>
 
                       <div>
