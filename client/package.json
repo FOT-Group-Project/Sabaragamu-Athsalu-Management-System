@@ -1,6 +1,8 @@
 {
   "name": "client",
   "private": true,
+  "homepage": "https://sabaragamuathsalu.online",
+  "proxy": "https://backend.sabaragamuathsalu.online",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
