@@ -565,12 +565,7 @@ export default function fetchdamageitems() {
             popup
             size="md"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-            >
+           
               <Modal.Header />
               <Modal.Body>
                 <div className="text-center">
