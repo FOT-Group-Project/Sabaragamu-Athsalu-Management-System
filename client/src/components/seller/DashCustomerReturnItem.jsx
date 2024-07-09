@@ -177,16 +177,22 @@ export default function DashCustomerReturnItem() {
     }
   };
 
-  // Fetch return items
-  const fetchReturnItems = async () => {
+  // Fetch sales
+  const fetchSales = async () => {
     try {
-      const res = await fetch(`/api/customerreturnitem/getreturns`);
+      const res = await fetch("api/sales-report/getsales");
       const data = await res.json();
       if (res.ok) {
-        setReturnItems(data.sales);
+        // Group sales by customerId, shopId, and buyDateTime
+        const groupedSales = groupSales(data.sales);
+        const generatedBillIds = groupedSales.map(generateBillId);
+        const billDetailsMap = generateBillDetailsMap(groupedSales);
+        setSales(groupedSales);
+        setBillIds(generatedBillIds);
+        setBillDetailsMap(billDetailsMap);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error.message);
     }
   };
 
@@ -263,6 +269,19 @@ export default function DashCustomerReturnItem() {
     }
   };
 
+  // Fetch return items
+  const fetchReturnItems = async () => {
+    try {
+      const res = await fetch(`/api/customerreturnitem/getreturns`);
+      const data = await res.json();
+      if (res.ok) {
+        setReturnItems(data.sales);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Filter return items based on search query and return date
   useEffect(() => {
     if (isFilterActive) {
@@ -309,8 +328,9 @@ export default function DashCustomerReturnItem() {
   // Fetch return items based on user role
   useEffect(
     () => {
-      if (currentUser.role === "Admin") {
+      if (currentUser.role === "Admin" || currentUser.role === "Accountant") {
         fetchReturnItems();
+        fetchSales();
       } else if (currentUser.role === "Seller") {
         const fetchShopId = async () => {
           try {
@@ -340,29 +360,33 @@ export default function DashCustomerReturnItem() {
   );
 
   // Export to Excel
-  const exportToExcel = () => { 
-    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-    const fileExtension = '.xlsx';
+  const exportToExcel = () => {
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
     const exportItems = filteredReturnItems.map((item) => ({
       "Customer Name": `${item.Customer.firstname} ${item.Customer.lastname}`,
       "Product Name": item.Product.itemName,
-      "Quantity": item.quantity,
+      Quantity: item.quantity,
       "Sold Price": item.BuyItem.unitPrice,
       "Buy Date Time": new Date(item.buyDateTime).toLocaleString(),
       "Return Date Time": new Date(item.returnDateTime).toLocaleString(),
-      "Reason": item.reason,
+      Reason: item.reason,
       "Amount Refunded": item.BuyItem.unitPrice * item.quantity,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportItems);
-    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
     //get current date and time
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().replace(/[-T:\.Z]/g, "");
     const fileName = `ReturnItems_${formattedDate}${fileExtension}`;
-    saveAs(new Blob([excelBuffer], {type: fileType}), fileName + fileExtension);
+    saveAs(
+      new Blob([excelBuffer], { type: fileType }),
+      fileName + fileExtension
+    );
   };
 
   //console.log(returnCounts);
@@ -419,6 +443,10 @@ export default function DashCustomerReturnItem() {
                 // style={{ backgroundColor: "red" }}
                 onClick={() => setIsModalOpen(true)}
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
+                style={{
+                  display:
+                    currentUser.role === "Accountant" ? "none" : "inline-block",
+                }}
               >
                 Add Retuns
               </Button>
