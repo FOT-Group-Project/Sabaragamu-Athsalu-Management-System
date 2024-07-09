@@ -17,6 +17,7 @@ import {
   TextInput,
   Select,
   Spinner,
+  Pagination,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -57,6 +58,20 @@ export default function DashStores() {
   const [createLoding, setCreateLoding] = useState(null);
 
   const [storeKeeper, setStoreKeeper] = useState([]);
+
+   // Pagiation
+   const [currentPage, setCurrentPage] = useState(1);
+   const itemsPerPage = 5;
+   const totalPages = Math.ceil(skeeperMstores.length / itemsPerPage);
+ 
+   const onPageChange = (page) => setCurrentPage(page);
+ 
+   const currentData = skeeperMstores.slice(
+     (currentPage - 1) * itemsPerPage,
+     currentPage * itemsPerPage
+   );
+ 
+   // Pagination
 
   //fetch StoreKeeperManageStore data
   const fetchStoreKeeperManageStore = async () => {
@@ -561,7 +576,7 @@ export default function DashStores() {
 
           
 
-          {currentUser.role == "Admin" && skeeperMstores.length > 0 ? (
+          {currentUser.role == "Admin" && currentData.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -575,7 +590,7 @@ export default function DashStores() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {skeeperMstores.map((store) => (
+                {currentData.map((store) => (
                   
                   <Table.Body className="divide-y" key={store.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
@@ -613,6 +628,15 @@ export default function DashStores() {
                   </Table.Body>
                 ))}
               </Table>
+              {/* Pagination */}
+              <div className="flex overflow-x-auto sm:justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                  showIcons
+                />
+              </div>
               {/* {showMore && (
             <button
               onClick={handleShowMore}
