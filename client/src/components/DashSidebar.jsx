@@ -19,6 +19,7 @@ import { RiFileDamageFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { signoutSuccess } from "../redux/user/userSlice";
+import { BsFillHouseAddFill } from "react-icons/bs";
 
 export default function DashSidebar() {
   const { currentUser } = useSelector((state) => state.user);
@@ -315,6 +316,16 @@ export default function DashSidebar() {
                     active={tab === "products"}
                   >
                     Products
+                  </Sidebar.Item>
+                </Link>
+
+                <Link to="/dashboard?tab=storeproducts">
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={BsFillHouseAddFill}
+                    active={tab === "storeproducts"}
+                  >
+                  Store Products
                   </Sidebar.Item>
                 </Link>
 
