@@ -294,17 +294,42 @@ export default function fetchdamageitems() {
                     <div className="flex gap-2 mb-4">
                       <div>
                         <div className="mb-2 block">
-                          <Label value="Date" />
+                          <Label value="Store Name" />
                         </div>
-                        <TextInput
-                          id="date"
-                          type="date"
-                          placeholder="2021-09-05"
+                        <Select
+                          id="storeId"
+                          onChange={handleChange}
                           required
                           shadow
-                          onChange={handleChange}
-                        />
+                        >
+                          <option value="">Select a store</option>
+                          {stores.map((store) => (
+                            <option key={store.id} value={store.id}>
+                              {store.storeName}
+                            </option>
+                          ))}
+                        </Select>
                       </div>
+
+                      <div>
+                        <div className="mb-2 block">
+                          <Label value="Product" />
+                        </div>
+                        <Select
+                          id="itemId"
+                          onChange={handleChange}
+                          required
+                          shadow
+                        >
+                          <option value="">Select a product</option>
+                          {storeProducts.map((product) => (
+                            <option key={product.id} value={product.id}>
+                              {product.itemName}
+                            </option>
+                          ))}
+                        </Select>
+                      </div>
+
                       <div>
                         <div className="mb-2 block">
                           <Label value="quantity" />
@@ -318,37 +343,19 @@ export default function fetchdamageitems() {
                           onChange={handleChange}
                         />
                       </div>
+
                       <div>
                         <div className="mb-2 block">
-                          <Label value="storeId" />
+                          <Label value="Date" />
                         </div>
                         <TextInput
-                          id="storeId"
-                          type="text"
-                          placeholder="2536f"
+                          id="date"
+                          type="date"
+                          placeholder="2021-09-05"
                           required
                           shadow
                           onChange={handleChange}
                         />
-                      </div>
-                      <div>
-                        <div className="mb-2 block">
-                          <Label value="ItemId" />
-                        </div>
-                        <Select
-                          id="itemId"
-                          type="text"
-                          placeholder="2536f"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        >
-                          {StoredamageItem.map((storeitem) => (
-                            <option key={storeitem.id} value={storeitem.id}>
-                              {storeitem.itemId}
-                            </option>
-                          ))}
-                        </Select>
                       </div>
                     </div>
 
