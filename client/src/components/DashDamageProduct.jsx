@@ -56,6 +56,14 @@ export default function fetchdamageitems() {
   const [storeitems, setStoreItems] = useState([]);
   const [StoredamageItem, setStoredamageItems] = useState([]);
 
+  const [products, setProducts] = useState([]);
+  const [storeProducts, setStoreProducts] = useState([]);
+  const [productIdToDelete, setproductIdToDelete] = useState("");
+  const [storeNames, setStoreNames] = useState([]);
+  const [itemNames, setItemNames] = useState([]);
+
+  const [stores, setStores] = useState([]);
+
   //sed data to afer click submit buttern the storekeeperdamageitem table
   const handleSubmit = async (e) => {
     e.preventDefault();
