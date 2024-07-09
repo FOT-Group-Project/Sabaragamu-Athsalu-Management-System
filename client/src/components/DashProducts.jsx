@@ -192,6 +192,10 @@ export default function DashProducts() {
               color="blue"
               size="sm"
               onClick={() => setOpenModal(true)}
+              style={{
+                display:
+                  currentUser.role === "Accountant" ? "none" : "inline-block",
+              }}
             >
               <HiPlusCircle className="mr-2 h-4 w-4" />
               Add Product
@@ -466,6 +470,12 @@ export default function DashProducts() {
                               setFormData(product);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Accountant"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <FaUserEdit className="mr-3 h-4 w-4" />
                             Edit
@@ -476,6 +486,12 @@ export default function DashProducts() {
                               setproductIdToDelete(product.id);
                             }}
                             color="gray"
+                            style={{
+                              display:
+                                currentUser.role === "Accountant"
+                                  ? "none"
+                                  : "inline-block",
+                            }}
                           >
                             <MdDeleteForever className="mr-3 h-4 w-4" />
                             Delete

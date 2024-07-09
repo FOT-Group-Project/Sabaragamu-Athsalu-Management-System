@@ -80,6 +80,10 @@ export default function Dashboard() {
         <DashDirectorProducts />
       )}
 
+      {tab === "products" && currentUser.role === "Accountant" && (
+        <DashProducts />
+      )}
+
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (
@@ -111,6 +115,10 @@ export default function Dashboard() {
 
       {/*Return Items */}
       {tab === "returnItems" && currentUser.role === "Seller" && (
+        <DashCustomerReturnItem />
+      )}
+
+      {tab === "returnItems" && currentUser.role === "Accountant" && (
         <DashCustomerReturnItem />
       )}
     </div>
