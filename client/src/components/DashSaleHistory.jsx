@@ -422,7 +422,8 @@ export default function DashSellerInvetory() {
   useEffect(() => {
     if (
       currentUser.role === "Accountant" ||
-      currentUser.role === "Admin"
+      currentUser.role === "Admin" ||
+      currentUser.role === "Director"
     ) {
       fetchSales();
     } else if (currentUser.role === "Seller") {
