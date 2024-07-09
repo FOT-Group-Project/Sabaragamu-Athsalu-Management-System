@@ -18,9 +18,9 @@ import DashSellerSendStock from "../components/seller/DashSellerSendStock";
 import SellerDashboardHome from "../components/seller/SellerDashboardHome";
 
 import DashSalesReport from "../components/DashSalesReport";
-import AccountantDashboardHome from "../components/accountant/AccountantDashboardHome";
-import DashDirectorProducts from "../components/director/DashDirectorProducts";
-import DirectorDashboardHome from "../components/director/DirectorDashboardHome";
+// import AccountantDashboardHome from "../components/accountant/AccountantDashboardHome";
+// import DashDirectorProducts from "../components/director/DashDirectorProducts";
+// import DirectorDashboardHome from "../components/director/DirectorDashboardHome";
 import StockQADashboardHome from "../components/stockqa/StockQADashboardHome";
 import DashStoreKeeperProducts from "../components/storeKeeper/DashStoreKeeperProducts";
 import DashStoreKeeperSendStock from "../components/storeKeeper/DashStoreKeeperSendStock";
@@ -76,9 +76,9 @@ export default function Dashboard() {
         <DashStoreKeeperProducts />
       )}
 
-      {tab === "products" && currentUser.role === "Director" && (
+      {/* {tab === "products" && currentUser.role === "Director" && (
         <DashDirectorProducts />
-      )}
+      )} */}
 
       {tab === "products" && currentUser.role === "Accountant" && (
         <DashProducts />
@@ -86,6 +86,8 @@ export default function Dashboard() {
 
       {/* dash */}
       {tab === "dash" && currentUser.role === "Admin" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Accountant" && <DashboardComp />}
+      {tab === "dash" && currentUser.role === "Director" && <DashboardComp />}
       {tab === "dash" && currentUser.role === "Seller" && (
         <SellerDashboardHome />
       )}
@@ -93,13 +95,13 @@ export default function Dashboard() {
         <StoreKeeperDashboardHome />
       )}
 
-      {tab === "dash" && currentUser.role === "Director" && (
+      {/* {tab === "dash" && currentUser.role === "Director" && (
         <DirectorDashboardHome />
-      )}
+      )} */}
 
-      {tab === "dash" && currentUser.role === "Accountant" && (
+      {/* {tab === "dash" && currentUser.role === "Accountant" && (
         <AccountantDashboardHome />
-      )}
+      )} */}
 
       {tab === "dash" && currentUser.role === "StockQA" && (
         <StockQADashboardHome />
