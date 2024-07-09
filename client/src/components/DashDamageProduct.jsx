@@ -122,24 +122,24 @@ const [products, setProducts] = useState([]);
     }
   };
 
-
-
-  //get data product data from product table
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch(`/api/product/getallproducts`);
-      const data = await res.json();
-      if (res.ok) {
-        setProducts(data.products);
-        if (data.product.length < 9) {
-          setShowMore(false);
-        }
+//get data product data from product table
+const fetchProducts = async () => {
+  try {
+    const res = await fetch(`/api/product/getallproducts`);
+    const data = await res.json();
+    if (res.ok) {
+      setProducts(data.products);
+      if (data.product.length < 9) {
+        setShowMore(false);
       }
-    } catch (error) {
-      console.log(error.message);
     }
-  };
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+
+  
 
   useEffect(() => {
     fetchProducts();
