@@ -17,6 +17,7 @@ import {
   TextInput,
   Select,
   Spinner,
+  Badge,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -27,6 +28,8 @@ import {
   HiOutlineExclamationCircle,
   HiPlusCircle,
   HiUserAdd,
+  HiXCircle,
+  HiCheckCircle,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -41,7 +44,9 @@ export default function DashSellerProducts() {
       const shopIdRes = await fetch(`/api/shop/getshop/${currentUser.id}`);
       const shopIdData = await shopIdRes.json();
       if (shopIdRes.ok) {
-        const productsRes = await fetch(`/api/shop-item/getshopitems/${shopIdData.shops[0].id}`);
+        const productsRes = await fetch(
+          `/api/shop-item/getshopitems/${shopIdData.shops[0].id}`
+        );
         const productsData = await productsRes.json();
         if (productsRes.ok) {
           setProducts(productsData.shopItems);
@@ -89,7 +94,7 @@ export default function DashSellerProducts() {
                   <TableHeadCell>SKU</TableHeadCell>
                   <TableHeadCell>Type</TableHeadCell>
                   <TableHeadCell>Manufacturer</TableHeadCell>
-                  <TableHeadCell>Store Name</TableHeadCell>
+
                   <TableHeadCell>Quantity</TableHeadCell>
                   <TableHeadCell>Price</TableHeadCell>
                 </TableHead>
@@ -102,8 +107,17 @@ export default function DashSellerProducts() {
                       <TableCell>{product.item.sku}</TableCell>
                       <TableCell>{product.item.itemType}</TableCell>
                       <TableCell>{product.item.manufacturer}</TableCell>
-                      <TableCell>{product.item.store.storeName}</TableCell>
-                      <TableCell>{product.item.itemQuantity}</TableCell>
+                      <TableCell>
+                        <Badge
+                          className="pl-3 pr-3 w-28"
+                          color={product.quantity > 0 ? "green" : "red"}
+                          icon={
+                            product.quantity > 0 ? HiCheckCircle : HiXCircle
+                          }
+                        >
+                          {product.quantity} in stock
+                        </Badge>
+                      </TableCell>
                       <TableCell>Rs. {product.item.itemPrice}</TableCell>
                     </TableRow>
                   </Table.Body>

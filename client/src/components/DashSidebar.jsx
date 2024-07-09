@@ -106,7 +106,7 @@ export default function DashSidebar() {
                 <Link to="/dashboard?tab=sendstock">
                   <Sidebar.Item
                     className="mt-2 mb-2"
-                    active={tab === "pos"}
+                    active={tab === "sendstock"}
                     icon={HiSortAscending}
                     labelColor="dark"
                     as="div"
@@ -136,13 +136,21 @@ export default function DashSidebar() {
                 </Link>
 
                 <Link to="/dashboard?tab=saleHistory">
-                  <Sidebar.Item className="mt-2 mb-2" icon={HiClipboardList}>
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiClipboardList}
+                    active={tab === "saleHistory"}
+                  >
                     Sales History
                   </Sidebar.Item>
                 </Link>
 
                 <Link to="/dashboard?tab=salesReport">
-                  <Sidebar.Item className="mt-2 mb-2" icon={HiTable}>
+                  <Sidebar.Item
+                    className="mt-2 mb-2"
+                    icon={HiTable}
+                    active={tab === "salesReport"}
+                  >
                     Sales Report
                   </Sidebar.Item>
                 </Link>

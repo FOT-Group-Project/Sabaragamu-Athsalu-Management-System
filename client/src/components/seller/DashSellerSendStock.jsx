@@ -130,19 +130,19 @@ export default function DashSellerSendStock() {
         setCreateLoding(false);
         setOpenModal(false);
         setCreateUserError(null);
-  
+
         // Update local state with updated stock data
-        const updatedProducts = allProducts.map(product => {
+        const updatedProducts = allProducts.map((product) => {
           if (product.id === sendItemId) {
             return {
               ...product,
-              quantity: product.quantity - formData.quantity
+              quantity: product.quantity - formData.quantity,
             };
           }
           return product;
         });
         setAllProducts(updatedProducts);
-  
+
         Toast.success("Stock sent successfully!");
       } else {
         setCreateUserError(data.message);
@@ -153,7 +153,6 @@ export default function DashSellerSendStock() {
       setCreateLoding(false);
     }
   };
-  
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -335,7 +334,6 @@ export default function DashSellerSendStock() {
                       <TableHeadCell>Product Name</TableHeadCell>
                       <TableHeadCell>SKU</TableHeadCell>
                       <TableHeadCell>Manufacturer</TableHeadCell>
-                      <TableHeadCell>Store Name</TableHeadCell>
                       <TableHeadCell>Price</TableHeadCell>
                       <TableHeadCell>Quantity</TableHeadCell>
                       <TableHeadCell></TableHeadCell>
@@ -351,12 +349,11 @@ export default function DashSellerSendStock() {
                           </TableCell>
                           <TableCell>{product.item.sku}</TableCell>
                           <TableCell>{product.item.manufacturer}</TableCell>
-                          <TableCell>{product.item.store.storeName}</TableCell>
                           <TableCell>Rs. {product.item.itemPrice}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-2">
                               <Badge
-                                className="pl-3 pr-3"
+                                className="pl-3 pr-3  w-28"
                                 color={product.quantity > 0 ? "green" : "red"}
                                 icon={
                                   product.quantity > 0
