@@ -414,10 +414,9 @@ export default function fetchdamageitems() {
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
-                  <TableHeadCell> ID</TableHeadCell>
-                  <TableHeadCell>Date</TableHeadCell>
-                  <TableHeadCell>itemId </TableHeadCell>
-                  <TableHeadCell>storeId </TableHeadCell>
+                  <TableHeadCell>Product Name</TableHeadCell>
+                  <TableHeadCell>SKU</TableHeadCell>
+                  <TableHeadCell>Store Name</TableHeadCell>
                   <TableHeadCell>quantity </TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
@@ -427,11 +426,10 @@ export default function fetchdamageitems() {
                 {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell>ST:{shop.id}</TableCell>
-                      <TableCell>{shop.date}</TableCell>
+                      <TableCell>{shop.item.itemName}</TableCell>
+                      <TableCell>{shop.item.sku}</TableCell>
+                      <TableCell>{shop.store.storeName}</TableCell>
                       <TableCell>{shop.quantity}</TableCell>
-                      <TableCell>{shop.storeId}</TableCell>
-                      <TableCell>{shop.itemId}</TableCell>
 
                       <TableCell>
                         <Button.Group>
