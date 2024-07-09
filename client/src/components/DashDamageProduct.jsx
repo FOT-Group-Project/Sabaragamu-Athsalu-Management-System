@@ -64,6 +64,35 @@ export default function fetchdamageitems() {
 
   const [stores, setStores] = useState([]);
 
+
+  const fetchStoreProducts = async () => {
+    try {
+      const storeRes = await fetch(
+        `/api/storekeepermanagestore/getstoresbystorekeeperid/${currentUser.id}`
+      );
+
+      const storeData = await storeRes.json();
+
+      if (storeRes.ok) {
+        const productsRes = await fetch(
+          `/api/store-item/getstoreitems/${storeData.stores[0].storeId}`
+        );
+
+        const productsData = await productsRes.json();
+
+        if (productsRes.ok) {
+          setProducts(productsData.storeItems);
+          if (productsData.storeItems.length < 9) {
+            setShowMore(false);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
   //sed data to afer click submit buttern the storekeeperdamageitem table
   const handleSubmit = async (e) => {
     e.preventDefault();
