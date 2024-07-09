@@ -64,7 +64,6 @@ export default function fetchdamageitems() {
 
   const [stores, setStores] = useState([]);
 
-
   const fetchStoreProducts = async () => {
     try {
       const storeRes = await fetch(
@@ -92,7 +91,6 @@ export default function fetchdamageitems() {
     }
   };
 
-
   const fetchStores = async () => {
     try {
       const storeRes = await fetch(`/api/store/getstores`);
@@ -105,9 +103,6 @@ export default function fetchdamageitems() {
       console.log(error.message);
     }
   };
-
- 
-
 
   const fetchProducts = async () => {
     try {
@@ -134,41 +129,11 @@ export default function fetchdamageitems() {
     fetchStores();
   }, [currentUser.id]);
 
-
-
-
-
-
-  //fetch storitem data from storeitem table
-
-  const fetchStoreItems = async () => {
-    try {
-      const response = await fetch("/api/stordamageproduct/getstoritem");
-      const data = await response.json();
-      setStoredamageItems(data.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   useEffect(() => {
     if (currentUser.role === "StoreKeeper") {
       fetchStoreItems();
     }
   }, []);
-
-  //fetch storedamadeitem data from StoredamageItem table
-  const fetchStoredamageItems = async () => {
-    try {
-      const response = await fetch("/api/stordamageproduct/getStoredamageItem");
-      const data = await response.json();
-      setStoreItems(data.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -209,6 +174,40 @@ export default function fetchdamageitems() {
     }
   }, []);
 
+  const fetchStoreItems = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getstoritem");
+      const data = await response.json();
+      setStoredamageItems(data.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
+      fetchStoreItems();
+    }
+  }, []);
+
+  //fetch storedamadeitem data from StoredamageItem table
+  const fetchStoredamageItems = async () => {
+    try {
+      const response = await fetch("/api/stordamageproduct/getStoredamageItem");
+      const data = await response.json();
+      setStoreItems(data.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  //affter sending the data to the database table refresh the page
+  useEffect(() => {
+    if (currentUser.role === "StoreKeeper") {
+      fetchStoredamageItems();
+    }
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
     console.log(formData);
@@ -232,12 +231,16 @@ export default function fetchdamageitems() {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
         fetchUsers();
+        setShowModal(false);
+        fetchStoredamageItems();
       } else {
         console.log(data.message);
       }
     } catch (error) {
       console.log(error.message);
     }
+    setShowModal(false);
+    fetchStoredamageItems();
   };
 
   return (
