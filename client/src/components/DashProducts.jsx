@@ -515,16 +515,16 @@ export default function DashProducts() {
 
               {/* Pagination */}
               <div className="flex overflow-x-auto sm:justify-center">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={onPageChange}
-                  showIcons
-                />
-              </div>
-            </>
-          ) : (
-            <p>You have no store yet!</p>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    showIcons
+                  />
+                </div>
+              </>
+            ) : (
+              <p>You have no store yet!</p>
           )}
           <Modal
             show={showModal}

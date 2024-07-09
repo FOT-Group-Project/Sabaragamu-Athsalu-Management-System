@@ -13,6 +13,7 @@ import {
   TextInput,
   Modal,
   Alert,
+  Pagination,
 } from "flowbite-react";
 import { HiHome } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -40,6 +41,19 @@ export default function DashCustomerReturnItem() {
   const [show14DayAlert, setShow14DayAlert] = useState(false);
   const [showError, setShowError] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  
+  const totalPages = Math.ceil(returnItems.length / itemsPerPage);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  const currentData = filteredReturnItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
 
   // Determine if the filter is active
   const isFilterActive = searchQuery.length > 0 || returnDateTime !== null;
@@ -288,13 +302,23 @@ export default function DashCustomerReturnItem() {
     if (isFilterActive) {
       setFilteredReturnItems(
         returnItems.filter((item) => {
+          const searchTerms = searchQuery.toLowerCase().split(" ");
+
+          const matchesName =
+            searchTerms.length === 2
+              ? item.Customer.firstname
+                  .toLowerCase()
+                  .includes(searchTerms[0]) &&
+                item.Customer.lastname.toLowerCase().includes(searchTerms[1])
+              : item.Customer.firstname
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                item.Customer.lastname
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase());
+
           const matchesSearchQuery =
-            item.Customer.firstname
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            item.Customer.lastname
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
+            matchesName ||
             item.Product.itemName
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
@@ -302,16 +326,11 @@ export default function DashCustomerReturnItem() {
             item.BuyItem.unitPrice
               .toString()
               .includes(searchQuery.toLowerCase()) ||
-            item.buyDateTime
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            item.returnDateTime
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
             item.reason.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (item.BuyItem.unitPrice * item.quantity)
               .toString()
               .includes(searchQuery.toLowerCase());
+
           // Check if return date matches
           const matchesReturnDate = returnDateTime
             ? new Date(item.returnDateTime).toISOString().split("T")[0] ===
@@ -325,6 +344,7 @@ export default function DashCustomerReturnItem() {
       setFilteredReturnItems(returnItems);
     }
   }, [searchQuery, returnDateTime, returnItems]);
+
 
   // Fetch return items based on user role
   useEffect(
@@ -446,7 +466,10 @@ export default function DashCustomerReturnItem() {
                 className="h-10 w-32 ml-2 bg-red-500 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-700"
                 style={{
                   display:
-                    currentUser.role === "Accountant" || currentUser.role==="Director" ? "none" : "inline-block",
+                    currentUser.role === "Accountant" ||
+                    currentUser.role === "Director"
+                      ? "none"
+                      : "inline-block",
                 }}
               >
                 Add Retuns
@@ -455,45 +478,59 @@ export default function DashCustomerReturnItem() {
           </div>
 
           <div className="mt-4">
-            <Table hoverable className="shadow-md w-full">
-              <TableHead>
-                <TableHeadCell>Customer Name</TableHeadCell>
-                <TableHeadCell>Product Name</TableHeadCell>
-                <TableHeadCell>Quantity</TableHeadCell>
-                <TableHeadCell>Sold Price</TableHeadCell>
-                <TableHeadCell>Buy Date Time</TableHeadCell>
-                <TableHeadCell>Return Date Time</TableHeadCell>
-                <TableHeadCell>Reason</TableHeadCell>
-                <TableHeadCell>Amount Refunded</TableHeadCell>
-              </TableHead>
-              <TableBody>
-                {(isFilterActive ? filteredReturnItems : returnItems).map(
-                  (sale) => (
-                    <TableRow
-                      key={sale.id}
-                      className="bg-white dark:border-gray-700 dark:bg-gray-800"
-                    >
-                      <TableCell>
-                        {`${sale.Customer.firstname} ${sale.Customer.lastname}`}
-                      </TableCell>
-                      <TableCell>{sale.Product.itemName}</TableCell>
-                      <TableCell>{sale.quantity}</TableCell>
-                      <TableCell>Rs. {sale.BuyItem.unitPrice}</TableCell>
-                      <TableCell>
-                        {new Date(sale.buyDateTime).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(sale.returnDateTime).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{sale.reason}</TableCell>
-                      <TableCell>
-                        Rs. {sale.BuyItem.unitPrice * sale.quantity}
-                      </TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-            </Table>
+            {returnItems.length > 0 ? (
+              <>
+                <Table hoverable className="shadow-md w-full">
+                  <TableHead>
+                    <TableHeadCell>Customer Name</TableHeadCell>
+                    <TableHeadCell>Product Name</TableHeadCell>
+                    <TableHeadCell>Quantity</TableHeadCell>
+                    <TableHeadCell>Sold Price</TableHeadCell>
+                    <TableHeadCell>Buy Date Time</TableHeadCell>
+                    <TableHeadCell>Return Date Time</TableHeadCell>
+                    <TableHeadCell>Reason</TableHeadCell>
+                    <TableHeadCell>Amount Refunded</TableHeadCell>
+                  </TableHead>
+                  <TableBody>
+                    {currentData.map((sale) => (
+                      <TableRow
+                        key={sale.id}
+                        className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                      >
+                        <TableCell>
+                          {`${sale.Customer.firstname} ${sale.Customer.lastname}`}
+                        </TableCell>
+                        <TableCell>{sale.Product.itemName}</TableCell>
+                        <TableCell>{sale.quantity}</TableCell>
+                        <TableCell>Rs. {sale.BuyItem.unitPrice}</TableCell>
+                        <TableCell>
+                          {new Date(sale.buyDateTime).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(sale.returnDateTime).toLocaleString()}
+                        </TableCell>
+                        <TableCell>{sale.reason}</TableCell>
+                        <TableCell>
+                          Rs. {sale.BuyItem.unitPrice * sale.quantity}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {/* Pagination */}
+                <div className="flex overflow-x-auto sm:justify-center">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                    showIcons
+                  />
+                </div>
+              </>
+            ) : (
+              <p>You have no store yet!</p>
+            )}
           </div>
 
           <Modal show={isModalOpen} onClose={() => setIsModalOpen(false)}>
