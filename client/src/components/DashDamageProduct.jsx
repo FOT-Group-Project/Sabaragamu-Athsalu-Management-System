@@ -583,7 +583,9 @@ export default function fetchdamageitems() {
                       Yes, I'm sure
                     </Button>
                     
-                   
+                    <Button color="gray" onClick={() => setShowModal(false)}>
+                      No, cancel
+                    </Button>
                   </div>
                 </div>
               </Modal.Body>
