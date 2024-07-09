@@ -138,6 +138,28 @@ export default function fetchdamageitems() {
     }
   };
 
+
+  const fetchProducts = async () => {
+    try {
+      // Fetch all products using the API endpoint
+      const productsRes = await fetch(`/api/product/getallproducts`);
+      const productsData = await productsRes.json();
+      if (productsRes.ok) {
+        // Set the products state with the products array from the response
+        setStoreProducts(productsData.products);
+
+        if (productsData.products.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+
+
   //fetch storitem data from storeitem table
 
   const fetchStoreItems = async () => {
