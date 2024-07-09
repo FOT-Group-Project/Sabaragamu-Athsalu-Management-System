@@ -579,11 +579,11 @@ export default function fetchdamageitems() {
                     Are you sure you want to delete this user?
                   </h3>
                   <div className="flex justify-center gap-4">
-                  
-
-                    <Button color="gray" onClick={() => setShowModal(false)}>
-                      No, cancel
+                    <Button color="failure" onClick={handleDeleteUser}>
+                      Yes, I'm sure
                     </Button>
+                    
+                   
                   </div>
                 </div>
               </Modal.Body>
