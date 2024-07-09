@@ -58,6 +58,7 @@ export default function fetchdamageitems() {
   const [createLoding, setCreateLoding] = useState(false);
   const [storeitems, setStoreItems] = useState([]);
 
+
 const [products, setProducts] = useState([]);
   const [StoredamageItem, setStoredamageItems] = useState([]);
 
@@ -111,16 +112,24 @@ const [products, setProducts] = useState([]);
     }
   }, []);
 
+
+
+
+
   //fetch storedamadeitem data from StoredamageItem table
   const fetchStoredamageItems = async () => {
     try {
-      const response = await fetch("/api/stordamageproduct/getStoredamageItem");
+      const response = await fetch("/api/store-item/getStoredamageItem");
       const data = await response.json();
       setStoreItems(data.data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
+//get data storeitem id form storeietm table
+
+
 
 //get data product data from product table
 const fetchProducts = async () => {
@@ -296,7 +305,7 @@ const fetchProducts = async () => {
                         >
                           {storeitems.map((storeitem) => (
                             <option key={storeitem.id} value={storeitem.id}>
-                              {storeitem.itemId}
+                              {storeitem.storeId}
                             </option>
                           ))}
                         </Select>

@@ -53,6 +53,11 @@ function getProductId(req, res) {
 }
 
 
+//get storeid form storeiem table
+
+
+
+
 
 //get StoredamageItem from StoredamageItem table
 function getDamageProduct(req, res) {
