@@ -17,6 +17,7 @@ import {
   TextInput,
   Select,
   Spinner,
+  Pagination,
 } from "flowbite-react";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
@@ -56,6 +57,20 @@ export default function DashShops() {
 
   const [seller, setSeller] = useState([]);
 
+   // Pagiation
+   const [currentPage, setCurrentPage] = useState(1);
+   const itemsPerPage = 5;
+   const totalPages = Math.ceil(shops.length / itemsPerPage);
+ 
+   const onPageChange = (page) => setCurrentPage(page);
+ 
+   const currentData = shops.slice(
+     (currentPage - 1) * itemsPerPage,
+     currentPage * itemsPerPage
+   );
+ 
+   // Pagination
+
   const fetchSellers = async () => {
     try {
       const res = await fetch(`/api/user/getsellers`);
@@ -74,9 +89,9 @@ export default function DashShops() {
       const data = await res.json();
       if (res.ok) {
         setShops(data.shops);
-        if (data.shop.length < 9) {
-          setShowMore(false);
-        }
+        // if (data.shop.length < 9) {
+        //   setShowMore(false);
+        // }
       }
     } catch (error) {
       console.log(error.message);
@@ -421,7 +436,7 @@ export default function DashShops() {
             </motion.div>
           </Modal>
 
-          {currentUser.role == "Admin" && shops.length > 0 ? (
+          {currentUser.role == "Admin" && currentData.length > 0 ? (
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
@@ -474,6 +489,16 @@ export default function DashShops() {
                   </Table.Body>
                 ))}
               </Table>
+
+              {/* Pagination */}
+              <div className="flex overflow-x-auto sm:justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                  showIcons
+                />
+              </div>
               {/* {showMore && (
             <button
               onClick={handleShowMore}

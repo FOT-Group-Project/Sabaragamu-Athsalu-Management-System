@@ -1,43 +1,30 @@
-import { React, useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
 import {
+  Alert,
+  Breadcrumb,
+  Button,
+  Label,
+  Modal,
+  Pagination,
+  Spinner,
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeadCell,
   TableRow,
-  Avatar,
-  Button,
-  Breadcrumb,
-  Modal,
-  Checkbox,
-  Label,
-  Alert,
   TextInput,
-  Select,
-  Spinner,
 } from "flowbite-react";
-import { FaUserEdit } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
-import { HiHome } from "react-icons/hi";
-import { useSelector } from "react-redux";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { app } from "../firebase";
-import { CircularProgressbar } from "react-circular-progressbar";
+import { AnimatePresence, motion } from "framer-motion";
+import { React, useEffect, useState } from "react";
 import "react-circular-progressbar/dist/styles.css";
-import Profile from "../assets/add-pic.png";
+import { FaUserEdit } from "react-icons/fa";
 import {
+  HiHome,
   HiOutlineExclamationCircle,
   HiPlusCircle,
-  HiUserAdd,
 } from "react-icons/hi";
-import { motion, AnimatePresence } from "framer-motion";
+import { MdDeleteForever } from "react-icons/md";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function DashProducts() {
   const { currentUser } = useSelector((state) => state.user);
@@ -55,21 +42,35 @@ export default function DashProducts() {
   const [createUserError, setCreateUserError] = useState(null);
   const [createLoding, setCreateLoding] = useState(null);
 
+  // Pagiation
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  const onPageChange = (page) => setCurrentPage(page);
+
+  const currentData = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Pagination
+
   const fetchProducts = async () => {
     try {
       const res = await fetch(`/api/product/getallproducts`);
       const data = await res.json();
       if (res.ok) {
         setProducts(data.products);
-        if (data.product.length < 9) {
-          setShowMore(false);
-        }
+        // if (data.product.length < 9) {
+        //   setShowMore(false);
+        // }
+        // console.log(data.products);
       }
     } catch (error) {
       console.log(error.message);
     }
   };
-
 
   useEffect(() => {
     fetchProducts();
@@ -451,7 +452,7 @@ export default function DashProducts() {
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
                 </TableHead>
-                {products.map((product) => (
+                {currentData.map((product) => (
                   <Table.Body className="divide-y" key={product.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
                       <TableCell>
@@ -502,14 +503,16 @@ export default function DashProducts() {
                   </Table.Body>
                 ))}
               </Table>
-              {/* {showMore && (
-            <button
-              onClick={handleShowMore}
-              className="w-full text-teal-500 self-center text-sm py-7"
-            >
-              Show more
-            </button>
-          )} */}
+
+              {/* Pagination */}
+              <div className="flex overflow-x-auto sm:justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={onPageChange}
+                  showIcons
+                />
+              </div>
             </>
           ) : (
             <p>You have no store yet!</p>
