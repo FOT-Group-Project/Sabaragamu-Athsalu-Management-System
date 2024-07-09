@@ -374,7 +374,13 @@ export default function fetchdamageitems() {
                           " Add Dmage Items"
                         )}
                       </Button>
-                    
+                      <Button
+                        size="sm"
+                        color="gray"
+                        onClick={() => setOpenModal(false)}
+                      >
+                        Decline
+                      </Button>
                     </div>
                   </form>
                 </div>
