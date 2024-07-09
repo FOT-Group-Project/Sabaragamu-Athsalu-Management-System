@@ -46,6 +46,10 @@ function getDamageProduct(req, res) {
                     model: models.Store,
                     as: "store",
                 },
+                {
+                    model: models.Product,
+                    as: "item",
+                  },
               
             ],
         }
