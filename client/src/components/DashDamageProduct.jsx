@@ -214,7 +214,7 @@ const fetchProducts = async () => {
           </Breadcrumb>
 
           <h1 className="mt-3 mb-3 text-left font-semibold text-xl">
-            Dmage Items
+    
           </h1>
           <div className="flex gap-3 justify-end">
             <Button
