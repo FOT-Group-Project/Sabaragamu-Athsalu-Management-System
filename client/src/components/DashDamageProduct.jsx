@@ -348,14 +348,7 @@ export default function fetchdamageitems() {
                         <div className="mb-2 block">
                           <Label value="Date" />
                         </div>
-                        <TextInput
-                          id="date"
-                          type="date"
-                          placeholder="2021-09-05"
-                          required
-                          shadow
-                          onChange={handleChange}
-                        />
+                       
                       </div>
                     </div>
 
