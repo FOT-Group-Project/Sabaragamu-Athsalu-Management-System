@@ -153,7 +153,7 @@ export default function DashSalesReport() {
   };
 
   useEffect(() => {
-    if (currentUser.role === "Accountant" || currentUser.role === "Admin") {
+    if (currentUser.role === "Accountant" || currentUser.role === "Admin" || currentUser.role === "Director") {
       fetchSales();
     } else if (currentUser.role === "Seller") {
       //get user's shopId from shop table
