@@ -157,7 +157,12 @@ export default function fetchdamageitems() {
     }
   };
 
-
+  useEffect(() => {
+    //fetchCurrentUserStore();
+    fetchStoreProducts();
+    fetchProducts();
+    fetchStores();
+  }, [currentUser.id]);
 
 
   //fetch storitem data from storeitem table
