@@ -509,11 +509,11 @@ export default function fetchdamageitems() {
             <>
               <Table hoverable className="shadow-md w-full">
                 <TableHead>
-                  <TableHeadCell> ID</TableHeadCell>
-                  <TableHeadCell>Date</TableHeadCell>
-                  <TableHeadCell>itemId </TableHeadCell>
-                  <TableHeadCell>storeId </TableHeadCell>
-                  <TableHeadCell>quantity </TableHeadCell>
+                  <TableHeadCell>Product Name</TableHeadCell>
+                  <TableHeadCell>SKU</TableHeadCell>
+
+                  <TableHeadCell>Quantity </TableHeadCell>
+                  <TableHeadCell>Date </TableHeadCell>
                   <TableHeadCell>
                     <span className="sr-only">Edit</span>
                   </TableHeadCell>
@@ -522,36 +522,26 @@ export default function fetchdamageitems() {
                 {storeitems.map((shop) => (
                   <Table.Body className="divide-y" key={shop.id}>
                     <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                      <TableCell>ST:{shop.id}</TableCell>
-                      <TableCell>{shop.date}</TableCell>
+                      <TableCell>{shop.item.itemName}</TableCell>
+                      <TableCell>{shop.item.sku}</TableCell>
+
                       <TableCell>{shop.quantity}</TableCell>
-                      <TableCell>{shop.storeId}</TableCell>
-                      <TableCell>{shop.itemId}</TableCell>
 
                       <TableCell>
-                        <Button.Group>
-                          <Button
-                            onClick={() => {
-                              setOpenModalEdit(true);
-                              setFormData(damageitems);
-                            }}
-                            color="gray"
-                          >
-                            <FaUserEdit className="mr-3 h-4 w-4" />
-                            Edit
-                          </Button>
+                        {new Date(shop.date).toLocaleDateString()}
+                      </TableCell>
 
-                          <Button
-                            onClick={() => {
-                              setShowModal(true);
-                              setStordamageIdToDelete(shop.id);
-                            }}
-                            color="gray"
-                          >
-                            <MdDeleteForever className="mr-3 h-4 w-4" />
-                            Delete
-                          </Button>
-                        </Button.Group>
+                      <TableCell>
+                        <Button
+                          onClick={() => {
+                            setShowModal(true);
+                            setStordamageIdToDelete(shop.id);
+                          }}
+                          color="red"
+                        >
+                          <MdDeleteForever className="mr-3 h-4 w-4" />
+                          Delete
+                        </Button>
                       </TableCell>
                     </TableRow>
                   </Table.Body>
