@@ -9,6 +9,7 @@ function addProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
+    sku: req.body.sku
   };
 
   //Validation of the request
@@ -39,6 +40,35 @@ function addProduct(req, res) {
     .catch((error) => {
       res.status(500).json({
         message: "Error adding product",
+        error: error,
+      });
+    });
+}
+
+//Add Products
+function addProducts(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ message: "Invalid request body" });
+  }
+
+  const products = req.body.map(product => ({
+    itemName: product.itemName,
+    itemType: product.itemType,
+    manufacturer: product.manufacturer,
+    itemPrice: product.itemPrice,
+    sku: product.sku
+  }));
+
+  models.Product.bulkCreate(products)
+    .then((result) => {
+      res.status(201).json({
+        message: "Products added successfully",
+        products: result,
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: "Error adding products",
         error: error,
       });
     });
@@ -97,6 +127,7 @@ function updateProduct(req, res) {
     itemType: req.body.itemType,
     manufacturer: req.body.manufacturer,
     itemPrice: req.body.itemPrice,
+    sku: req.body.sku
   };
 
   //Validation of the request
@@ -105,17 +136,20 @@ function updateProduct(req, res) {
     itemType: { type: "string", optional: false, max: "100" },
     manufacturer: { type: "string", optional: false, max: "100" },
     itemPrice: { type: "string", optional: false },
+    sku: { type: "string", optional: false, max: "100" },
+    storeId: { type: "string", optional: false },
+    itemQuantity: { type: "string", optional: false },
   };
 
   const v = new Validator();
   const validationResponse = v.validate(updatedProduct, schema);
 
-  if (validationResponse !== true) {
-    return res.status(400).json({
-      message: "Validation failed",
-      errors: validationResponse,
-    });
-  }
+  // if (validationResponse !== true) {
+  //   return res.status(400).json({
+  //     message: "Validation failed for the input data provided",
+  //     errors: validationResponse,
+  //   });
+  // }
 
   models.Product.update(updatedProduct, { where: { id: id } })
     .then((result) => {
@@ -167,4 +201,5 @@ module.exports = {
   getAllProducts: getAllProducts,
   updateProduct: updateProduct,
   deleteProduct: deleteProduct,
+  addProducts: addProducts,
 };

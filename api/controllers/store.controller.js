@@ -1,3 +1,4 @@
+const Validator = require("fastest-validator");
 const models = require("../models");
 
 function createStore(req, res) {
@@ -28,6 +29,7 @@ function createStore(req, res) {
     storeName: req.body.storeName,
     phone: req.body.phone,
     address: req.body.address,
+    storeKeeperId: req.body.storeKeeperId,
   };
   models.Store.create(store)
     .then((data) => {
@@ -45,6 +47,41 @@ function createStore(req, res) {
       });
     });
 }
+
+// Create multiple stores
+function createStores(req, res) {
+  if (!Array.isArray(req.body)) {
+    return res.status(400).json({ success: false, message: "Invalid request body" });
+  }
+
+  const invalidShops = req.body.filter(shop => !shop.storeName || !shop.phone || !shop.address || shop.phone.length !== 10 || shop.address.length < 3 || shop.storeName.length < 3);
+  if (invalidShops.length > 0) {
+    return res.status(400).json({ success: false, message: "Some data is missing or invalid in the shops", invalidShops });
+  }
+
+  const stores = req.body.map(shop => ({
+    storeName: shop.storeName,
+    phone: shop.phone,
+    address: shop.address,
+  }));
+
+  models.Store.bulkCreate(stores)
+    .then((data) => {
+      res.status(201).json({
+        success: true,
+        message: "Stores created successfully",
+        stores: data,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Some error occurred",
+        error: err,
+      });
+    });
+}
+
 
 function getStores(req, res) {
   models.Store.findAll()
@@ -138,4 +175,5 @@ module.exports = {
   getStores: getStores,
   deleteStore: deleteStore,
   updateStore: updateStore,
+  createStores: createStores,
 };

@@ -11,14 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.StoreKeeperManageStore.belongsTo(models.Store, {foreignKey: 'storeId'})
-      models.StoreKeeperManageStore.belongsTo(models.StoreKeeper, {foreignKey: 'storeKeeperId'})
+      StoreKeeperManageStore.belongsTo(models.User, {
+        foreignKey: 'storeKeeperId',
+        as: 'storeKeeper',
+        onDelete: 'RESTRICT',
+      });
+
+      StoreKeeperManageStore.belongsTo(models.Store, {
+        foreignKey: 'storeId',
+        as: 'store',
+        onDelete: 'RESTRICT',
+      });
     }
   }
   StoreKeeperManageStore.init({
-    date: DataTypes.DATE,
     storeKeeperId: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER
+    storeId: DataTypes.INTEGER,
+    date: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'StoreKeeperManageStore',

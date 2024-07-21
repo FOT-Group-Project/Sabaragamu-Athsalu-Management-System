@@ -11,15 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.QaCheckStore.belongsTo(models.QualityAssurance, {foreignKey: 'qaId'})
-      models.QaCheckStore.belongsTo(models.Store, {foreignKey: 'storeId'})
     }
   }
   QaCheckStore.init({
-    date: DataTypes.DATE,
-    report: DataTypes.STRING,
     qaId: DataTypes.INTEGER,
-    storeId: DataTypes.INTEGER
+    storeId: DataTypes.INTEGER,
+    date: DataTypes.DATE,
+    report: DataTypes.BLOB
   }, {
     sequelize,
     modelName: 'QaCheckStore',
